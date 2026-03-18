@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tutorial | GoldHen Manager V2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #0b0c10; overflow-x: hidden; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); }
+        .gradient-text { background: linear-gradient(to right, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="text-white antialiased pb-10">
+
+    <header class="py-8 px-4 text-center border-b border-white/10 relative">
+        <div class="absolute inset-0 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none"></div>
+        <i class="fa-brands fa-playstation text-5xl text-blue-500 mb-3 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"></i>
+        <h1 class="text-3xl font-black tracking-tight mb-2 uppercase">GoldHen <span class="gradient-text">Manager</span></h1>
+        <p class="text-white/60 text-xs tracking-widest font-mono uppercase mb-4">Guía de Instalación y Uso</p>
+        <span class="inline-block bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-widest border border-white/20">By SeBaS</span>
+    </header>
+
+    <main class="w-full max-w-3xl mx-auto px-4 mt-8 space-y-10">
+
+        <section class="glass-card rounded-2xl p-5 shadow-lg">
+            <div class="flex items-center gap-3 mb-5 border-b border-white/10 pb-4">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-black shadow-[0_0_15px_rgba(59,130,246,0.4)] shrink-0">1</div>
+                <div class="overflow-hidden">
+                    <h2 class="text-lg font-black tracking-wide truncate">Descarga e Instalación</h2>
+                    <p class="text-white/60 text-[10px] uppercase tracking-widest truncate">Servidor Android (KSWEB)</p>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <p class="text-white/80 text-sm leading-relaxed">Tu celular actuará como un servidor local. Descarga los archivos necesarios desde la <a href="https://sebasbms.github.io/Ps4.SeBaS/" target="_blank" class="text-blue-400 font-bold hover:underline">página oficial</a> y sigue estos pasos:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <div class="flex justify-between items-start mb-3">
+                            <i class="fa-solid fa-download text-2xl text-blue-400"></i>
+                            <span class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xs shadow-lg">A</span>
+                        </div>
+                        <h4 class="font-bold text-sm mb-2">KSWEB</h4>
+                        <p class="text-xs text-white/70 leading-relaxed">Instala el APK de KSWEB. Ábrelo una vez para conceder permisos y que se cree la carpeta <span class="font-mono text-white bg-black px-1 py-0.5 rounded border border-white/10 text-[10px]">htdocs</span> en tu celular.</p>
+                    </div>
+                    
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <div class="flex justify-between items-start mb-3">
+                            <i class="fa-solid fa-file-code text-2xl text-purple-400"></i>
+                            <span class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xs shadow-lg">B</span>
+                        </div>
+                        <h4 class="font-bold text-sm mb-2">El Instalador</h4>
+                        <p class="text-xs text-white/70 leading-relaxed">Descarga el script <span class="font-mono text-white bg-black px-1 py-0.5 rounded border border-white/10 text-[10px]">instalar.php</span> de la web y muévelo adentro de la carpeta <b class="text-white">htdocs</b> usando un explorador de archivos.</p>
+                    </div>
+
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <div class="flex justify-between items-start mb-3">
+                            <i class="fa-brands fa-chrome text-2xl text-green-400"></i>
+                            <span class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xs shadow-lg">C</span>
+                        </div>
+                        <h4 class="font-bold text-sm mb-2">Ejecución</h4>
+                        <p class="text-xs text-white/70 leading-relaxed">Abre Chrome en tu celular y escribe esta dirección exacta:<br><b class="text-green-400 mt-2 block text-xs font-mono">http://localhost:8080/instalar.php</b></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 blur-[50px] rounded-full pointer-events-none"></div>
+            <div class="flex items-center gap-3 mb-5 border-b border-white/10 pb-4 relative z-10">
+                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-black shadow-[0_0_15px_rgba(34,197,94,0.4)] shrink-0">2</div>
+                <div class="overflow-hidden">
+                    <h2 class="text-lg font-black tracking-wide truncate">Conexión con PS4</h2>
+                    <p class="text-white/60 text-[10px] uppercase tracking-widest truncate">Sincroniza el celular y la consola</p>
+                </div>
+            </div>
+
+            <div class="space-y-5 relative z-10">
+                <p class="text-white/80 text-sm leading-relaxed">Abre GoldHen Manager. Tienes dos formas de enlazar tu consola. (Asegúrate de tener el Wi-Fi activado).</p>
+                
+                <div class="flex flex-col gap-4">
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <h3 class="text-sm font-bold text-green-400 mb-2"><i class="fa-solid fa-satellite-dish mr-2"></i> Escáner (Radar)</h3>
+                        <p class="text-xs text-white/70 leading-relaxed">Toca el botón azul de la antena. El radar buscará la PS4 por la red automáticamente. Verás un cartel verde de <b class="text-green-400 text-[10px] bg-green-900/30 px-1 py-0.5 rounded">PS4 DETECTADA</b> cuando enlace.</p>
+                    </div>
+                    
+                    <div class="bg-black/40 p-4 rounded-xl border border-white/10">
+                        <h3 class="text-sm font-bold text-yellow-400 mb-2"><i class="fa-solid fa-network-wired mr-2"></i> Conexión Manual</h3>
+                        <p class="text-xs text-white/70 leading-relaxed">Si sabes la IP de tu PS4 (ej: 192.168.0.25), escríbela en el recuadro superior y toca el botón del <b>enchufe</b> para conectar directo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-32 h-32 bg-purple-600/10 blur-[50px] rounded-full pointer-events-none"></div>
+            <div class="flex items-center gap-3 mb-5 border-b border-white/10 pb-4 relative z-10">
+                <div class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white text-lg font-black shadow-[0_0_15px_rgba(147,51,234,0.4)] shrink-0">3</div>
+                <div class="overflow-hidden">
+                    <h2 class="text-lg font-black tracking-wide truncate">Instalar Juegos (RPI)</h2>
+                    <p class="text-white/60 text-[10px] uppercase tracking-widest truncate">Envío inalámbrico de archivos .PKG</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 relative z-10">
+                <div class="bg-black/50 p-4 rounded-xl border border-white/10">
+                    <span class="text-blue-400 font-black text-[10px] tracking-widest uppercase block mb-1">Paso 1: Archivos en el Celular</span>
+                    <p class="text-xs text-white/80 leading-relaxed">Mueve tus archivos <span class="font-mono text-purple-300 text-[10px]">.pkg</span> adentro de la carpeta <span class="font-mono bg-black px-1 border border-white/20 rounded text-white text-[10px]">htdocs/servidor_rpi/</span>.</p>
+                </div>
+
+                <div class="bg-black/50 p-4 rounded-xl border border-white/10">
+                    <span class="text-blue-400 font-black text-[10px] tracking-widest uppercase block mb-1">Paso 2: Preparar la PS4</span>
+                    <p class="text-xs text-white/80 leading-relaxed">Abre la aplicación <b>Remote Package Installer</b> en tu consola y déjala abierta en la pantalla (no la minimices).</p>
+                </div>
+
+                <div class="bg-black/50 p-4 rounded-xl border border-white/10">
+                    <span class="text-blue-400 font-black text-[10px] tracking-widest uppercase block mb-1">Paso 3: Enviar</span>
+                    <p class="text-xs text-white/80 leading-relaxed">En GoldHen Manager (celular), ve a la pestaña de <b>Transferir</b> y elige <b>RPI SENDER</b>. Toca los juegos que quieres mandar y presiona el botón amarillo <b class="text-yellow-400 text-[10px]">INSTALAR EN PS4</b>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-red-900/10 border border-red-500/30 rounded-2xl p-5 shadow-lg relative overflow-hidden mb-6">
+            <div class="flex items-center gap-3 mb-5 border-b border-red-500/30 pb-4 relative z-10">
+                <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 shrink-0"></i>
+                <div class="overflow-hidden">
+                    <h2 class="text-lg font-black tracking-wide text-red-400 truncate">Solución de Problemas</h2>
+                    <p class="text-red-200/60 text-[10px] uppercase tracking-widest truncate">Reglas de red y errores RPI</p>
+                </div>
+            </div>
+
+            <div class="space-y-6 relative z-10">
+                
+                <div class="bg-black/60 p-4 rounded-xl border border-red-500/20">
+                    <h3 class="text-sm font-black text-white mb-2">1. La regla de la Subred (IP)</h3>
+                    <p class="text-xs text-white/80 mb-4 leading-relaxed">Para que funcione, <b class="text-red-400">los primeros 3 bloques de la IP deben coincidir</b>. Si no, la PS4 rechazará la instalación.</p>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-green-500/10 border border-green-500/40 p-3 rounded-lg text-center">
+                            <i class="fa-solid fa-check-circle text-green-400 text-xl mb-1"></i>
+                            <h4 class="font-black text-green-400 text-[10px] mb-1">BIEN</h4>
+                            <p class="font-mono text-[10px] text-white/90">Cel: <b class="text-white">192.168.0.</b>15<br>PS4: <b class="text-white">192.168.0.</b>25</p>
+                        </div>
+                        <div class="bg-red-500/10 border border-red-500/40 p-3 rounded-lg text-center">
+                            <i class="fa-solid fa-xmark-circle text-red-400 text-xl mb-1"></i>
+                            <h4 class="font-black text-red-400 text-[10px] mb-1">MAL</h4>
+                            <p class="font-mono text-[10px] text-white/90">Cel: <b class="text-red-400">192.168.1.</b>15<br>PS4: <b class="text-red-400">192.168.0.</b>25</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 p-3 rounded-lg border-l-2 border-blue-500">
+                        <p class="text-[11px] text-white/80 leading-relaxed"><b class="text-blue-400">Solución:</b> Si no coinciden, enciende el "Punto de Acceso Wi-Fi" de tu celular y conecta la PS4 a esa red para forzar la conexión.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/10">
+                        <h4 class="text-yellow-400 font-black text-sm mb-1">Error 0x80990004</h4>
+                        <p class="text-xs text-white/70 mb-2 leading-relaxed">El nombre del PKG tiene espacios o símbolos.</p>
+                        <p class="text-[10px] text-white/50 leading-relaxed"><b class="text-white">Solución:</b> Renómbralo. <br>❌ <span class="text-red-400">Mi Juego (Update).pkg</span> <br>✅ <span class="text-green-400">Mi_Juego_Update.pkg</span></p>
+                    </div>
+
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/10">
+                        <h4 class="text-blue-400 font-black text-sm mb-1">Error 0x80990015</h4>
+                        <p class="text-xs text-white/70 mb-2 leading-relaxed">La cola de descargas de la consola está llena o trabada.</p>
+                        <p class="text-[10px] text-white/50 leading-relaxed"><b class="text-white">Solución:</b> Ve a las <b class="text-white">Notificaciones > Descargas</b> de la PS4 y borra todos los errores.</p>
+                    </div>
+
+                    <div class="bg-black/60 p-4 rounded-xl border border-white/10">
+                        <h4 class="text-purple-400 font-black text-sm mb-1">"Tiempo Agotado (Timeout)"</h4>
+                        <p class="text-xs text-white/70 mb-2 leading-relaxed">El celular no encontró el instalador abierto en la consola.</p>
+                        <p class="text-[10px] text-white/50 leading-relaxed"><b class="text-white">Solución:</b> Asegúrate de tener abierto <b>Remote Package Installer</b> en la pantalla de tu TV y revisa que las IP estén en la misma subred.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center mt-8 text-white/30 text-[10px] font-mono tracking-widest pb-8">
+        <i class="fa-solid fa-code mb-2 text-white/20 text-lg block"></i>
+        GOLDHEN MANAGER V2.0 <br> DEVELOPED BY SEBAS
+    </footer>
+
+</body>
+</html>
