@@ -1,7 +1,7 @@
 <?php
 /**
  * ARCHIVO: api/library.php
- * Motor de Biblioteca (Fusión: Lógica SeBaS + Motor cURL Moderno)
+ * Motor de Biblioteca (Lógica Original SeBaS + Motor cURL Moderno)
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -17,8 +17,35 @@ if (!file_exists($cache_dir)) { @mkdir($cache_dir, 0777, true); }
 if (!file_exists($cache_dir . '/.nomedia')) { @file_put_contents($cache_dir . '/.nomedia', ''); }
 
 // ==========================================
-// 1. FUNCIONES CORE (cURL + Parseo)
+// FUNCIONES NÚCLEO (Parseo + cURL)
 // ==========================================
+
+// Tu función original intacta
+function parse_sfo($filepath) {
+    $sfo = @file_get_contents($filepath);
+    if (!$sfo || substr($sfo, 0, 4) !== "\0PSF") return false;
+    $key_table_offset = unpack("V", substr($sfo, 0x08, 4))[1];
+    $data_table_offset = unpack("V", substr($sfo, 0x0C, 4))[1];
+    $entries = unpack("V", substr($sfo, 0x10, 4))[1];
+    $keys = [];
+    for ($i = 0; $i < $entries; $i++) {
+        $entry_offset = 0x14 + ($i * 16);
+        $key_offset = unpack("v", substr($sfo, $entry_offset, 2))[1];
+        $data_format = unpack("v", substr($sfo, $entry_offset + 2, 2))[1];
+        $data_len = unpack("V", substr($sfo, $entry_offset + 4, 4))[1];
+        $data_offset = unpack("V", substr($sfo, $entry_offset + 12, 4))[1];
+        $k_offset_abs = $key_table_offset + $key_offset;
+        $k_end = strpos($sfo, "\0", $k_offset_abs);
+        $key = substr($sfo, $k_offset_abs, $k_end - $k_offset_abs);
+        $d_offset_abs = $data_table_offset + $data_offset;
+        $data = substr($sfo, $d_offset_abs, $data_len);
+        if ($data_format == 0x0204) $data = rtrim($data, "\0");
+        $keys[$key] = $data;
+    }
+    return $keys;
+}
+
+// Función cURL para listar carpetas (Reemplazo de ftp_rawlist)
 function curl_ftp_list_folders($ip, $port, $path) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port" . rtrim($path, '/') . '/');
@@ -47,34 +74,30 @@ function curl_ftp_list_folders($ip, $port, $path) {
     return $folders;
 }
 
-// TU FUNCIÓN MAESTRA ORIGINAL (Intacta)
-function parse_sfo($filepath) {
-    $sfo = @file_get_contents($filepath);
-    if (!$sfo || substr($sfo, 0, 4) !== "\0PSF") return false;
-    $key_table_offset = unpack("V", substr($sfo, 0x08, 4))[1];
-    $data_table_offset = unpack("V", substr($sfo, 0x0C, 4))[1];
-    $entries = unpack("V", substr($sfo, 0x10, 4))[1];
-    $keys = [];
-    for ($i = 0; $i < $entries; $i++) {
-        $entry_offset = 0x14 + ($i * 16);
-        $key_offset = unpack("v", substr($sfo, $entry_offset, 2))[1];
-        $data_format = unpack("v", substr($sfo, $entry_offset + 2, 2))[1];
-        $data_len = unpack("V", substr($sfo, $entry_offset + 4, 4))[1];
-        $data_offset = unpack("V", substr($sfo, $entry_offset + 12, 4))[1];
-        $k_offset_abs = $key_table_offset + $key_offset;
-        $k_end = strpos($sfo, "\0", $k_offset_abs);
-        $key = substr($sfo, $k_offset_abs, $k_end - $k_offset_abs);
-        $d_offset_abs = $data_table_offset + $data_offset;
-        $data = substr($sfo, $d_offset_abs, $data_len);
-        if ($data_format == 0x0204) $data = rtrim($data, "\0");
-        $keys[$key] = $data;
+// Función cURL para descargar un archivo (Si existe)
+function curl_download_file($ip, $port, $remote_path, $local_path) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port$remote_path");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+    // IMPORTANTE: Pedimos que falle silenciosamente si el archivo no existe (error 404/550)
+    curl_setopt($ch, CURLOPT_FAILONERROR, true); 
+    
+    $data = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); // En FTP devuelve código de respuesta
+    curl_close($ch);
+    
+    if ($data !== false && strlen($data) > 0) {
+        file_put_contents($local_path, $data);
+        return true;
     }
-    return $keys;
+    return false;
 }
 
 // ==========================================
-// 2. RUTAS DE ACCIÓN
+// RUTAS DE ACCIÓN
 // ==========================================
+
 if ($action === 'delete_game') {
     @unlink($cache_dir . '/' . $cusa_id . '.png');
     @unlink($cache_dir . '/' . $cusa_id . '.sfo');
@@ -84,7 +107,6 @@ if ($action === 'delete_game') {
 
 if ($action === 'get_cached_games') {
     $games = [];
-    // Volvemos a tu lógica de buscar PNGs y SFOs
     $iconos = glob($cache_dir . '/*.png');
     
     if (is_array($iconos)) {
@@ -102,8 +124,11 @@ if ($action === 'get_cached_games') {
                         $clean_title = preg_replace('/\s+/', ' ', $clean_title);
                         if (trim($clean_title) !== '') { $title = trim($clean_title); }
                     }
-                    if (!empty($sfo_data['APP_VER'])) { $version = $sfo_data['APP_VER']; } 
-                    elseif (!empty($sfo_data['VERSION'])) { $version = $sfo_data['VERSION']; }
+                    if (!empty($sfo_data['APP_VER'])) {
+                        $version = $sfo_data['APP_VER'];
+                    } elseif (!empty($sfo_data['VERSION'])) {
+                        $version = $sfo_data['VERSION'];
+                    }
                 }
             }
             
@@ -122,10 +147,10 @@ if ($action === 'get_cached_games') {
     exit;
 }
 
-if (!$host_ip) { echo json_encode(['status' => 'error', 'message' => 'Falta IP']); exit; }
+if (!$host_ip) { echo json_encode(['status' => 'error', 'message' => 'Falta IP de PS4']); exit; }
 
 if ($action === 'scan_list') {
-    // TUS 6 RUTAS SECRETAS ORIGINALES
+    // Tus 6 rutas mágicas
     $rutas = [
         '/user/appmeta',
         '/user/appmeta/external',
@@ -176,7 +201,7 @@ if ($action === 'get_game_data' && $cusa_id) {
     
     if (!file_exists($local_icon) || !file_exists($local_sfo) || filesize($local_sfo) == 0) {
         
-        // TUS 4 RUTAS DE EXTRACCIÓN ORIGINALES
+        // Tus 4 rutas posibles de extracción
         $rutas_posibles = [
             "/user/appmeta/$cusa_id",
             "/system_data/priv/appmeta/$cusa_id",
@@ -185,29 +210,13 @@ if ($action === 'get_game_data' && $cusa_id) {
         ];
 
         foreach ($rutas_posibles as $ruta) {
-            // Buscamos descargar primero el icono con cURL
-            $ch_icon = curl_init();
-            curl_setopt($ch_icon, CURLOPT_URL, "ftp://$host_ip:$port$ruta/icon0.png");
-            curl_setopt($ch_icon, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch_icon, CURLOPT_TIMEOUT, 6);
-            $icon_data = curl_exec($ch_icon);
-            curl_close($ch_icon);
-
-            if ($icon_data && strlen($icon_data) > 100) { 
-                file_put_contents($local_icon, $icon_data);
-                
-                // Si encontramos el icono, descargamos el SFO de la misma ruta
-                $ch_sfo = curl_init();
-                curl_setopt($ch_sfo, CURLOPT_URL, "ftp://$host_ip:$port$ruta/param.sfo");
-                curl_setopt($ch_sfo, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch_sfo, CURLOPT_TIMEOUT, 5);
-                $sfo_data = curl_exec($ch_sfo);
-                curl_close($ch_sfo);
-                
-                if ($sfo_data) {
-                    file_put_contents($local_sfo, $sfo_data);
-                }
-                break; // Cortamos el ciclo porque ya lo encontramos
+            // Intentamos descargar ambos archivos
+            $sfo_ok = curl_download_file($host_ip, $port, "$ruta/param.sfo", $local_sfo);
+            $png_ok = curl_download_file($host_ip, $port, "$ruta/icon0.png", $local_icon);
+            
+            // Si logró bajar al menos el SFO o el PNG, cortamos el bucle (ya encontramos la ruta correcta)
+            if ($sfo_ok || $png_ok) {
+                break;
             }
         }
     }
