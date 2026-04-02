@@ -1,16 +1,19 @@
 <?php
 /**
  * ARCHIVO: api/saves.php
- * Motor de Backup de Partidas Guardadas (RAM Optimizada con almacenamiento temporal en disco)
+ * Motor de Backup de Partidas (RAM Optimizada con almacenamiento temporal en disco)
+ * VERSIÓN ACTUALIZADA A cURL (Compatible con el nuevo Termux)
  */
-header('Content-Type: application/json');
+error_reporting(0);
+header('Content-Type: application/json; charset=utf-8');
 set_time_limit(300); // 5 minutos de tiempo límite
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $host_ip = $_POST['host_ip'] ?? $_GET['host_ip'] ?? '';
 $cusa = $_POST['cusa_id'] ?? $_GET['cusa_id'] ?? '';
+$port = 2121;
 
-// 1. Descarga el ZIP creado
+// 1. Descarga el ZIP creado (NO USA RED, SOLO ARCHIVOS LOCALES)
 if ($action === 'download') {
     $file = $_GET['file'] ?? '';
     $path = "../cache_biblioteca/" . basename($file);
@@ -29,58 +32,82 @@ if (!$host_ip || !$cusa) {
     exit;
 }
 
-$conn = @ftp_connect($host_ip, 2121, 5);
-if (!$conn) {
-    echo json_encode(['status' => 'error', 'message' => 'No conecta a PS4.']);
-    exit;
-}
-@ftp_login($conn, "anonymous", "");
-ftp_pasv($conn, true);
+// ==========================================
+// FUNCIONES NÚCLEO cURL (Reemplazo de ftp_*)
+// ==========================================
 
-// Función para calcular peso sin colgar la consola (¡Tu regla de -1 es genial aquí!)
-function getDirStats($conn, $remote_dir, &$fileCount) {
-    $size = 0;
-    $files = @ftp_nlist($conn, $remote_dir);
-    if (is_array($files)) {
-        foreach ($files as $file) {
-            $base = basename($file);
-            if ($base == '.' || $base == '..') continue;
-            
-            $remote_path = rtrim($remote_dir, '/') . '/' . $base;
-            $s = @ftp_size($conn, $remote_path);
-            
-            if ($s == -1) {
-                $size += getDirStats($conn, $remote_path, $fileCount);
-            } else {
-                $size += $s;
-                $fileCount++;
+// Lista detallada de archivos (Equivalente a ftp_rawlist para sacar tamaño y tipo de una sola vez)
+function curl_ftp_list_details($ip, $port, $path) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port" . rtrim($path, '/') . '/');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);
+    $res = curl_exec($ch);
+    curl_close($ch);
+    
+    $items = [];
+    if ($res) {
+        $lines = explode("\n", trim($res));
+        foreach ($lines as $line) {
+            if(empty(trim($line))) continue;
+            $parts = preg_split('/\s+/', trim($line), 9);
+            if(count($parts) >= 9) {
+                $name = $parts[8];
+                if ($name === '.' || $name === '..') continue;
+                $is_dir = (substr($parts[0], 0, 1) === 'd');
+                $size = (int)$parts[4];
+                $items[] = ['name' => $name, 'is_dir' => $is_dir, 'size' => $size];
             }
+        }
+    }
+    return $items;
+}
+
+// Descarga un archivo por FTP directo a un archivo temporal (Bajo consumo de RAM)
+function curl_ftp_download($ip, $port, $remote_path, $local_path) {
+    $ch = curl_init();
+    $fp = fopen($local_path, 'w');
+    curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port$remote_path");
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    $success = curl_exec($ch);
+    curl_close($ch);
+    fclose($fp);
+    return $success;
+}
+
+// Función recursiva para calcular peso usando cURL
+function getDirStatsCurl($ip, $port, $remote_dir, &$fileCount) {
+    $size = 0;
+    $items = curl_ftp_list_details($ip, $port, $remote_dir);
+    foreach ($items as $item) {
+        $remote_path = rtrim($remote_dir, '/') . '/' . $item['name'];
+        if ($item['is_dir']) {
+            $size += getDirStatsCurl($ip, $port, $remote_path, $fileCount);
+        } else {
+            $size += $item['size'];
+            $fileCount++;
         }
     }
     return $size;
 }
 
-// NUEVA VERSIÓN: Descarga a disco (casi 0% consumo de RAM)
-function addFolderToZip($conn, $remote_dir, $zip, $zip_dir, $temp_base_dir) {
-    $files = @ftp_nlist($conn, $remote_dir);
-    if (is_array($files)) {
+// Descarga a disco y encola al ZIP
+function addFolderToZipCurl($ip, $port, $remote_dir, $zip, $zip_dir, $temp_base_dir) {
+    $items = curl_ftp_list_details($ip, $port, $remote_dir);
+    if (count($items) > 0) {
         $zip->addEmptyDir($zip_dir); 
-        foreach ($files as $file) {
-            $base = basename($file);
-            if ($base == '.' || $base == '..') continue;
+        foreach ($items as $item) {
+            $remote_path = rtrim($remote_dir, '/') . '/' . $item['name'];
+            $local_zip_path = $zip_dir . '/' . $item['name'];
             
-            $remote_path = rtrim($remote_dir, '/') . '/' . $base;
-            $local_zip_path = $zip_dir . '/' . $base;
-            
-            $size = @ftp_size($conn, $remote_path);
-            
-            if ($size == -1) {
-                addFolderToZip($conn, $remote_path, $zip, $local_zip_path, $temp_base_dir); 
+            if ($item['is_dir']) {
+                addFolderToZipCurl($ip, $port, $remote_path, $zip, $local_zip_path, $temp_base_dir); 
             } else {
-                // Descargamos a un archivo físico temporal
+                // Descargamos a un archivo físico temporal (Sin saturar RAM)
                 $temp_file = $temp_base_dir . '/' . uniqid('sv_') . '.tmp';
-                if (@ftp_get($conn, $temp_file, $remote_path, FTP_BINARY)) {
-                    // addFile no colapsa la RAM, solo encola la ruta para cuando hagas $zip->close()
+                if (curl_ftp_download($ip, $port, $remote_path, $temp_file)) {
                     $zip->addFile($temp_file, $local_zip_path); 
                 }
             }
@@ -98,33 +125,33 @@ function limpiarDirectorioTemporal($dir) {
     @rmdir($dir);
 }
 
+
+// ==========================================
 // 2. Acción: Revisar y calcular peso ANTES de descargar
+// ==========================================
 if ($action === 'check_saves') {
-    $users = @ftp_nlist($conn, "/user/home");
+    $users = curl_ftp_list_details($host_ip, $port, "/user/home");
     $total_size = 0;
     $total_files = 0;
     $found_users = [];
 
-    if (is_array($users)) {
-        foreach ($users as $u) {
-            $user_id = basename($u);
-            if ($user_id === '.' || $user_id === '..') continue;
-            
-            $target = "/user/home/$user_id/savedata/$cusa";
-            
-            $check = @ftp_nlist($conn, $target);
-            if (is_array($check) && count($check) > 0) {
-                $count = 0;
-                $size = getDirStats($conn, $target, $count);
-                if ($count > 0) {
-                    $total_size += $size;
-                    $total_files += $count;
-                    $found_users[] = $user_id;
-                }
+    foreach ($users as $u) {
+        if (!$u['is_dir']) continue;
+        $user_id = $u['name'];
+        
+        $target = "/user/home/$user_id/savedata/$cusa";
+        $check = curl_ftp_list_details($host_ip, $port, $target);
+        
+        if (count($check) > 0) {
+            $count = 0;
+            $size = getDirStatsCurl($host_ip, $port, $target, $count);
+            if ($count > 0) {
+                $total_size += $size;
+                $total_files += $count;
+                $found_users[] = $user_id;
             }
         }
     }
-    @ftp_close($conn);
 
     if (empty($found_users)) {
         echo json_encode(['status' => 'error', 'message' => 'No se encontraron partidas (Saves) en la consola para este juego.']);
@@ -140,21 +167,21 @@ if ($action === 'check_saves') {
     exit;
 }
 
+// ==========================================
 // 3. Acción: Crear el ZIP real
+// ==========================================
 if ($action === 'backup') {
-    $users = @ftp_nlist($conn, "/user/home");
+    $users = curl_ftp_list_details($host_ip, $port, "/user/home");
     $save_paths = [];
     
-    if (is_array($users)) {
-        foreach ($users as $u) {
-            $user_id = basename($u);
-            if ($user_id === '.' || $user_id === '..') continue;
-            
-            $target = "/user/home/$user_id/savedata/$cusa";
-            $check = @ftp_nlist($conn, $target);
-            if (is_array($check) && count($check) > 0) {
-                $save_paths[] = $target; 
-            }
+    foreach ($users as $u) {
+        if (!$u['is_dir']) continue;
+        $user_id = $u['name'];
+        
+        $target = "/user/home/$user_id/savedata/$cusa";
+        $check = curl_ftp_list_details($host_ip, $port, $target);
+        if (count($check) > 0) {
+            $save_paths[] = $target; 
         }
     }
 
@@ -174,7 +201,7 @@ if ($action === 'backup') {
     if ($zip->open($zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
         foreach ($save_paths as $path) {
             $user_folder = basename(dirname(dirname($path))); 
-            addFolderToZip($conn, $path, $zip, "Saves_Usuario_$user_folder", $temp_work_dir);
+            addFolderToZipCurl($host_ip, $port, $path, $zip, "Saves_Usuario_$user_folder", $temp_work_dir);
         }
         
         // ¡Magia aquí! Cierra y compila el ZIP leyendo desde disco, no desde RAM.
@@ -189,7 +216,6 @@ if ($action === 'backup') {
         limpiarDirectorioTemporal($temp_work_dir);
         echo json_encode(['status' => 'error', 'message' => 'Error al comprimir el archivo ZIP en el servidor local.']);
     }
-    @ftp_close($conn);
     exit;
 }
 ?>
