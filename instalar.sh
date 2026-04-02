@@ -3,10 +3,10 @@
 # 1. Esperar a que el usuario conceda los permisos de almacenamiento
 while ! ls ~/storage/shared >/dev/null 2>&1; do sleep 2; done
 
-# 2. Reparar repositorios e instalar PHP y Git
+# 2. Reparar repositorios e instalar PHP, Git y Busybox (¡Aquí está el cambio 1!)
 echo "deb https://packages.termux.dev/apt/termux-main stable main" > $PREFIX/etc/apt/sources.list
 pkg update -y
-pkg install php git -y
+pkg install php git busybox -y
 
 # 3. Limpiar rastros viejos y descargar la última versión de tu app
 rm -rf ~/PS4Manager
@@ -39,13 +39,17 @@ echo -e "\e[1;32m         ▶ MANAGER V2.1 | DEVELOPED BY SEBAS ◀\e[0m"
 echo ""
 echo -e "\e[1;34m============================================================\e[0m"
 echo -e "\e[1;33m[*] \e[1;37mBuscando actualizaciones..."
-echo -e "\e[1;33m[*] \e[1;37mIniciando Servidor PHP Optimizado (5 Carriles)..."
+echo -e "\e[1;33m[*] \e[1;37mIniciando Servidor PHP y Busybox (Doble Motor)..."
 echo -e "\e[1;33m[*] \e[1;37mAbriendo GoldHen Manager..."
 echo -e "\e[1;34m============================================================\e[0m"
 echo ""
 cd ~/PS4Manager/GHManager
 git pull >/dev/null 2>&1
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
+
+# ¡Aquí está el cambio 2! Encendemos Busybox (8081) antes de PHP (8080)
+killall busybox >/dev/null 2>&1
+busybox httpd -p 8081 -h ~/PS4Manager/GHManager
 PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
 EOF
 
@@ -67,4 +71,8 @@ echo -e "\e[1;34m============================================================\e[
 echo ""
 cd ~/PS4Manager/GHManager
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
+
+# Y aquí también repetimos el encendido del Doble Motor
+killall busybox >/dev/null 2>&1
+busybox httpd -p 8081 -h ~/PS4Manager/GHManager
 PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
