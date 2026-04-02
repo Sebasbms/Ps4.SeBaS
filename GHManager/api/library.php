@@ -2,6 +2,7 @@
 /**
  * ARCHIVO: api/library.php
  * Motor de Biblioteca (Lógica Original SeBaS + Motor cURL Moderno)
+ * CORRECCIÓN: Búsqueda independiente de SFO y PNG.
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -45,7 +46,7 @@ function parse_sfo($filepath) {
     return $keys;
 }
 
-// Función cURL para listar carpetas (Reemplazo de ftp_rawlist)
+// Función cURL para listar carpetas (Reemplazo de LIST/NLST)
 function curl_ftp_list_folders($ip, $port, $path) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port" . rtrim($path, '/') . '/');
@@ -65,26 +66,23 @@ function curl_ftp_list_folders($ip, $port, $path) {
                 $name = $parts[8];
                 if ($name === '.' || $name === '..') continue;
                 $is_dir = (substr($parts[0], 0, 1) === 'd');
-                if ($is_dir) {
-                    $folders[] = $name;
-                }
+                if ($is_dir) { $folders[] = $name; }
             }
         }
     }
     return $folders;
 }
 
-// Función cURL para descargar un archivo (Si existe)
+// Función cURL para descargar (Mejorada para archivos binarios de PS4)
 function curl_download_file($ip, $port, $remote_path, $local_path) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port$remote_path");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 6);
-    // IMPORTANTE: Pedimos que falle silenciosamente si el archivo no existe (error 404/550)
+    curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);
     curl_setopt($ch, CURLOPT_FAILONERROR, true); 
     
     $data = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); // En FTP devuelve código de respuesta
     curl_close($ch);
     
     if ($data !== false && strlen($data) > 0) {
@@ -95,7 +93,7 @@ function curl_download_file($ip, $port, $remote_path, $local_path) {
 }
 
 // ==========================================
-// RUTAS DE ACCIÓN
+// ACCIONES
 // ==========================================
 
 if ($action === 'delete_game') {
@@ -116,6 +114,7 @@ if ($action === 'get_cached_games') {
             $title = $cusa; 
             $version = "1.00";
             
+            // Si el SFO existe, extraemos el nombre real con TU función
             if (file_exists($sfo_file) && filesize($sfo_file) > 0) {
                 $sfo_data = parse_sfo($sfo_file);
                 if ($sfo_data) {
@@ -124,11 +123,8 @@ if ($action === 'get_cached_games') {
                         $clean_title = preg_replace('/\s+/', ' ', $clean_title);
                         if (trim($clean_title) !== '') { $title = trim($clean_title); }
                     }
-                    if (!empty($sfo_data['APP_VER'])) {
-                        $version = $sfo_data['APP_VER'];
-                    } elseif (!empty($sfo_data['VERSION'])) {
-                        $version = $sfo_data['VERSION'];
-                    }
+                    if (!empty($sfo_data['APP_VER'])) { $version = $sfo_data['APP_VER']; } 
+                    elseif (!empty($sfo_data['VERSION'])) { $version = $sfo_data['VERSION']; }
                 }
             }
             
@@ -147,38 +143,21 @@ if ($action === 'get_cached_games') {
     exit;
 }
 
-if (!$host_ip) { echo json_encode(['status' => 'error', 'message' => 'Falta IP de PS4']); exit; }
+if (!$host_ip) { echo json_encode(['status' => 'error']); exit; }
 
 if ($action === 'scan_list') {
-    // Tus 6 rutas mágicas
     $rutas = [
-        '/user/appmeta',
-        '/user/appmeta/external',
-        '/user/appmeta/push_resource',
-        '/system_data/priv/appmeta',
-        '/system_data/priv/appmeta/external',
-        '/system_data/priv/appmeta/push_resource'
+        '/user/appmeta', '/user/appmeta/external', '/user/appmeta/push_resource',
+        '/system_data/priv/appmeta', '/system_data/priv/appmeta/external', '/system_data/priv/appmeta/push_resource'
     ];
     
-    $games_list = []; 
-    $patron_id = '/^[A-Z]{4}\d{5}$/i';
+    $games_list = []; $patron_id = '/^[A-Z]{4}\d{5}$/i';
 
     foreach ($rutas as $ruta) {
         $folders = curl_ftp_list_folders($host_ip, $port, $ruta);
         foreach ($folders as $name) {
             $cusa = strtoupper($name);
-            if (preg_match($patron_id, $cusa)) {
-                $games_list[$cusa] = true;
-            }
-        }
-    }
-
-    $cached_files = glob($cache_dir . '/*');
-    if (is_array($cached_files)) {
-        foreach ($cached_files as $file) {
-            if (basename($file) === '.nomedia') continue;
-            $cusa = pathinfo($file, PATHINFO_FILENAME);
-            if (!isset($games_list[$cusa])) { @unlink($file); }
+            if (preg_match($patron_id, $cusa)) { $games_list[$cusa] = true; }
         }
     }
 
@@ -190,7 +169,6 @@ if ($action === 'scan_list') {
             $missing[] = ['id' => $cusa]; 
         }
     }
-
     echo json_encode(['status' => 'success', 'missing' => $missing]);
     exit;
 }
@@ -199,27 +177,27 @@ if ($action === 'get_game_data' && $cusa_id) {
     $local_icon = $cache_dir . '/' . $cusa_id . '.png';
     $local_sfo = $cache_dir . '/' . $cusa_id . '.sfo';
     
-    if (!file_exists($local_icon) || !file_exists($local_sfo) || filesize($local_sfo) == 0) {
-        
-        // Tus 4 rutas posibles de extracción
-        $rutas_posibles = [
-            "/user/appmeta/$cusa_id",
-            "/system_data/priv/appmeta/$cusa_id",
-            "/user/appmeta/external/$cusa_id",
-            "/system_data/priv/appmeta/external/$cusa_id"
-        ];
+    $rutas_posibles = [
+        "/user/appmeta/$cusa_id", "/system_data/priv/appmeta/$cusa_id",
+        "/user/appmeta/external/$cusa_id", "/system_data/priv/appmeta/external/$cusa_id"
+    ];
 
-        foreach ($rutas_posibles as $ruta) {
-            // Intentamos descargar ambos archivos
-            $sfo_ok = curl_download_file($host_ip, $port, "$ruta/param.sfo", $local_sfo);
-            $png_ok = curl_download_file($host_ip, $port, "$ruta/icon0.png", $local_icon);
-            
-            // Si logró bajar al menos el SFO o el PNG, cortamos el bucle (ya encontramos la ruta correcta)
-            if ($sfo_ok || $png_ok) {
-                break;
-            }
+    $has_icon = (file_exists($local_icon) && filesize($local_icon) > 0);
+    $has_sfo = (file_exists($local_sfo) && filesize($local_sfo) > 0);
+
+    foreach ($rutas_posibles as $ruta) {
+        // CORRECCIÓN MAESTRA: Buscamos ambos archivos de forma independiente
+        if (!$has_sfo) {
+            $has_sfo = curl_download_file($host_ip, $port, "$ruta/param.sfo", $local_sfo);
         }
+        if (!$has_icon) {
+            $has_icon = curl_download_file($host_ip, $port, "$ruta/icon0.png", $local_icon);
+        }
+        
+        // Si ya conseguimos los dos, NO seguimos buscando en otras rutas
+        if ($has_sfo && $has_icon) { break; }
     }
+    
     echo json_encode(['status' => 'success']);
     exit;
 }
