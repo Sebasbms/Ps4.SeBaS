@@ -1,4 +1,3 @@
- 
 #!/bin/bash
 
 # 1. Esperar a que el usuario conceda los permisos de almacenamiento
@@ -39,13 +38,15 @@ echo " ╚═════╝  ╚═════╝ ╚══════╝╚�
 echo -e "\e[1;32m         ▶ MANAGER V2.1 | DEVELOPED BY SEBAS ◀\e[0m"
 echo ""
 echo -e "\e[1;34m============================================================\e[0m"
-echo -e "\e[1;33m[*] \e[1;37mIniciando Servidor PHP..."
+echo -e "\e[1;33m[*] \e[1;37mBuscando actualizaciones..."
+echo -e "\e[1;33m[*] \e[1;37mIniciando Servidor PHP Optimizado (5 Carriles)..."
 echo -e "\e[1;33m[*] \e[1;37mAbriendo GoldHen Manager..."
 echo -e "\e[1;34m============================================================\e[0m"
 echo ""
 cd ~/PS4Manager/GHManager
+git pull >/dev/null 2>&1
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
-php -S 0.0.0.0:8080
+PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
 EOF
 
 # 7. Ejecutar la app por primera vez tras la instalación
@@ -66,4 +67,4 @@ echo -e "\e[1;34m============================================================\e[
 echo ""
 cd ~/PS4Manager/GHManager
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
-php -S 0.0.0.0:8080
+PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
