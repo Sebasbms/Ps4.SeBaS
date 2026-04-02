@@ -49,7 +49,7 @@ function curl_ftp_list_details($ip, $port, $path) {
         $lines = explode("\n", trim($res));
         foreach ($lines as $line) {
             if(empty(trim($line))) continue;
-            // Dividir la línea del listado UNIX (Tu lógica original)
+            // Dividir la línea del listado UNIX
             $parts = preg_split('/\s+/', trim($line), 9);
             if(count($parts) >= 9) {
                 $name = $parts[8];
@@ -70,7 +70,7 @@ if ($action === 'list_dir') {
     $path = $_POST['path'] ?? '/';
     $items = curl_ftp_list_details($host_ip, $port, $path);
     
-    // Ordenar: Primero carpetas, luego archivos (alfabéticamente - Tu lógica original)
+    // Ordenar: Primero carpetas, luego archivos
     usort($items, function($a, $b) {
         if ($a['is_dir'] && !$b['is_dir']) return -1;
         if (!$a['is_dir'] && $b['is_dir']) return 1;
@@ -92,7 +92,7 @@ elseif ($action === 'delete_item') {
 
     $is_dir = $_POST['is_dir'] === 'true' || $_POST['is_dir'] === '1';
     
-    // Borrado en cadena (Reescrito para cURL)
+    // Borrado en cadena 
     function deleteDirCurl($ip, $port, $dir) {
         $items = curl_ftp_list_details($ip, $port, $dir);
         foreach($items as $item) {
@@ -191,7 +191,6 @@ elseif ($action === 'read_file') {
     if ($content !== false && empty($err)) {
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         
-        // Tu lógica original de procesar imágenes y texto
         if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'bmp'])) {
             $base64 = base64_encode($content);
             $mime = 'image/' . ($ext === 'jpg' ? 'jpeg' : $ext);
@@ -202,6 +201,74 @@ elseif ($action === 'read_file') {
         }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'No se pudo leer el archivo.']);
+    }
+    exit;
+}
+
+// ==========================================
+// NUEVO: MOTOR FTP CLÁSICO (SUBIDA POR FRAGMENTOS CON cURL)
+// ==========================================
+
+elseif ($action === 'check_file') {
+    $path = $_POST['path'] ?? '';
+    if (!$path || !$host_ip) exit;
+    
+    $url = "ftp://$host_ip:$port" . $path;
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_NOBODY, true);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_exec($ch);
+    
+    $size = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+    curl_close($ch);
+    
+    if ($size > 0) {
+        echo json_encode(['status' => 'success', 'exists' => true, 'size' => $size]);
+    } else {
+        echo json_encode(['status' => 'success', 'exists' => false, 'size' => 0]);
+    }
+    exit;
+}
+
+elseif ($action === 'upload_chunk') {
+    $path = rtrim($_POST['path'] ?? '', '/') . '/';
+    $file_name = $_POST['file_name'] ?? '';
+    $chunk_index = isset($_POST['chunk_index']) ? (int)$_POST['chunk_index'] : 0;
+    
+    if (!$host_ip || !$file_name || !isset($_FILES['chunk'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Faltan datos del fragmento.']);
+        exit;
+    }
+    
+    $remote_path = $path . $file_name;
+    $url = "ftp://$host_ip:$port" . $remote_path;
+    $tmp_file = $_FILES['chunk']['tmp_name'];
+    
+    $ch = curl_init($url);
+    $fp = fopen($tmp_file, 'r');
+    
+    curl_setopt($ch, CURLOPT_UPLOAD, true);
+    curl_setopt($ch, CURLOPT_INFILE, $fp);
+    curl_setopt($ch, CURLOPT_INFILESIZE, filesize($tmp_file));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60); 
+    
+    if ($chunk_index === 0) {
+        curl_setopt($ch, CURLOPT_FTPAPPEND, false);
+    } else {
+        curl_setopt($ch, CURLOPT_FTPAPPEND, true);
+    }
+    
+    $res = curl_exec($ch);
+    $err = curl_error($ch);
+    curl_close($ch);
+    fclose($fp);
+    
+    if ($res !== false) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Error de conexión: ' . $err]);
     }
     exit;
 }
