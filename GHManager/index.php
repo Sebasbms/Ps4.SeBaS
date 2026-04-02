@@ -2248,7 +2248,7 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-        async function iniciarColaInstalacionRPI() {
+                async function iniciarColaInstalacionRPI() {
             if(rpiQueue.length === 0) { await ps5Alert(t('j_err_file'), "Selecciona al menos un juego de la lista.", "fa-hand-pointer"); return; }
             const ps4Ip = document.getElementById('host-ip').value;
             if(!ps4Ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), "fa-network-wired"); return; }
@@ -2263,7 +2263,8 @@ if (isset($_GET['ota_update'])) {
                 if (!advertencia) return;
             }
 
-            let port = window.location.port ? ':' + window.location.port : '';
+            // MAGIA 1: Forzar siempre el puerto 8080 para Termux
+            let port = window.location.port ? ':' + window.location.port : ':8080';
             let baseUrl = window.location.protocol + '//' + phoneIp + port + window.location.pathname.replace(/index\.php$/, '').replace(/\/$/, '');
 
             document.getElementById('custom-modal').classList.remove('hidden', 'opacity-0'); 
@@ -2278,6 +2279,12 @@ if (isset($_GET['ota_update'])) {
             
             for (let i = 0; i < rpiQueue.length; i++) {
                 let selectedPath = rpiQueue[i]; 
+                
+                // MAGIA 2: Asegurarnos de que el link apunta a la carpeta correcta
+                if (!selectedPath.includes('servidor_rpi/')) {
+                    selectedPath = 'servidor_rpi/' + selectedPath;
+                }
+
                 let pathParts = selectedPath.split('/');
                 let encodedPath = pathParts.map(p => encodeURIComponent(p)).join('/');
                 let urlToSend = baseUrl + '/' + encodedPath;
