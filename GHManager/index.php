@@ -4,6 +4,53 @@
  * GOLDHEN MANAGER V2.1 (PS5/PS4)
  * DEVELOPED *By SeBaS* * ====================================================================
  */
+
+// ==========================================
+// 0. INTERCEPTOR MÁGICO PARA PKGS (Soluciona el rechazo del RPI)
+// ==========================================
+if (php_sapi_name() == 'cli-server') {
+    $req = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (preg_match('/\.pkg$/i', $req)) {
+        $file_path = __DIR__ . urldecode($req);
+        if (file_exists($file_path)) {
+            $size = filesize($file_path);
+            $start = 0; $end = $size - 1;
+            header('Accept-Ranges: bytes');
+            header('Content-Type: application/octet-stream');
+            
+            if (isset($_SERVER['HTTP_RANGE'])) {
+                list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
+                if (strpos($range, ',') !== false) { header('HTTP/1.1 416 Requested Range Not Satisfiable'); header("Content-Range: bytes $start-$end/$size"); exit; }
+                if ($range == '-') { $c_start = $size - substr($range, 1); $c_end = $size - 1; }
+                else { $range = explode('-', $range); $c_start = $range[0]; $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size - 1; }
+                $c_end = ($c_end > $end) ? $end : $c_end;
+                if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) { header('HTTP/1.1 416 Requested Range Not Satisfiable'); header("Content-Range: bytes $start-$end/$size"); exit; }
+                $start = $c_start; $end = $c_end;
+                header('HTTP/1.1 206 Partial Content');
+                header("Content-Range: bytes $start-$end/$size");
+            } else { header('HTTP/1.1 200 OK'); }
+            
+            $length = $end - $start + 1;
+            header("Content-Length: $length");
+            
+            $fp = @fopen($file_path, 'rb');
+            if ($fp) {
+                fseek($fp, $start);
+                $buffer_size = 1024 * 128; // Mandamos en trozos de 128KB para no ahogar a Termux
+                while (!feof($fp) && ($p = ftell($fp)) <= $end) {
+                    if ($p + $buffer_size > $end) { $buffer_size = $end - $p + 1; }
+                    echo fread($fp, $buffer_size);
+                    flush();
+                }
+                fclose($fp);
+            }
+            exit;
+        }
+    }
+    // Si no es un PKG, que PHP sirva la foto o el script normalmente
+    if (is_file(__DIR__ . $req) && $req !== '/index.php') { return false; }
+}
+
 error_reporting(0);
 @ini_set('display_errors', 0);
 @ini_set('memory_limit', '512M'); 
