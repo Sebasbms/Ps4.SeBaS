@@ -3,9 +3,9 @@
 # 1. Esperar a que el usuario conceda los permisos de almacenamiento
 while ! ls ~/storage/shared >/dev/null 2>&1; do sleep 2; done
 
-# 2. Reparar repositorios e instalar PHP, Git, Busybox y cURL (¡Agregado cURL!)
-echo "deb https://packages.termux.dev/apt/termux-main stable main" > $PREFIX/etc/apt/sources.list
+# 2. Actualizar sistema e instalar PHP, Git, Busybox y cURL (SIN forzar servidores rotos)
 pkg update -y
+pkg upgrade -y
 pkg install php git busybox curl -y
 
 # 3. Limpiar rastros viejos y descargar la última versión de tu app
@@ -47,7 +47,7 @@ cd ~/PS4Manager/GHManager
 git reset --hard >/dev/null 2>&1
 git pull >/dev/null 2>&1
 
-# ¡EL ANTIFANTASMAS! Matamos procesos colgados antes de arrancar
+# Matamos procesos colgados antes de arrancar
 pkill php >/dev/null 2>&1
 killall busybox >/dev/null 2>&1
 
@@ -76,7 +76,7 @@ echo -e "\e[1;34m============================================================\e[
 echo ""
 cd ~/PS4Manager/GHManager
 
-# ¡EL ANTIFANTASMAS! Limpiamos antes de la primera ejecución
+# Limpiamos antes de la primera ejecución
 pkill php >/dev/null 2>&1
 killall busybox >/dev/null 2>&1
 
