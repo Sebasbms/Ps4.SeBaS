@@ -1,7 +1,7 @@
 <?php
 /**
  * ARCHIVO: api/modding.php
- * Sistema de inyección y extracción de portadas (CUSA) - Versión Definitiva
+ * Sistema de inyección y extracción de portadas (CUSA) - RUTAS CORREGIDAS
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -17,7 +17,7 @@ if (!$host) {
 }
 
 // ==========================================
-// 1. INYECTAR PORTADA (UPLOAD) - Modo "Caballo de Troya"
+// 1. INYECTAR PORTADA (UPLOAD)
 // ==========================================
 if ($action === 'upload_icon') {
     $source = $_POST['source_type'] ?? '';
@@ -39,8 +39,8 @@ if ($action === 'upload_icon') {
         exit;
     }
 
-    // Ruta de destino. Usamos doble barra al inicio para asegurar la raíz en GoldHEN
-    $dest_path = "//user/app/meta/$cusa/icon0.png";
+    // EL ERROR ESTABA AQUÍ: Era appmeta, no app/meta
+    $dest_path = "/user/appmeta/$cusa/icon0.png";
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$dest_path");
@@ -54,11 +54,7 @@ if ($action === 'upload_icon') {
     curl_setopt($ch, CURLOPT_INFILESIZE, strlen($icon_data));
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
-    
-    // MAGIA: El "Caballo de Troya".
-    // Obligamos a cURL a navegar por las carpetas una por una antes de soltar el archivo.
-    // Esto desarma el escudo de GoldHEN que causa el Error 550.
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_MULTICWD); 
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
     
     $res = curl_exec($ch);
     $err = curl_error($ch);
@@ -82,16 +78,14 @@ if ($action === 'backup_original') {
         exit;
     }
 
-    // Doble barra de seguridad para la raíz
-    $remote = "//user/app/meta/$cusa/icon0.png";
+    // EL ERROR ESTABA AQUÍ: Era appmeta, no app/meta
+    $remote = "/user/appmeta/$cusa/icon0.png";
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
-    
-    // Para leer, el modo directo sigue siendo el más seguro
     curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
     
     $data = curl_exec($ch);
@@ -111,16 +105,19 @@ if ($action === 'backup_original') {
 }
 
 // ==========================================
-// 3. ESCANEAR TODOS LOS JUEGOS (Para el botón "Respaldar Todos")
+// 3. ESCANEAR TODOS LOS JUEGOS
 // ==========================================
 if ($action === 'get_all_cusa') {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port/user/app/meta/");
+    
+    // EL ERROR ESTABA AQUÍ TAMBIÉN
+    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port/user/appmeta/");
+    
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_MULTICWD); // Usamos multi-navegación aquí también por precaución
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
     $res = curl_exec($ch);
     curl_close($ch);
     
@@ -146,7 +143,7 @@ if ($action === 'get_all_cusa') {
 // 4. OBTENER AVATAR DEL PERFIL PS4
 // ==========================================
 if ($action === 'get_ps4_profile') {
-    $remote = "//user/home/10000000/avatar.png"; 
+    $remote = "/user/home/10000000/avatar.png"; 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
