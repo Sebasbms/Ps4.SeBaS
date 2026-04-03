@@ -3,10 +3,10 @@
 # 1. Esperar a que el usuario conceda los permisos de almacenamiento
 while ! ls ~/storage/shared >/dev/null 2>&1; do sleep 2; done
 
-# 2. Reparar repositorios e instalar PHP, Git y Busybox (¡Aquí está el cambio 1!)
+# 2. Reparar repositorios e instalar PHP, Git, Busybox y cURL (¡Agregado cURL!)
 echo "deb https://packages.termux.dev/apt/termux-main stable main" > $PREFIX/etc/apt/sources.list
 pkg update -y
-pkg install php git busybox -y
+pkg install php git busybox curl -y
 
 # 3. Limpiar rastros viejos y descargar la última versión de tu app
 rm -rf ~/PS4Manager
@@ -44,11 +44,16 @@ echo -e "\e[1;33m[*] \e[1;37mAbriendo GoldHen Manager..."
 echo -e "\e[1;34m============================================================\e[0m"
 echo ""
 cd ~/PS4Manager/GHManager
+git reset --hard >/dev/null 2>&1
 git pull >/dev/null 2>&1
+
+# ¡EL ANTIFANTASMAS! Matamos procesos colgados antes de arrancar
+pkill php >/dev/null 2>&1
+killall busybox >/dev/null 2>&1
+
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
 
-# ¡Aquí está el cambio 2! Encendemos Busybox (8081) antes de PHP (8080)
-killall busybox >/dev/null 2>&1
+# Encendemos Busybox (8081) y luego PHP con sus 5 carriles (8080)
 busybox httpd -p 8081 -h ~/PS4Manager/GHManager
 PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
 EOF
@@ -70,9 +75,13 @@ echo -e "\e[1;33m[*] \e[1;37mAbriendo GoldHen Manager..."
 echo -e "\e[1;34m============================================================\e[0m"
 echo ""
 cd ~/PS4Manager/GHManager
+
+# ¡EL ANTIFANTASMAS! Limpiamos antes de la primera ejecución
+pkill php >/dev/null 2>&1
+killall busybox >/dev/null 2>&1
+
 am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1
 
-# Y aquí también repetimos el encendido del Doble Motor
-killall busybox >/dev/null 2>&1
+# Encendido del Doble Motor
 busybox httpd -p 8081 -h ~/PS4Manager/GHManager
 PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
