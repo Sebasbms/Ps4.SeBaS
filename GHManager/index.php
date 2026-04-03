@@ -245,6 +245,8 @@ if (isset($_GET['ota_update'])) {
     }
     exit;
 }
+?>
+
 
 
 
