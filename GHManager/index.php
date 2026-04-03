@@ -12,7 +12,7 @@ header('Content-Type: text/html; charset=utf-8');
 $firma = chr(83).chr(101).chr(66).chr(97).chr(83); 
 header('X-Author: ' . $firma);
 
-// 1. AUTO-CREACI脫N PWA E ICONO
+// 1. AUTO-CREACION PWA E ICONO
 $manifest_content = '{
   "name": "GoldHen Manager", "short_name": "GoldHen Manager",
   "start_url": "./index.php", "display": "standalone", "background_color": "#0b0c10",
@@ -326,6 +326,10 @@ if (isset($_GET['ota_update'])) {
             --neu-shadow: 6px 6px 12px #18191c, -6px -6px 12px #2c2f34; 
             --neu-shadow-inset: inset 5px 5px 10px #18191c, inset -5px -5px 10px #2c2f34; 
         }
+        body[data-theme="glass"] {
+            --theme-prim: #38bdf8; --theme-sec: #818cf8; --theme-bg: #0f172a;
+            --text-main: #ffffff; --text-muted: rgba(255,255,255,0.7);
+        }
 
         body[data-theme^="neumorphism"] { background-color: var(--theme-bg); color: var(--text-main); }
         body[data-theme^="neumorphism"] .glass-panel, 
@@ -347,7 +351,7 @@ if (isset($_GET['ota_update'])) {
         body { font-family: 'Outfit', sans-serif; background-color: var(--theme-bg); color: var(--text-main); overflow: hidden; height: 100dvh; display: flex; flex-direction: column; -webkit-user-select: none; user-select: none; touch-action: pan-y; margin: 0; transition: background-color 0.5s; }
 
         #custom-bg-layer { position: fixed; inset: 0; z-index: -3; background-size: cover; background-position: center; opacity: var(--bg-opacity); filter: blur(var(--bg-blur)); transition: opacity 0.5s, filter 0.3s; pointer-events: none; }
-        .app-bg-overlay { position: fixed; inset: 0; z-index: -2; background: var(--theme-bg); opacity: 0.65; pointer-events: none; transition: opacity 0.3s, background 0.5s; }
+        .app-bg-overlay { position: fixed; inset: 0; z-index: -2; background: var(--theme-bg); opacity: 0.3; pointer-events: none; transition: opacity 0.3s, background 0.5s; }
 
         #intro-screen { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0b0c14; transition: opacity 1.5s ease; }
         #logo-wrapper { position: relative; z-index: 10; opacity: 0; transform: scale(0.9); filter: blur(10px); transition: all 3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
@@ -362,14 +366,45 @@ if (isset($_GET['ota_update'])) {
         .orb-3 { width: 250px; height: 250px; background: #0f172a; top: 40%; left: 40%; animation-delay: -10s; }
         @keyframes float-orb { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, 50px) scale(1.2); } 100% { transform: translate(-20px, 20px) scale(0.9); } }
 
-        #stardust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 201; opacity: 0.8; transition: z-index 0s 1.5s, opacity 0.5s; }
+        #stardust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 201; opacity: 0.8; transition: z-index 0s 1.5s, opacity 0.5s; background-color: transparent !important; }
         
         #app-ui { opacity: 0; transition: opacity 1.5s ease; flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; z-index: 10; width: 100%; background: transparent; }
         
-        .glass-panel { background: rgba(10, 10, 15, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        /* Glassmorphism Puro y Ultra Transparente */
+        .glass-panel { background: rgba(10, 15, 25, 0.25) !important; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); }
+        body[data-theme="glass"] .glass-panel { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+
         .theme-icon-box { background-color: color-mix(in srgb, var(--theme-prim) 15%, transparent); border: 1px solid color-mix(in srgb, var(--theme-prim) 25%, transparent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .theme-text { color: var(--theme-prim); }
-        .btn-ps5-primary { background: linear-gradient(135deg, var(--theme-prim), var(--theme-sec)) !important; color: white !important; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 25px color-mix(in srgb, var(--theme-prim) 50%, transparent), inset 0 2px 5px rgba(255,255,255,0.3) !important; transition: all 0.2s; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+        
+        /* Estilo Botón Pedestal Premium (Idéntico a tu foto) */
+        .btn-premium { 
+            background: linear-gradient(180deg, rgba(30, 35, 45, 0.6) 0%, rgba(15, 18, 25, 0.8) 100%); 
+            border: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid color-mix(in srgb, var(--theme-prim) 60%, transparent);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.05); 
+            color: white; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            cursor: pointer; 
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        /* El brillo intenso en el centro inferior (El toque maestro) */
+        .btn-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 2px;
+            background: #fff;
+            box-shadow: 0 0 15px 4px var(--theme-prim);
+            z-index: 10;
+        }
+        .btn-premium:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
         
         .dock-nav { position: fixed; bottom: calc(15px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 40; display: flex; justify-content: space-between; align-items: center; width: 92%; max-width: 420px; padding: 8px 12px; border-radius: 28px; background: rgba(8, 8, 12, 0.85) !important; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1) !important; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
         .dock-item { width: 46px; height: 46px; border-radius: 16px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); font-size: 1.2rem; transition: all 0.2s; flex-shrink: 0; cursor: pointer; position: relative; border: 1px solid transparent; }
@@ -385,13 +420,16 @@ if (isset($_GET['ota_update'])) {
         @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutRight { to { transform: translateX(120%); opacity: 0; } }
 
-        .floating-btn-global { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: 100%; max-width: 32rem; padding: 0 1.25rem; z-index: 35; transition: opacity 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .floating-hidden { opacity: 0; pointer-events: none; transform: translate(-50%, 30px) scale(0.95); }
+        /* Contenedor Pedestal Animado */
+        .pedestal-btn-container { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: top; }
+        .floating-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(10px) scale(0.95); height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: hidden; border: none !important; }
 
         main { flex: 1; position: relative; width: 100%; overflow: hidden; max-width: 56rem; margin: 0 auto; }
         .tab-content { position: absolute; inset: 0; display: none; opacity: 0; transform: translateY(20px) scale(0.98); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; padding-bottom: 100px; padding-left: 1.25rem; padding-right: 1.25rem; }
-        .tab-content.active { display: block; opacity: 1; transform: translateY(0) scale(1); }
-        #tab-biblioteca.active { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 80px; }
+        
+        /* FIX: Convertimos las pestañas en Flexbox para que no aplasten al botón */
+        .tab-content.active { display: flex; flex-direction: column; opacity: 1; transform: translateY(0) scale(1); }
+        #tab-biblioteca.active { overflow: hidden; padding-bottom: 80px; }
         
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--theme-prim) 40%, transparent); border-radius: 10px; }
@@ -399,9 +437,16 @@ if (isset($_GET['ota_update'])) {
         
         .folder-btn.active { background: rgba(255,255,255,0.1); border-color: var(--theme-prim); color: var(--theme-prim); }
         .payload-item.selected { background: rgba(255,255,255,0.1); border-color: var(--theme-sec); }
-        .gallery-item { position: relative; cursor: pointer; border-radius: 16px; overflow: hidden; border: 2px solid transparent; transition: all 0.2s; background-color: #111; width: 100%; padding-bottom: 100%; }
-        .gallery-item.selected { border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); transform: scale(0.95); }
-        .gallery-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;}
+        
+        /* Galería Pro: 4 Columnas perfectas sin espacios vacíos */
+        .grid-cols-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.25rem; }
+        .gallery-item { position: relative; cursor: pointer; border-radius: 12px; overflow: hidden; border: 2px solid transparent; transition: all 0.2s; background-color: #000; width: 100%; aspect-ratio: 1 / 1; }
+        .gallery-item.selected { border-color: var(--theme-prim); box-shadow: 0 0 15px var(--theme-prim), inset 0 0 10px var(--theme-prim); transform: scale(0.96); }
+        .gallery-item img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;}
+        
+        /* Papelera Contextual (Solo visible al seleccionar) */
+        .gallery-item .gallery-trash-btn { opacity: 0; pointer-events: none; transition: all 0.2s; }
+        .gallery-item.selected .gallery-trash-btn { opacity: 1; pointer-events: auto; }
         
         .rpi-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; overflow: hidden; border: 2px solid transparent; background: rgba(255,255,255,0.05); }
         .rpi-card.selected { border-color: var(--theme-prim); transform: scale(0.96); box-shadow: 0 0 20px color-mix(in srgb, var(--theme-prim) 30%, transparent); background: rgba(255, 255, 255, 0.1); }
@@ -425,7 +470,6 @@ if (isset($_GET['ota_update'])) {
             .dock-nav { max-width: 500px; padding: 12px 20px; bottom: calc(25px + env(safe-area-inset-bottom)); }
             .dock-item { width: 50px; height: 50px; font-size: 1.3rem; }
             .bottom-sheet { max-width: 40rem; }
-            .floating-btn-global { max-width: 40rem; }
         }
         @media (max-width: 767px) and (orientation: landscape) {
             #landscape-warning { display: flex !important; }
@@ -434,7 +478,7 @@ if (isset($_GET['ota_update'])) {
     </style>
 </head>
 
-<body data-theme="cyberpunk">
+<body data-theme="ps5">
     
     <div id="custom-bg-layer"></div>
     <div class="app-bg-overlay"></div>
@@ -458,32 +502,34 @@ if (isset($_GET['ota_update'])) {
     </div>
     
     <div id="app-ui">
-        <header class="w-full max-w-md md:max-w-4xl mx-auto pt-2 px-5 flex justify-between items-center relative z-10 mb-1.5 shrink-0">
-            <div id="badge-detectada" class="hidden items-center gap-2 bg-[#1a2f24] border border-[#2f5c40] px-3.5 py-2 rounded-[0.8rem]">
-                <div id="badge-dot" class="w-2.5 h-2.5 rounded-full bg-[#4ade80] animate-pulse shadow-[0_0_8px_#4ade80]"></div>
-                <span id="badge-text" class="text-[10px] font-bold tracking-widest text-green-100 uppercase" data-i18n="ps4_detected">PS4 DETECTADA</span>
+        
+        <header class="w-full max-w-md md:max-w-4xl mx-auto pt-3 px-4 flex justify-between items-center z-50 mb-4 shrink-0 gap-2">
+            <div id="badge-detectada" class="hidden items-center gap-1.5 bg-[#102418] border border-[#1b3d28] px-2.5 py-1.5 rounded-full shrink-0">
+                <div id="badge-dot" class="w-2 h-2 rounded-full bg-[#4ade80] animate-pulse shadow-[0_0_8px_#4ade80]"></div>
             </div>
-            <div id="badge-desconectada" class="flex items-center gap-2 bg-[#2d1b1e] border border-[#5c2a32] px-3.5 py-2 rounded-[0.8rem]">
-                <div class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
-                <span class="text-[10px] font-bold tracking-widest text-red-100 uppercase" data-i18n="ps4_disconnected">DESCONECTADA</span>
+            <div id="badge-desconectada" class="flex items-center gap-1.5 bg-[#2d1b1e] border border-[#5c2a32] px-2.5 py-1.5 rounded-full shrink-0">
+                <div class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
             </div>
 
-            <div class="flex items-center gap-3 cursor-pointer group" onclick="cambiarNombreUsuario()">
-                <div id="profile-avatar" class="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center border bg-cover bg-center overflow-hidden relative transition-all group-hover:scale-105" style="border-color: var(--theme-prim); box-shadow: 0 0 10px color-mix(in srgb, var(--theme-prim) 30%, transparent);">
-                    <span id="profile-initial" class="text-white font-black text-sm relative z-10">S</span>
+            <div class="flex-1 flex items-center justify-between bg-black/40 border border-white/5 rounded-full px-3 py-1.5 shadow-inner backdrop-blur-md">
+                <div class="flex items-center gap-2 overflow-hidden w-full">
+                    <i class="fa-solid fa-network-wired text-white/30 text-[9px]"></i>
+                    <input type="text" id="host-ip" placeholder="192.168.x.x" data-i18n-placeholder="ip_placeholder" class="bg-transparent w-full text-[10px] font-mono outline-none text-white truncate placeholder-[var(--text-muted)]" autocomplete="off">
                 </div>
-                <span id="profile-name" class="text-[11px] font-black tracking-[0.15em] uppercase" style="color: var(--theme-prim);">BY SEBAS</span>
+                <div class="flex items-center gap-3 pl-2 border-l border-white/10 shrink-0">
+                    <i class="fa-solid fa-plug text-[10px] text-[var(--text-muted)] hover:text-white cursor-pointer" onclick="connectManualIP()"></i>
+                    <i id="scan-icon" class="fa-solid fa-satellite-dish text-[10px] text-[var(--theme-prim)] cursor-pointer" onclick="toggleRealScan()"></i>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 pl-1 cursor-pointer group" onclick="document.getElementById('avatar-upload').click()">
+                <input type="file" id="avatar-upload" accept="image/gif, image/jpeg, image/png" class="hidden" onchange="handleAvatarUpload(event)">
+                <div id="profile-avatar" class="w-7 h-7 rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_10px_color-mix(in_srgb,var(--theme-prim)_30%,transparent)] overflow-hidden bg-cover bg-center transition-transform group-hover:scale-110" style="background-color: var(--theme-prim);">
+                    <span id="profile-initial" class="text-black font-black text-[10px]">S</span>
+                </div>
+                <span id="profile-name" class="text-[9px] font-black tracking-widest uppercase truncate max-w-[60px]" style="color: var(--theme-prim);">SEBAS</span>
             </div>
         </header>
-        <div class="w-full max-w-md md:max-w-4xl mx-auto px-5 relative z-10 mb-1.5 flex gap-2 shrink-0">
-            <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 focus-within:border-[var(--theme-prim)] transition-all shadow-inner h-[42px] backdrop-blur-md">
-                <i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i>
-                <input type="text" id="host-ip" placeholder="192.168.x.x" data-i18n-placeholder="ip_placeholder" class="bg-transparent w-full text-xs font-mono outline-none text-[var(--text-main)] placeholder-[var(--text-muted)]" autocomplete="off">
-                <i class="fa-solid fa-xmark text-white/30 hover:text-white cursor-pointer px-2 py-2 relative z-20 text-[10px]" onclick="clearIP()"></i>
-            </div>
-            <button onclick="connectManualIP()" class="w-[42px] h-[42px] rounded-[1.2rem] bg-black/60 backdrop-blur-md hover:bg-white/10 border border-white/5 flex items-center justify-center text-[var(--text-main)] active:scale-95 shrink-0 transition-colors shadow-inner"><i class="fa-solid fa-plug text-sm" style="color: var(--theme-prim);" id="connect-icon"></i></button>
-            <button id="btn-scan" onclick="toggleRealScan()" class="w-[42px] h-[42px] rounded-[1.2rem] flex items-center justify-center text-black active:scale-95 shrink-0 transition-all" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 50%, transparent);"><i class="fa-solid fa-satellite-dish text-sm" id="scan-icon"></i></button>
-        </div>
 
         <div class="w-full max-w-md md:max-w-4xl mx-auto px-5 relative z-10 mb-2 shrink-0">
             <p id="global-status" class="text-[9px] font-bold text-center font-mono text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] tracking-widest hidden"><i class="fa-solid fa-satellite-dish fa-fade mr-2 text-[var(--text-main)]"></i> <span id="scan-text">BUSCANDO IP...</span></p>
@@ -494,7 +540,7 @@ if (isset($_GET['ota_update'])) {
                 <div class="absolute top-0 right-0 w-20 h-20 blur-[30px] rounded-full pointer-events-none" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);"></div>
                 <div class="flex items-center gap-3 relative z-10">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);"><i class="fa-solid fa-mobile-screen-button text-lg" style="color: var(--theme-prim);"></i></div>
-                    <div><span class="text-xs font-bold text-[var(--text-main)] block" data-i18n="install_app">Instalar App</span><span class="text-[9px] text-[var(--text-muted)]" data-i18n="install_desc">A帽adir a pantalla de inicio</span></div>
+                    <div><span class="text-xs font-bold text-[var(--text-main)] block" data-i18n="install_app">Instalar App</span><span class="text-[9px] text-[var(--text-muted)]" data-i18n="install_desc">Añadir a pantalla de inicio</span></div>
                 </div>
                 <div class="flex items-center gap-2 relative z-10">
                     <button onclick="installPWA()" class="text-black font-black text-[9px] tracking-widest px-4 py-2.5 rounded-lg active:scale-95" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent);" data-i18n="btn_install">INSTALAR</button>
@@ -519,18 +565,17 @@ if (isset($_GET['ota_update'])) {
                 <div id="categoria-nav" class="flex gap-2 overflow-x-auto pb-1 mb-2 custom-scrollbar items-center shrink-0"></div>
 
                 <div class="flex-1 w-full overflow-y-auto custom-scrollbar pr-1 relative mb-2">
-                    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5" id="grid-biblioteca"></div>
+                    <div class="grid grid-cols-4 gap-1.5" id="grid-biblioteca"></div>
                 </div>
 
                 <div class="shrink-0 w-full pt-1">
                     <div class="flex justify-between items-end mb-3">
                         <div class="flex flex-col">
-                            <h1 class="text-3xl font-black text-[var(--text-main)] tracking-wide leading-none mb-1.5 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_biblio">Biblioteca</h1>
                             <div class="flex items-center gap-2 text-[10px]">
                                 <div class="flex items-center gap-1.5 font-bold bg-black/50 px-2.5 py-0.5 rounded-full border backdrop-blur-md" style="color: var(--theme-prim); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
                                     <i class="fa-solid fa-gamepad"></i> <span class="text-[10px]" id="total-games-badge">--</span>
                                 </div>
-                                <span class="text-[var(--text-muted)] font-mono tracking-widest uppercase drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="titles_installed">T&Iacute;TULOS INSTALADOS</span>
+                                <span class="text-[var(--text-muted)] font-mono tracking-widest uppercase drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="titles_installed">TÍTULOS INSTALADOS</span>
                             </div>
                         </div>
                         <div class="flex gap-2">
@@ -543,26 +588,36 @@ if (isset($_GET['ota_update'])) {
             </div>
 
             <div id="tab-ftp" class="tab-content">
-                <h1 class="text-3xl font-black mb-1 text-[var(--text-main)] tracking-wide drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_transfer">Transferir</h1>
-                <p class="text-xs text-[var(--text-muted)] mb-6 font-light tracking-wide drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_transfer">Env&iacute;a juegos o aplicaciones a tu consola.</p>
-                
-                <div class="glass-panel p-1.5 rounded-2xl mb-6 flex relative shrink-0">
+                <div class="glass-panel p-1.5 rounded-2xl mb-4 flex relative shrink-0">
                     <button id="btn-mode-rpi" onclick="switchTransferMode('rpi')" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap relative z-10 transition-all" data-i18n="rpi_sender">RPI SENDER</button>
-                    <button id="btn-mode-ftp" onclick="switchTransferMode('ftp')" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap relative z-10 transition-all" data-i18n="ftp_classic">FTP CL&Aacute;SICO</button>
+                    <button id="btn-mode-ftp" onclick="switchTransferMode('ftp')" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap relative z-10 transition-all" data-i18n="ftp_classic">FTP CLÁSICO</button>
                 </div>
 
-                <div id="box-mode-rpi" class="glass-panel rounded-[2rem] p-6 mb-6 shrink-0">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center border" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
-                            <i class="fa-solid fa-mobile-screen text-xs" style="color: var(--theme-prim);"></i>
+                <div id="box-mode-rpi" class="glass-panel rounded-[2rem] p-6 mb-2 shrink-0 relative flex flex-col flex-1 min-h-0">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl flex items-center justify-center border" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                                <i class="fa-solid fa-mobile-screen text-xs" style="color: var(--theme-prim);"></i>
+                            </div>
+                            <h2 class="text-[10px] font-black tracking-widest" style="color: var(--theme-prim);" data-i18n="games_on_phone">JUEGOS EN EL CELULAR</h2>
                         </div>
-                        <h2 class="text-[10px] font-black tracking-widest" style="color: var(--theme-prim);" data-i18n="games_on_phone">JUEGOS EN EL CELULAR</h2>
+                        <button onclick="document.getElementById('rpi-pc-upload').click()" class="bg-white/5 hover:bg-white/10 text-white rounded-lg px-3 py-2 text-[9px] font-black tracking-widest flex items-center gap-2 transition-colors border border-white/10 shadow-inner">
+                            <i class="fa-solid fa-computer" style="color: var(--theme-prim);"></i> DESDE PC
+                        </button>
+                        <input type="file" id="rpi-pc-upload" accept=".pkg" class="hidden" onchange="handlePCUpload(this)">
                     </div>
-                    <div id="rpi-pkg-list" class="grid grid-cols-3 md:grid-cols-4 gap-2"></div>
+                    <div id="rpi-pkg-list" class="grid grid-cols-4 gap-1.5 flex-1 overflow-y-auto custom-scrollbar min-h-0"></div>
+                    
+                    <div id="floating-btn-rpi" class="pedestal-btn-container floating-hidden shrink-0 w-full flex justify-center pt-4 mt-auto">
+                        <button onclick="iniciarColaInstalacionRPI()" class="btn-premium w-full rounded-2xl py-4 flex items-center justify-center gap-3 active:scale-95 transition-transform" style="background: linear-gradient(180deg, rgba(251, 191, 36, 0.2) 0%, rgba(217, 119, 6, 0.3) 100%); border-color: rgba(251, 191, 36, 0.5);">
+                            <i class="fa-solid fa-download text-lg text-yellow-400"></i>
+                            <span id="rpi-install-text" class="text-[10px] font-black tracking-widest uppercase text-yellow-400" data-i18n="btn_install_ps4">INSTALAR EN PS4</span>
+                        </button>
+                    </div>
                 </div>
 
-                <form id="ftp-form" onsubmit="enviarArchivoChunks(event)" class="hidden shrink-0">
-                    <div class="glass-panel rounded-[2rem] p-6 mb-6">
+                <form id="ftp-form" onsubmit="enviarArchivoChunks(event)" class="hidden shrink-0 h-full flex flex-col">
+                    <div class="glass-panel rounded-[2rem] p-6 flex-1">
                         <h2 class="text-[10px] font-black tracking-widest mb-4" style="color: var(--theme-prim);"><i class="fa-solid fa-folder-open mr-2"></i>RUTAS DE DESTINO</h2>
                         <div class="grid grid-cols-2 gap-3 mb-6" id="paths-grid">
                             <button type="button" class="folder-btn active btn-ps5 rounded-xl py-3 text-xs font-bold text-[var(--text-muted)] border border-white/10" onclick="selectPath(this, '/data/')">/data/</button>
@@ -585,47 +640,55 @@ if (isset($_GET['ota_update'])) {
                             <input type="file" id="file-upload" class="hidden" multiple onchange="updateFileName(this)">
                         </div>
                     </div>
+                    
+                    <div id="floating-btn-ftp" class="pedestal-btn-container floating-hidden shrink-0 w-full flex justify-center pt-4">
+                        <button type="button" onclick="document.getElementById('ftp-form-submit').click()" class="btn-premium w-full rounded-2xl py-4 flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                            <i class="fa-brands fa-playstation text-lg" style="color: var(--theme-prim);"></i>
+                            <span class="text-[10px] font-black tracking-widest uppercase" data-i18n="btn_send_files">ENVIAR ARCHIVOS</span>
+                        </button>
+                    </div>
                     <button type="submit" id="ftp-form-submit" class="hidden"></button>
                 </form>
             </div>
 
-            <div id="tab-icons" class="tab-content">
-                <h1 class="text-3xl font-black mb-1 text-[var(--text-main)] tracking-wide drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_mod">Modding</h1>
-                <p class="text-xs text-[var(--text-muted)] mb-6 font-light tracking-wide drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_mod">Personaliza el arte de tu biblioteca.</p>
-                
-                <form id="icon-form" onsubmit="enviarIcono(event)">
-                    <div class="glass-panel rounded-[2rem] p-6 mb-6">
-                        <div class="flex gap-2 mb-6 items-end shrink-0">
+            <div id="tab-icons" class="tab-content relative flex flex-col">
+                <form id="icon-form" onsubmit="enviarIcono(event)" class="flex-1 flex flex-col min-h-0">
+                    <div class="glass-panel rounded-[2rem] p-4 flex flex-col shrink-0 border border-white/5 shadow-2xl flex-1 min-h-0">
+                        <div class="flex gap-2 mb-4 items-end">
                             <div class="flex-1 relative">
-                                <label class="text-[9px] font-black tracking-widest block mb-3" style="color: var(--theme-prim);" data-i18n="title_id">TITLE ID</label>
-                                <input type="text" id="icon-cusa" placeholder="CUSA12345" oninput="this.value = this.value.toUpperCase();" class="w-full bg-black/60 border rounded-2xl px-5 py-4 font-mono text-center text-lg outline-none text-[var(--text-main)] uppercase shadow-inner backdrop-blur-md" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                                <div class="flex justify-between items-center mb-1.5 px-1">
+                                    <label class="text-[9px] font-black tracking-widest block" style="color: var(--theme-prim);" data-i18n="title_id">TITLE ID</label>
+                                    <span class="text-[8px] text-[var(--text-muted)] uppercase tracking-widest">Personalizar Portada</span>
+                                </div>
+                                <input type="text" id="icon-cusa" placeholder="CUSA12345" oninput="this.value = this.value.toUpperCase();" class="w-full bg-[#0a0a0f] border border-white/5 rounded-2xl px-5 py-3.5 font-mono text-center text-lg outline-none text-[var(--text-main)] uppercase shadow-inner">
                             </div>
-                            <button type="button" onclick="respaldarOriginal()" class="h-[58px] w-[58px] bg-black/60 border hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-2xl flex items-center justify-center active:scale-95 shrink-0 transition-colors backdrop-blur-md" style="border-color: color-mix(in srgb, var(--theme-prim) 50%, transparent);">
-                                <i class="fa-solid fa-download text-xl"></i>
+                            <button type="button" onclick="respaldarOriginal()" class="h-[52px] w-[52px] bg-black/40 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded-2xl flex items-center justify-center active:scale-95 shrink-0 transition-colors">
+                                <i class="fa-solid fa-download text-lg"></i>
                             </button>
-                            <button type="button" onclick="respaldarTodos()" class="h-[58px] w-[58px] text-black rounded-2xl flex items-center justify-center active:scale-95 shrink-0 transition-colors" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent);">
-                                <i class="fa-solid fa-layer-group text-xl"></i>
+                            <button type="button" onclick="respaldarTodos()" class="h-[52px] w-[52px] text-black rounded-2xl flex items-center justify-center active:scale-95 shrink-0 transition-colors shadow-lg" style="background-color: var(--theme-prim);">
+                                <i class="fa-solid fa-layer-group text-lg"></i>
                             </button>
-                        </div>
-                        <div class="flex gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-6 border border-white/5 overflow-x-auto custom-scrollbar shrink-0">
-                            <button type="button" id="btn-src-gallery" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('gallery')" data-i18n="gallery">GALER&Iacute;A</button>
-                            <button type="button" id="btn-src-backup" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('backup')" data-i18n="backups">BACKUPS</button>
-                            <button type="button" id="btn-src-import" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('import')" data-i18n="import">IMPORTAR</button>
-                            <button type="button" id="btn-src-local" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('local')" data-i18n="local">LOCAL</button>
                         </div>
                         
-                        <div id="box-src-gallery" class="animate-fade-in"><div id="gallery-container"></div></div>
-                        <div id="box-src-backup" class="hidden animate-fade-in"><div id="backup-container"></div></div>
+                        <div class="flex gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-4 border border-white/5 overflow-x-auto custom-scrollbar shrink-0 shadow-inner">
+                            <button type="button" id="btn-src-gallery" class="flex-1 py-2 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('gallery')" data-i18n="gallery">GALERÍA</button>
+                            <button type="button" id="btn-src-backup" class="flex-1 py-2 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('backup')" data-i18n="backups">BACKUPS</button>
+                            <button type="button" id="btn-src-import" class="flex-1 py-2 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('import')" data-i18n="import">IMPORTAR</button>
+                            <button type="button" id="btn-src-local" class="flex-1 py-2 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('local')" data-i18n="local">LOCAL</button>
+                        </div>
+                        
+                        <div id="box-src-gallery" class="animate-fade-in flex-1 overflow-hidden min-h-0"><div id="gallery-container" class="h-full"></div></div>
+                        <div id="box-src-backup" class="hidden animate-fade-in flex-1 overflow-hidden min-h-0"><div id="backup-container" class="h-full"></div></div>
                         <div id="box-src-import" class="hidden animate-fade-in shrink-0">
-                            <div class="bg-black/40 border border-white/5 rounded-[1.5rem] p-5 text-center h-[250px] flex flex-col justify-center">
+                            <div class="bg-black/40 border border-white/5 rounded-[1.5rem] p-5 text-center h-[250px] flex flex-col justify-center shadow-inner">
                                 <i class="fa-solid fa-cloud-arrow-down text-4xl mb-3" style="color: color-mix(in srgb, var(--theme-prim) 50%, transparent);"></i>
-                                <p class="text-[10px] text-[var(--text-muted)] mb-4 px-2" data-i18n="import_desc">Pega un link directo para descargar a tu galer&iacute;a.</p>
-                                <input type="url" id="import-url" placeholder="https://..." class="w-full bg-black/60 rounded-xl px-4 py-3 border font-mono text-xs text-[var(--text-main)] outline-none mb-4 shadow-inner" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
-                                <button type="button" id="btn-cargar-url" onclick="importarURL()" class="w-full text-black rounded-xl py-3 font-black text-[10px] tracking-widest transition-colors" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 30%, transparent);" data-i18n="btn_import">INICIAR IMPORTACI&Oacute;N</button>
+                                <p class="text-[10px] text-[var(--text-muted)] mb-4 px-2" data-i18n="import_desc">Pega un link directo para descargar a tu galería.</p>
+                                <input type="url" id="import-url" placeholder="https://..." class="w-full bg-[#0a0a0f] rounded-xl px-4 py-3 border border-white/5 font-mono text-xs text-[var(--text-main)] outline-none mb-4 shadow-inner">
+                                <button type="button" id="btn-cargar-url" onclick="importarURL()" class="w-full text-black rounded-xl py-3 font-black text-[10px] tracking-widest transition-colors shadow-[0_0_15px_color-mix(in_srgb,var(--theme-prim)_30%,transparent)]" style="background-color: var(--theme-prim);" data-i18n="btn_import">INICIAR IMPORTACIÓN</button>
                             </div>
                         </div>
                         <div id="box-src-local" class="hidden animate-fade-in shrink-0">
-                            <div onclick="document.getElementById('icon-file').click()" class="w-full h-[250px] bg-black/40 rounded-[1.5rem] border border-dashed flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:bg-black/60 transition-colors" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                            <div onclick="document.getElementById('icon-file').click()" class="w-full h-[250px] bg-black/40 rounded-[1.5rem] border border-dashed flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:bg-black/60 transition-colors shadow-inner" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
                                 <i id="icon-file-placeholder" class="fa-solid fa-image text-4xl mb-3 group-hover:scale-110 transition-transform" style="color: color-mix(in srgb, var(--theme-prim) 40%, transparent);"></i>
                                 <span id="icon-file-name" class="text-[10px] font-black tracking-widest text-[var(--text-muted)] text-center px-4 z-10" data-i18n="touch_image">TOCA PARA BUSCAR IMAGEN</span>
                                 <img id="preview-img-local" src="" class="hidden absolute inset-0 w-full h-full object-contain z-20 bg-black/90">
@@ -633,21 +696,29 @@ if (isset($_GET['ota_update'])) {
                             </div>
                         </div>
                     </div>
+                    
+                    <div id="floating-btn-aplicar" class="pedestal-btn-container floating-hidden shrink-0 w-full flex justify-center pt-4">
+                        <button type="button" onclick="ejecutarFormIconos()" class="btn-premium w-full rounded-2xl py-4 flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                            <i class="fa-solid fa-wand-magic-sparkles text-lg" style="color: var(--theme-prim);"></i>
+                            <span class="text-[10px] font-black tracking-widest uppercase" data-i18n="btn_apply_art">APLICAR PORTADA</span>
+                        </button>
+                    </div>
                     <button type="submit" id="icon-form-submit" class="hidden"></button>
                 </form>
             </div>
+            
             <div id="tab-explorer" class="tab-content">
-                <div class="flex justify-between items-end mb-6 shrink-0">
-                    <div>
-                        <h1 class="text-3xl font-black mb-1 text-[var(--text-main)] tracking-wide drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_exp">Explorador</h1>
-                        <p class="text-xs text-[var(--text-muted)] font-light tracking-wide drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_exp">Gestor de archivos interno.</p>
+                <div class="flex justify-between items-end mb-4 shrink-0 px-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-folder-tree text-[var(--theme-prim)]"></i>
+                        <span class="text-xs font-black tracking-widest text-[var(--text-main)] uppercase">Gestor Interno</span>
                     </div>
                     <div class="flex gap-1.5 flex-wrap justify-end">
-                        <button onclick="addCurrentPathToShortcuts()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors hover:border-yellow-500/50 backdrop-blur-md"><i class="fa-solid fa-star text-[11px]"></i></button>
-                        <button onclick="promptCreateFolder()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-folder-plus text-[11px]"></i></button>
-                        <button id="btn-select-mode" onclick="toggleSelectMode()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors backdrop-blur-md"><i class="fa-solid fa-list-check text-[11px]"></i></button>
-                        <button onclick="if(currentExplorerPath) loadExplorerPath(currentExplorerPath)" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-rotate-right text-[11px]"></i></button>
-                        <button onclick="loadExplorerPath('/')" class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors hover:opacity-80 backdrop-blur-md" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent); color: var(--theme-prim);"><i class="fa-solid fa-home text-[11px]"></i></button>
+                        <button onclick="addCurrentPathToShortcuts()" class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors hover:border-yellow-500/50 backdrop-blur-md"><i class="fa-solid fa-star text-[10px]"></i></button>
+                        <button onclick="promptCreateFolder()" class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-folder-plus text-[10px]"></i></button>
+                        <button id="btn-select-mode" onclick="toggleSelectMode()" class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors backdrop-blur-md"><i class="fa-solid fa-list-check text-[10px]"></i></button>
+                        <button onclick="if(currentExplorerPath) loadExplorerPath(currentExplorerPath)" class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
+                        <button onclick="loadExplorerPath('/')" class="w-8 h-8 rounded-xl border flex items-center justify-center transition-colors hover:opacity-80 backdrop-blur-md" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent); color: var(--theme-prim);"><i class="fa-solid fa-home text-[10px]"></i></button>
                     </div>
                 </div>
 
@@ -672,50 +743,47 @@ if (isset($_GET['ota_update'])) {
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[55vh] shrink-0 border border-white/10">
+                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[65vh] shrink-0 border border-white/10">
                     <div class="bg-black/60 backdrop-blur-md px-5 py-4 border-b flex items-center gap-3 shrink-0" style="border-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);"><i class="fa-solid fa-hard-drive" style="color: color-mix(in srgb, var(--theme-prim) 50%, transparent);"></i><span id="explorer-path-text" class="text-xs font-mono text-[var(--text-main)] drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]">/</span></div>
                     <div id="explorer-shortcuts" class="hidden bg-black/40 px-4 py-2 border-b border-white/5 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0"></div>
                     <div id="explorer-list" class="flex-1 p-2 flex flex-col gap-1 overflow-y-auto custom-scrollbar bg-black/20"><div class="text-center text-[var(--text-muted)] text-[10px] font-black tracking-widest uppercase py-20 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="config_ip">Configura tu IP.</div></div>
                 </div>
             </div>
 
-            <div id="tab-payloads" class="tab-content">
-                <h1 class="text-3xl font-black mb-1 text-[var(--text-main)] tracking-wide drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_pay">Payloads</h1>
-                <p class="text-xs text-[var(--text-muted)] mb-6 font-light tracking-wide drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_pay">Inyecci&oacute;n de c&oacute;digo BinLoader.</p>
-                <form id="payload-form" onsubmit="enviarPayload(event)">
-                    <div class="glass-panel rounded-[2rem] p-6 mb-6 shrink-0">
-                        <div class="flex items-center justify-between bg-black/60 border rounded-2xl px-5 py-4 mb-6 shadow-inner backdrop-blur-md" style="border-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);">
+            <div id="tab-payloads" class="tab-content flex flex-col">
+                <form id="payload-form" onsubmit="enviarPayload(event)" class="flex-1 flex flex-col min-h-0">
+                    <div class="glass-panel rounded-[2rem] p-6 mb-4 shrink-0 flex flex-col flex-1 min-h-0">
+                        <div class="flex items-center justify-between bg-black/60 border border-white/5 rounded-2xl px-5 py-4 mb-4 shadow-inner backdrop-blur-md">
                             <span class="text-[9px] font-black tracking-widest uppercase" style="color: color-mix(in srgb, var(--theme-prim) 70%, transparent);" data-i18n="local_port">PUERTO LOCAL</span>
                             <input type="number" id="payload-port" value="9020" class="bg-transparent text-right font-mono text-[var(--text-main)] text-lg outline-none w-20 border-b border-dashed focus:border-[var(--theme-prim)]" style="border-color: color-mix(in srgb, var(--theme-prim) 40%, transparent);" required>
                         </div>
-                        <div class="flex gap-2 p-1 bg-black/40 rounded-[1.2rem] border border-white/5 backdrop-blur-md">
-                            <button type="button" id="btn-pay-gallery" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" onclick="switchPayloadSource('gallery')" data-i18n="gallery">GALER&Iacute;A</button>
+                        <div class="flex gap-2 p-1 bg-black/40 rounded-[1.2rem] border border-white/5 backdrop-blur-md shadow-inner">
+                            <button type="button" id="btn-pay-gallery" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" onclick="switchPayloadSource('gallery')" data-i18n="gallery">GALERÍA</button>
                             <button type="button" id="btn-pay-local" class="flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" onclick="switchPayloadSource('local')" data-i18n="device">DISPOSITIVO</button>
                         </div>
                         
-                        <div id="box-pay-gallery" class="mt-4 animate-fade-in"><div id="payload-gallery-container" class="min-h-[180px]"></div></div>
+                        <div id="box-pay-gallery" class="mt-4 animate-fade-in flex-1 overflow-hidden min-h-0"><div id="payload-gallery-container" class="h-full"></div></div>
                         <div id="box-pay-local" class="mt-4 hidden animate-fade-in shrink-0">
-                            <div onclick="document.getElementById('payload-file').click()" class="w-full h-[180px] bg-black/40 rounded-[1.5rem] border border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-black/60 transition-colors group backdrop-blur-md" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                            <div onclick="document.getElementById('payload-file').click()" class="w-full h-[180px] bg-black/40 rounded-[1.5rem] border border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-black/60 transition-colors group backdrop-blur-md shadow-inner" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
                                 <div id="payload-icon-container" class="w-14 h-14 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style="background-color: color-mix(in srgb, var(--theme-prim) 10%, transparent); color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 20%, transparent);"><i class="fa-solid fa-file-code text-xl"></i></div>
                                 <span id="payload-name-display" class="text-[10px] font-black tracking-widest text-[var(--text-muted)] px-6 text-center" data-i18n="touch_bin">TOCA PARA BUSCAR .BIN</span>
                                 <input type="file" id="payload-file" accept=".bin" class="hidden" onchange="updatePayloadName(this)">
                             </div>
                         </div>
                     </div>
+                    
+                    <div id="floating-btn-payload" class="pedestal-btn-container floating-hidden shrink-0 w-full flex justify-center pt-2">
+                        <button type="button" onclick="document.getElementById('payload-form-submit').click()" class="btn-premium w-full rounded-2xl py-4 flex items-center justify-center gap-3 active:scale-95 transition-transform" style="background: linear-gradient(180deg, rgba(234, 179, 8, 0.2) 0%, rgba(202, 138, 4, 0.3) 100%); border-color: rgba(234, 179, 8, 0.5);">
+                            <i class="fa-solid fa-bolt text-lg text-yellow-400"></i>
+                            <span class="text-[10px] font-black tracking-widest uppercase text-yellow-400" data-i18n="btn_inject">INYECTAR PAYLOAD</span>
+                        </button>
+                    </div>
                     <button type="submit" id="payload-form-submit" class="hidden"></button>
                 </form>
             </div>
 
             <div id="tab-settings" class="tab-content pt-2">
-                <div class="flex items-center justify-between mb-6 shrink-0">
-                    <div>
-                        <h2 class="text-3xl font-black text-[var(--text-main)] tracking-wider drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_set">Ajustes</h2>
-                        <p class="text-[var(--text-muted)] text-xs font-light tracking-wide mt-1 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_set">Configuraci&oacute;n del sistema y visual.</p>
-                    </div>
-                </div>
-
-                <div class="flex flex-col w-full glass-panel rounded-3xl p-4 shrink-0 shadow-[0_15px_30px_rgba(0,0,0,0.8)] border-white/10">
-                    
+                <div class="flex flex-col w-full glass-panel rounded-3xl p-4 shrink-0 border-white/10">
                     <div class="flex flex-col py-4 border-b border-white/5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
@@ -740,12 +808,13 @@ if (isset($_GET['ota_update'])) {
                                 <i class="fa-solid fa-images text-sm theme-text" style="color: var(--theme-prim);"></i>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">B&Oacute;VEDA DE CAPTURAS</span>
+                                <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">BÓVEDA DE CAPTURAS</span>
                                 <span class="text-[9px] text-[var(--text-muted)]">Ver fotos de todos los juegos.</span>
                             </div>
                         </div>
                         <i class="fa-solid fa-chevron-right text-[var(--text-muted)] opacity-50 text-xs"></i>
                     </div>
+                    
                     <div class="flex flex-col py-4 border-b border-white/5">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-4">
@@ -777,7 +846,7 @@ if (isset($_GET['ota_update'])) {
                                     <i class="fa-solid fa-sparkles text-sm theme-text" style="color: var(--theme-prim);"></i>
                                 </div>
                                 <div class="flex flex-col">
-                                    <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">PART&Iacute;CULAS</span>
+                                    <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">PARTÍCULAS</span>
                                     <span class="text-[9px] text-[var(--text-muted)]">Efecto polvo estelar.</span>
                                 </div>
                             </div>
@@ -846,12 +915,12 @@ if (isset($_GET['ota_update'])) {
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between py-4 mb-2 border-b border-white/5">
+                    <div class="flex items-center justify-between py-4 border-b border-white/5">
                         <div class="flex items-center gap-4">
                             <div class="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center border border-red-500/20"><i class="fa-solid fa-broom text-red-500 text-sm"></i></div>
                             <div class="flex flex-col">
                                 <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">LIMPIAR TEMPORALES</span>
-                                <span class="text-[9px] text-[var(--text-muted)]" data-i18n="set_temp_desc">Libera cach&eacute; del servidor.</span>
+                                <span class="text-[9px] text-[var(--text-muted)]" data-i18n="set_temp_desc">Libera caché del servidor.</span>
                             </div>
                         </div>
                         <button onclick="limpiarTemporales()" class="w-10 h-10 rounded-xl bg-black/50 text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-[var(--text-main)] transition-all border border-red-500/30 active:scale-95 shrink-0">
@@ -865,8 +934,8 @@ if (isset($_GET['ota_update'])) {
                                 <i class="fa-solid fa-cloud-arrow-down text-sm theme-text" style="color: var(--theme-prim);"></i>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">ACTUALIZACI&Oacute;N OTA</span>
-                                <span class="text-[9px] text-[var(--text-muted)]">Buscar e instalar nueva versi&oacute;n.</span>
+                                <span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">ACTUALIZACIÓN OTA</span>
+                                <span class="text-[9px] text-[var(--text-muted)]">Buscar e instalar nueva versión.</span>
                             </div>
                         </div>
                         <button onclick="buscarActualizacionOTA()" class="w-10 h-10 rounded-xl bg-black/50 flex items-center justify-center transition-all border active:scale-95 shrink-0" style="color: var(--theme-prim); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
@@ -875,7 +944,7 @@ if (isset($_GET['ota_update'])) {
                     </div>
                 </div>
                 
-                <div class="flex flex-col mt-6 mb-4 glass-panel rounded-3xl p-4 shadow-[0_15px_30px_rgba(0,0,0,0.8)] border-white/10">
+                <div class="flex flex-col mt-4 mb-4 glass-panel rounded-3xl p-4 border-white/10">
                     <div class="flex items-center gap-4 mb-3">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center border theme-icon-box" style="background-color: color-mix(in srgb, var(--theme-prim) 10%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);">
                             <i class="fa-solid fa-palette text-sm theme-text" style="color: var(--theme-prim);"></i>
@@ -886,8 +955,9 @@ if (isset($_GET['ota_update'])) {
                         </div>
                     </div>
                     <div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 px-1" id="theme-scroll-container">
-                        <button onclick="changeTheme('cyberpunk', this)" class="theme-btn active bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">CYBERPUNK</button>
-                        <button onclick="changeTheme('ps5', this)" class="theme-btn bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">PS5 CLASSIC</button>
+                        <button onclick="changeTheme('cyberpunk', this)" class="theme-btn bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">CYBERPUNK</button>
+                        <button onclick="changeTheme('glass', this)" class="theme-btn bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">PURE GLASS</button>
+                        <button onclick="changeTheme('ps5', this)" class="theme-btn active bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">PS5 CLASSIC</button>
                         
                         <button onclick="changeTheme('neumorphism-light', this)" class="theme-btn bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">NEUMORPHISM LIGHT</button>
                         <button onclick="changeTheme('neumorphism-dark', this)" class="theme-btn bg-white/5 border border-white/10 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[9px] font-black py-2 px-4 rounded-lg transition-all shrink-0 whitespace-nowrap">NEUMORPHISM DARK</button>
@@ -911,19 +981,6 @@ if (isset($_GET['ota_update'])) {
                 </div>
             </div>
         </main>
-
-        <div class="floating-btn-global floating-hidden" id="floating-btn-ftp">
-            <button onclick="document.getElementById('ftp-form-submit').click()" class="w-full btn-ps5-primary rounded-2xl py-5 font-black tracking-widest text-[10px] flex items-center justify-center gap-3"><i class="fa-brands fa-playstation text-xl"></i> <span data-i18n="btn_send_files">ENVIAR ARCHIVOS</span></button>
-        </div>
-        <div class="floating-btn-global floating-hidden" id="floating-btn-rpi">
-            <button onclick="iniciarColaInstalacionRPI()" class="w-full btn-ps5-primary !bg-[linear-gradient(135deg,#fbbf24,#d97706)] !text-[var(--text-main)] !border-yellow-400/30 !shadow-[0_0_25px_rgba(251,191,36,0.5),inset_0_2px_5px_rgba(255,255,255,0.3)] rounded-2xl py-5 font-black tracking-widest text-[10px] flex items-center justify-center gap-3"><i class="fa-solid fa-download text-xl"></i> <span id="rpi-install-text" data-i18n="btn_install_ps4">INSTALAR EN PS4</span></button>
-        </div>
-        <div class="floating-btn-global floating-hidden" id="floating-btn-aplicar">
-            <button onclick="ejecutarFormIconos()" class="w-full btn-ps5-primary rounded-2xl py-5 font-black tracking-widest text-[10px] flex items-center justify-center gap-3"><i class="fa-solid fa-wand-magic-sparkles text-lg"></i> <span data-i18n="btn_apply_art">APLICAR PORTADA</span></button>
-        </div>
-        <div class="floating-btn-global floating-hidden" id="floating-btn-payload">
-            <button onclick="document.getElementById('payload-form-submit').click()" class="w-full btn-ps5-primary !bg-[linear-gradient(135deg,#facc15,#ca8a04)] !text-black !border-yellow-400/50 !shadow-[0_0_25px_rgba(250,204,21,0.5),inset_0_2px_5px_rgba(255,255,255,0.5)] rounded-2xl py-5 font-black tracking-widest text-[10px] flex items-center justify-center gap-3"><i class="fa-solid fa-bolt text-lg"></i> <span data-i18n="btn_inject">INYECTAR PAYLOAD</span></button>
-        </div>
 
         <nav class="dock-nav">
             <button class="dock-item active" onclick="switchTab('tab-biblioteca', this, 0)" title="Biblioteca"><i class="fa-solid fa-gamepad"></i></button>
@@ -984,7 +1041,7 @@ if (isset($_GET['ota_update'])) {
             </div>
 
             <div class="bg-black/60 p-3 rounded-xl border border-white/5 mb-5 shadow-inner backdrop-blur-md">
-                <span class="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2" data-i18n="move_category">Mover a categor&iacute;a:</span>
+                <span class="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2" data-i18n="move_category">Mover a categoría:</span>
                 <div id="selector-categorias" class="flex gap-2 overflow-x-auto custom-scrollbar pb-1"></div>
             </div>
 
@@ -995,7 +1052,7 @@ if (isset($_GET['ota_update'])) {
                 </button>
                 <button onclick="abrirGaleriaJuego()" class="w-full flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors group">
                     <i class="fa-solid fa-images group-hover:scale-110 transition-transform w-5 text-center text-lg" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
-                    <span class="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)]" data-i18n="opt_gallery_caps">Galer&iacute;a de Capturas</span>
+                    <span class="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)]" data-i18n="opt_gallery_caps">Galería de Capturas</span>
                     <span id="opt-caps-badge" class="ml-auto bg-black/60 text-[9px] font-black px-2 py-0.5 rounded-full border border-white/10 shadow-inner hidden font-mono" style="color: var(--theme-prim);">0</span>
                 </button>
                 <button onclick="simularRedireccionModding()" class="w-full flex items-center gap-4 p-3.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-colors group">
@@ -1081,7 +1138,7 @@ if (isset($_GET['ota_update'])) {
             <div class="flex items-start gap-4 mb-4">
                 <div id="ps5-dialog-icon" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0"></div>
                 <div>
-                    <h3 id="ps5-dialog-title" class="text-[var(--text-main)] font-black text-sm tracking-widest uppercase mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">T&iacute;tulo</h3>
+                    <h3 id="ps5-dialog-title" class="text-[var(--text-main)] font-black text-sm tracking-widest uppercase mb-1 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">Título</h3>
                     <p id="ps5-dialog-text" class="text-[var(--text-muted)] text-[11px] leading-relaxed">Mensaje</p>
                 </div>
             </div>
@@ -1122,6 +1179,19 @@ if (isset($_GET['ota_update'])) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
         // ==========================================
         // PROTECCIÓN ANTI-CURIOSOS Y FIRMA
@@ -1135,7 +1205,7 @@ if (isset($_GET['ota_update'])) {
         console.log('%c' + atob('R29sZEhlbiBNYW5hZ2VyIFYyLjEgfCBEZXZlbG9wZWQgYnkgU2VCYVM='), 'color:#22d3ee; font-size:18px; font-weight:900; text-shadow: 0 0 10px rgba(34,211,238,0.5);');
 
         // ==========================================
-        // 1. PARTICULAS DINÁMICAS Y CONFIGURABLES
+        // 1. PARTICULAS DINÁMICAS (ESTRELLAS BLANCAS)
         // ==========================================
         const canvas = document.getElementById('stardust'); 
         const ctx = canvas.getContext('2d'); 
@@ -1153,24 +1223,29 @@ if (isset($_GET['ota_update'])) {
             reset() { 
                 this.x = Math.random() * canvas.width; 
                 this.y = Math.random() * canvas.height; 
-                this.size = Math.random() * 2.0 + 0.5; 
-                this.speedX = (Math.random() - 0.5) * 0.3; 
-                this.speedY = (Math.random() - 0.5) * 0.3; 
-                this.opacity = Math.random() * 0.6 + 0.4; 
+                this.size = Math.random() * 1.5 + 0.5; // Tamaño más sutil (Estrellas)
+                this.speedX = (Math.random() - 0.5) * 0.05; // Movimiento casi estático
+                this.speedY = (Math.random() - 0.5) * 0.05; 
+                this.baseOpacity = Math.random() * 0.5 + 0.2; 
+                this.twinkleSpeed = Math.random() * 0.02 + 0.005; // Velocidad de parpadeo
+                // Color aleatorio entre blanco puro y un celeste estelar muy suave
+                this.color = Math.random() > 0.8 ? '187, 222, 251' : '255, 255, 255'; 
             }
             update() { 
                 if (isExploding) { 
                     let dx = this.x - canvas.width / 2; let dy = this.y - canvas.height / 2; 
-                    this.x += dx * 0.06; this.y += dy * 0.06; this.size *= 1.01; this.opacity -= 0.03; 
-                    if(this.opacity <= 0) { this.reset(); this.opacity = 0; } 
+                    this.x += dx * 0.06; this.y += dy * 0.06; this.size *= 1.01; this.baseOpacity -= 0.03; 
+                    if(this.baseOpacity <= 0) { this.reset(); this.baseOpacity = 0; } 
                 } else { 
                     this.x += this.speedX; this.y += this.speedY; 
-                    if (this.opacity < 0.1) this.opacity += 0.01; 
+                    // Efecto Twinkle (Parpadeo) con seno del tiempo
+                    this.opacity = this.baseOpacity + Math.sin(Date.now() * this.twinkleSpeed) * 0.3;
+                    if (this.opacity < 0) this.opacity = 0;
                     if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset(); 
                 } 
             }
             draw() { 
-                ctx.fillStyle = `rgba(255, 215, 0, ${Math.max(0, this.opacity)})`; 
+                ctx.fillStyle = `rgba(${this.color}, ${Math.max(0, this.opacity)})`; 
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); 
             }
         }
@@ -1191,6 +1266,40 @@ if (isset($_GET['ota_update'])) {
         }
 
         // ==========================================
+        // AVATAR ANIMADO (GIF) LOCAL
+        // ==========================================
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    try {
+                        localStorage.setItem('ps4_custom_avatar', base64);
+                        aplicarAvatarLocal(base64);
+                        if(typeof ps5Notification === 'function') ps5Notification("PERFIL", "Avatar actualizado con éxito.", "fa-user-astronaut");
+                    } catch(err) {
+                        if(typeof ps5Alert === 'function') ps5Alert("ESPACIO INSUFICIENTE", "El GIF es muy pesado. Intenta con uno de menor resolución.", "fa-triangle-exclamation");
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function aplicarAvatarLocal(base64) {
+            const av = document.getElementById('profile-avatar'), ini = document.getElementById('profile-initial');
+            if(av) {
+                if(base64) {
+                    av.style.backgroundImage = `url('${base64}')`;
+                    if(ini) ini.classList.add('hidden');
+                } else {
+                    av.style.backgroundImage = '';
+                    if(ini) ini.classList.remove('hidden');
+                }
+            }
+        }
+
+        // ==========================================
         // 2. TEMAS VISUALES, WALLPAPER Y BLUR
         // ==========================================
         function changeTheme(theme, btn) {
@@ -1206,10 +1315,19 @@ if (isset($_GET['ota_update'])) {
                     b.style.boxShadow = 'none';
                 });
                 btn.classList.add('active');
-                btn.style.backgroundColor = 'color-mix(in srgb, var(--theme-prim) 20%, transparent)';
-                btn.style.borderColor = 'var(--theme-prim)';
-                btn.style.color = 'var(--theme-prim)';
-                btn.style.boxShadow = '0 0 10px color-mix(in srgb, var(--theme-prim) 40%, transparent)';
+                
+                // Efecto cristal/neón dependiendo del tema seleccionado
+                if(theme === 'glass') {
+                    btn.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                    btn.style.borderColor = 'var(--theme-prim)';
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.boxShadow = '0 0 15px rgba(255,255,255,0.2)';
+                } else {
+                    btn.style.backgroundColor = 'color-mix(in srgb, var(--theme-prim) 20%, transparent)';
+                    btn.style.borderColor = 'var(--theme-prim)';
+                    btn.style.color = 'var(--theme-prim)';
+                    btn.style.boxShadow = '0 0 10px color-mix(in srgb, var(--theme-prim) 40%, transparent)';
+                }
             }
             const activeFilter = document.querySelector('.filter-pill.active'); 
             if(activeFilter) filtrarCategoria(activeFilter.dataset.cat, activeFilter);
@@ -1266,7 +1384,7 @@ if (isset($_GET['ota_update'])) {
         }
 
         function loadThemeAndWallpaper() {
-            let savedTheme = localStorage.getItem('ps4_theme') || 'cyberpunk';
+            let savedTheme = localStorage.getItem('ps4_theme') || 'ps5';
             document.body.setAttribute('data-theme', savedTheme);
             
             setTimeout(() => {
@@ -1528,7 +1646,7 @@ if (isset($_GET['ota_update'])) {
                 }, 800);
             }, 3000);
             
-            switchTransferMode('ftp');
+            switchTransferMode('rpi'); 
         });
 
         const tabsOrder = ['tab-biblioteca', 'tab-ftp', 'tab-icons', 'tab-explorer', 'tab-payloads', 'tab-settings']; let currentTabIndex = 0;
@@ -1571,7 +1689,7 @@ if (isset($_GET['ota_update'])) {
             
             if (tabId === 'tab-ftp') { 
                 if (currentTransferMode === 'rpi') {
-                    if(currentTabIndex === 1 && rpiQueue && rpiQueue.length > 0 && btnRpi) btnRpi.classList.remove('floating-hidden');
+                    if(rpiQueue && rpiQueue.length > 0 && btnRpi) btnRpi.classList.remove('floating-hidden');
                 } else {
                     if(btnFtp) btnFtp.classList.remove('floating-hidden');
                 }
@@ -1657,7 +1775,7 @@ if (isset($_GET['ota_update'])) {
         function renderCategorias() {
             let customCats = JSON.parse(localStorage.getItem('ps4_custom_categories')) || []; const nav = document.getElementById('categoria-nav'); 
             if(nav) {
-                let htmlNav = `<button onclick="crearNuevaCategoria()" class="h-7 w-7 shrink-0 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-95 transition-colors mr-2"><i class="fa-solid fa-plus text-[10px]"></i></button>`;
+                let htmlNav = `<button onclick="crearNuevaCategoria()" class="h-7 w-7 shrink-0 rounded-lg bg-black/50 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-main)] active:scale-95 transition-colors mr-2"><i class="fa-solid fa-plus text-[10px]"></i></button>`;
                 const baseStyle = "filter-pill h-7 px-3 rounded-lg text-[9px] font-black tracking-widest uppercase transition-all border";
                 const inactStyle = "bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text-main)] hover:bg-white/5";
                 
@@ -1702,7 +1820,7 @@ if (isset($_GET['ota_update'])) {
                 let data = await res.json();
                 if(data.status === 'success') {
                     let html = ''; data.data.forEach((game, index) => { html += agregarJuegoHTML(game, index); });
-                    html += `<div onclick="abrirMenuInstalar()" class="game-card rounded-2xl overflow-hidden relative cursor-pointer aspect-square active:scale-95 flex flex-col items-center justify-center bg-black/40 hover:bg-black/60 transition-colors" data-id="9999" style="opacity: 0.8;"><div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 shadow-lg" style="background-color: var(--theme-prim); color: black;"><i class="fa-solid fa-plus text-lg"></i></div><span class="text-[9px] font-black tracking-widest text-[var(--text-muted)] uppercase">Instalar Nuevo</span></div>`;
+                    html += `<div onclick="abrirMenuInstalar()" class="game-card rounded-2xl overflow-hidden relative cursor-pointer aspect-square active:scale-95 flex flex-col items-center justify-center bg-black/40 hover:bg-black/60 transition-colors border border-dashed border-white/20" data-id="9999" style="opacity: 0.8;"><div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 shadow-lg" style="background-color: var(--theme-prim); color: black;"><i class="fa-solid fa-plus text-lg"></i></div><span class="text-[9px] font-black tracking-widest text-[var(--text-muted)] uppercase">Instalar Nuevo</span></div>`;
                     grid.innerHTML = html; 
                     if(document.getElementById('total-games-badge')) document.getElementById('total-games-badge').innerText = data.data.length;
                     filtrarCategoria('todos', document.querySelector('.filter-pill[data-cat="todos"]'));
@@ -1718,10 +1836,10 @@ if (isset($_GET['ota_update'])) {
             let safeTitle = game.title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
             return `<div class="item-biblio game-card rounded-2xl overflow-hidden relative group cursor-pointer aspect-square active:scale-95 shadow-lg animate-fade-in border border-white/5" data-category="${catAsignada}" data-name="${safeTitle}" data-id="${index}" onclick="abrirOpciones('${safeTitle}', '${game.id}', '${iconSrc}', '${game.version || "1.00"}')">
                 <img src="${iconSrc}" loading="lazy" class="w-full h-full object-cover relative z-10" onerror="this.src='icon-512.png'">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-20"></div>
-                <div class="absolute bottom-0 left-0 right-0 p-2.5 pointer-events-none z-30">
-                    <h3 class="text-[10px] font-black text-white leading-tight truncate uppercase drop-shadow-md">${game.title}</h3>
-                    <span class="text-[8px] font-mono tracking-widest opacity-90" style="color: var(--theme-prim);">${game.id}</span>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none z-20 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-2 pointer-events-none z-30">
+                    <h3 class="text-[9px] font-black text-white leading-tight truncate uppercase drop-shadow-md mb-0.5">${game.title}</h3>
+                    <span class="text-[7px] font-mono font-bold tracking-widest px-1 py-0.5 rounded bg-black/60 border border-white/10" style="color: var(--theme-prim);">${game.id}</span>
                 </div>
             </div>`;
         }
@@ -1750,9 +1868,9 @@ if (isset($_GET['ota_update'])) {
             let html = '';
             categorias.forEach(cat => {
                 let esActivo = (cat.id === categoriaActual);
-                let clasesColor = esActivo ? 'style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); color: var(--theme-prim); border-color: color-mix(in srgb, var(--theme-prim) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--theme-prim) 30%, transparent);"' : 'class="bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text-main)] hover:bg-white/5"';
-                let classesExtra = esActivo ? '' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text-main)] hover:bg-white/5';
-                html += `<button onclick="moverAGrupo('${cat.id}')" class="h-7 px-3 rounded-lg border text-[9px] font-black tracking-widest uppercase transition-all shrink-0 ${classesExtra}" ${clasesColor}>${cat.name}</button>`;
+                let clasesColor = esActivo ? 'style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); color: var(--theme-prim); border-color: color-mix(in srgb, var(--theme-prim) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--theme-prim) 30%, transparent);"' : 'class="bg-black/40 text-[var(--text-muted)] border-white/5 hover:text-[var(--text-main)] hover:bg-white/10"';
+                let classesExtra = esActivo ? '' : 'bg-black/40 text-[var(--text-muted)] border-white/5 hover:text-[var(--text-main)] hover:bg-white/10';
+                html += `<button onclick="moverAGrupo('${cat.id}')" class="h-8 px-4 rounded-xl border text-[9px] font-black tracking-widest uppercase transition-all shrink-0 ${classesExtra}" ${clasesColor}>${cat.name}</button>`;
             });
             container.innerHTML = html;
         }
@@ -1905,7 +2023,6 @@ if (isset($_GET['ota_update'])) {
                 } else { ps5Alert("SIN PARTIDAS", data.message, "fa-ghost"); }
             } catch(e) { mostrarErrorFinal("ERROR", "Falló la conexión."); }
         }
-
         // ==========================================
         // 11. SINCRONIZACIÓN Y LIMPIEZA / OTA
         // ==========================================
@@ -1981,7 +2098,7 @@ if (isset($_GET['ota_update'])) {
 
 
         // ==========================================
-        // 12. RPI SENDER Y FTP CLÁSICO
+        // 12. RPI SENDER Y FTP CLÁSICO (Y PASARELA PC)
         // ==========================================
         let currentTransferMode = 'ftp';
         let rpiQueue = []; 
@@ -2015,6 +2132,86 @@ if (isset($_GET['ota_update'])) {
                 if(currentTabIndex === 1 && floatingFtp && document.getElementById('file-upload').files.length > 0) floatingFtp.classList.remove('floating-hidden');
             }
         }
+
+        // --- PASARELA PC (STREAMING RAM) ---
+        async function handlePCUpload(input) {
+            if (!input.files || input.files.length === 0) return;
+            let file = input.files[0];
+            let ps4Ip = document.getElementById('host-ip').value;
+            if (!ps4Ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), "fa-network-wired"); input.value = ''; return; }
+
+            mostrarCarga("PASARELA PC", `Transmitiendo a PS4 vía RAM...<br><span class='text-[10px] font-bold text-yellow-400 block mt-1'>${file.name}</span>`, "fa-computer fa-bounce text-yellow-400");
+            document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)';
+
+            document.getElementById('modal-progress-container').classList.remove('hidden');
+            document.getElementById('modal-controls').classList.remove('hidden');
+            document.getElementById('modal-close-btn').classList.add('hidden');
+            document.getElementById('modal-cancel-btn').classList.remove('hidden');
+            document.getElementById('modal-action-btn').classList.add('hidden');
+
+            isTransferring = true;
+            isSyncCanceled = false;
+
+            const CHUNK_RAM = 50 * 1024 * 1024; // Buffer Volátil de 50MB
+            let totalChunks = Math.ceil(file.size / CHUNK_RAM);
+            let bytesSent = 0;
+
+            try {
+                for (let i = 0; i < totalChunks; i++) {
+                    if (isSyncCanceled) break;
+                    
+                    let start = i * CHUNK_RAM;
+                    let end = Math.min(start + CHUNK_RAM, file.size);
+                    let chunk = file.slice(start, end);
+
+                    let fd = new FormData();
+                    fd.append('action', 'stream_pc_ram');
+                    fd.append('host_ip', ps4Ip);
+                    fd.append('file_name', file.name);
+                    fd.append('chunk', chunk);
+                    fd.append('chunk_index', i);
+                    fd.append('total_chunks', totalChunks);
+
+                    uploadAbortController = new AbortController();
+                    
+                    let startTime = Date.now();
+                    let res = await fetch('api/upload.php', { 
+                        method: 'POST', 
+                        body: fd, 
+                        signal: uploadAbortController.signal 
+                    });
+                    
+                    let endTime = Date.now();
+                    let duration = (endTime - startTime) / 1000;
+                    let speed = (chunk.size / 1024 / 1024) / (duration || 0.1);
+                    
+                    bytesSent += chunk.size;
+                    let pct = (bytesSent / file.size) * 100;
+                    document.getElementById('modal-progress-bar').style.width = pct + '%';
+                    document.getElementById('modal-percentage').innerText = pct.toFixed(0) + '%';
+                    document.getElementById('modal-bytes').innerText = `${(bytesSent / 1e9).toFixed(2)} / ${(file.size / 1e9).toFixed(2)} GB`;
+                    document.getElementById('modal-speed').innerHTML = `<i class="fa-solid fa-microchip" style="color: var(--theme-prim);"></i> 50MB RAM | ${speed.toFixed(1)} MB/s`;
+                }
+            } catch(e) {
+                if (e.name !== 'AbortError') {
+                    mostrarErrorFinal("ERROR DE PUENTE", "Conexión interrumpida en la pasarela RAM.");
+                }
+            }
+
+            isTransferring = false;
+            if (isSyncCanceled) {
+                mostrarErrorFinal("CANCELADO", "Transmisión detenida. La RAM fue liberada.");
+            } else {
+                AudioEngine.playSuccess();
+                document.getElementById('modal-title').innerText = "TRANSMISIÓN EXITOSA";
+                document.getElementById('modal-text').innerText = "El juego se ha transmitido directo a la PS4.";
+                document.getElementById('modal-controls').classList.add('hidden');
+                document.getElementById('modal-close-btn').classList.remove('hidden');
+                document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-check text-4xl relative z-10" style="color: var(--theme-prim);"></i>`;
+            }
+            input.value = '';
+        }
+        // ------------------------------------
 
         function selectPath(btn, path) {
             document.querySelectorAll('.folder-btn').forEach(b => {
@@ -2149,7 +2346,6 @@ if (isset($_GET['ota_update'])) {
                         return;
                     }
                     
-                    // CONTROLES CENTRADOS
                     let htmlControls = `<div class="col-span-full flex justify-center gap-3 mb-4">
                         <button onclick="actualizarIpCelular()" class="bg-yellow-600/20 text-yellow-400 hover:bg-yellow-600 hover:text-white px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-colors active:scale-95 border border-yellow-500/30"><i class="fa-solid fa-pen mr-1"></i> EDITAR IP</button>
                         <button onclick="renderRpiList()" class="hover:text-black px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-colors active:scale-95 border hover:bg-white" style="color: var(--theme-prim); border-color: var(--theme-prim);"><i class="fa-solid fa-rotate mr-1"></i> REFRESCAR</button>
@@ -2161,7 +2357,6 @@ if (isset($_GET['ota_update'])) {
                         let iconOrigen = pkg.origen && pkg.origen.includes('MicroSD') ? '<i class="fa-solid fa-sd-card text-[9px]"></i>' : '<i class="fa-solid fa-mobile-screen text-[9px]"></i>';
                         let origenHtml = pkg.origen ? `<span class="text-[8px] font-mono tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white flex items-center gap-1">${iconOrigen} ${pkg.origen.replace(/💾 |📱 /g, '')}</span>` : '';
                         
-                        // Diseño Pro a 3 Columnas: aspect-[3/4]
                         htmlCards += `
                         <div id="${idCard}" class="rpi-card rounded-2xl overflow-hidden aspect-[3/4] flex flex-col relative group bg-black/40 border border-white/5 cursor-pointer shadow-lg" onclick="selectRpiPkg('${pkg.path || pkg.nombre}', '${idCard}')">
                             <div class="rpi-card-check"><i class="fa-solid fa-check"></i></div>
@@ -2209,7 +2404,6 @@ if (isset($_GET['ota_update'])) {
                     
                     if (titleContainer) {
                         let cleanTitle = data.data.title.replace(/<[^>]*>?/gm, '');
-                        // Limpiador Inteligente
                         cleanTitle = cleanTitle.replace(/CUSA\d{5}/gi, '')
                                                .replace(/v\d+\.\d+/gi, '')
                                                .replace(/\[.*?\]/g, '')
@@ -2288,7 +2482,6 @@ if (isset($_GET['ota_update'])) {
                 if (!advertencia) return;
             }
 
-            // MAGIA 1: Forzar el puerto 8081 (Busybox HTTPD) para la descarga pesada
             let baseUrl = window.location.protocol + '//' + phoneIp + ':8081';
 
             document.getElementById('custom-modal').classList.remove('hidden', 'opacity-0'); 
@@ -2304,13 +2497,23 @@ if (isset($_GET['ota_update'])) {
             for (let i = 0; i < rpiQueue.length; i++) {
                 let selectedPath = rpiQueue[i]; 
                 
-                // MAGIA 2: Asegurarnos de que el link apunta a la carpeta correcta
                 if (!selectedPath.includes('servidor_rpi/')) {
                     selectedPath = 'servidor_rpi/' + selectedPath;
                 }
 
                 let pathParts = selectedPath.split('/');
-                let encodedPath = pathParts.map(p => encodeURIComponent(p)).join('/');
+                
+                // SANITIZADOR EXTREMO PARA RPI SENDER (Reemplaza los caracteres que la PS4 rechaza)
+                let encodedPath = pathParts.map(p => {
+                    return encodeURIComponent(p)
+                        .replace(/'/g, "%27")
+                        .replace(/\+/g, "%2B")
+                        .replace(/\(/g, "%28")
+                        .replace(/\)/g, "%29")
+                        .replace(/\[/g, "%5B")
+                        .replace(/\]/g, "%5D");
+                }).join('/');
+                
                 let urlToSend = baseUrl + '/' + encodedPath;
                 let displayName = pathParts[pathParts.length - 1]; 
                 
@@ -2389,7 +2592,10 @@ if (isset($_GET['ota_update'])) {
             const container = document.getElementById(containerId); container.innerHTML = '';
             if (!lista || lista.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[220px] bg-black/40 rounded-[1.5rem] border border-dashed border-white/10 p-6 text-center shadow-inner"><i class="fa-solid fa-folder text-6xl mb-4" style="color: var(--theme-prim); opacity: 0.3;"></i><p class="text-[11px] text-[var(--text-muted)] leading-relaxed max-w-[250px] mx-auto">${t('empty_gal_title').replace('{folder}', folder)}</p></div>`; return; }
             const topBar = document.createElement('div'); topBar.className = 'flex justify-between items-center mb-3 px-1'; topBar.innerHTML = `<span class="text-[10px] font-black tracking-widest uppercase" style="color: var(--theme-prim); opacity: 0.6;">${lista.length} PORTADAS</span><button onclick="eliminarTodasLasImagenes('${folder}')" class="text-red-500 hover:text-red-400 text-[10px] font-black tracking-widest transition-colors active:scale-95"><i class="fa-solid fa-trash-can mr-1"></i> ${t('del_all')}</button>`; container.appendChild(topBar);
-            const grid = document.createElement('div'); grid.className = 'grid grid-cols-3 gap-2 overflow-y-auto custom-scrollbar pr-1 gallery-grid-fix'; 
+            
+            // FIX GALERIA 4 COLUMNAS
+            const grid = document.createElement('div'); grid.className = 'grid grid-cols-4 gap-1.5 overflow-y-auto custom-scrollbar pr-1 gallery-grid-fix'; 
+            
             const deseleccionarEnScroll = () => { const items = grid.querySelectorAll('.gallery-item.selected'); if(items.length > 0) { items.forEach(el => el.classList.remove('selected')); selectedIconValue = null; const btnAplicar = document.getElementById('floating-btn-aplicar'); if(btnAplicar) btnAplicar.classList.add('floating-hidden'); } }; grid.addEventListener('scroll', deseleccionarEnScroll, { passive: true }); grid.addEventListener('touchmove', deseleccionarEnScroll, { passive: true });
             lista.forEach(img => { const item = document.createElement('div'); item.className = 'gallery-item group border border-white/5 transition-all'; item.onclick = function() { document.querySelectorAll(`#${containerId} .gallery-item`).forEach(el => { el.classList.remove('selected'); el.style.borderColor = 'transparent'; }); this.classList.add('selected'); this.style.borderColor = 'var(--theme-prim)'; selectedIconValue = folder + '/' + img.nombre; document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); }; item.innerHTML = `<img src="${img.url}" loading="lazy"><div onclick="eliminarImagenGaleria('${img.nombre}', '${folder}', event)" class="absolute top-1 right-1 w-7 h-7 bg-red-600 rounded-full flex items-center justify-center text-white z-10 cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.5)] gallery-trash-btn border border-red-500"><i class="fa-solid fa-trash text-[10px]"></i></div>`; grid.appendChild(item); });
             container.appendChild(grid);
@@ -2651,7 +2857,6 @@ if (isset($_GET['ota_update'])) {
             if (notifToggle) { let savedNotif = localStorage.getItem('ps4_ui_notif'); if (savedNotif !== null) notifToggle.checked = (savedNotif === 'true'); notifToggle.addEventListener('change', (e) => { localStorage.setItem('ps4_ui_notif', e.target.checked); if(e.target.checked) ps5Notification("SISTEMA", "Notificaciones encendidas.", "fa-message"); }); }
             document.querySelectorAll('.dock-item').forEach(btn => { btn.addEventListener('click', function(e) { let ripple = document.createElement('div'); ripple.className = 'dock-ripple'; this.appendChild(ripple); setTimeout(() => ripple.remove(), 500); }); });
             
-            // Cargar Tema, Wallpaper, Blur y Partículas
             loadThemeAndWallpaper();
 
             if(localStorage.getItem('ps4_custom_username')) customUserName = localStorage.getItem('ps4_custom_username');
@@ -2682,7 +2887,6 @@ if (isset($_GET['ota_update'])) {
                 partSlider.addEventListener('change', (e) => updateParticlesCount(e.target.value)); 
             }
             
-            // Forzar actualización de colores dinámicos al iniciar y al cambiar tema
             const updateDynamicColors = () => {
                 const primColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-prim');
                 const btnScan = document.getElementById('btn-scan');
