@@ -227,25 +227,26 @@ if (isset($_GET['extract_pkg'])) {
     exit;
 }
 
-// 7. ACTUALIZACIÓN OTA (VÍA GIT) - VERSIÓN SEGURA
+// 7. ACTUALIZACIÓN OTA (VÍA GIT) - VERSIÓN SEGURA Y EN ESPAÑOL
 if (isset($_GET['ota_update'])) {
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=utf-8');
     $dir = __DIR__;
     
-    // Solo forzamos la descarga de los archivos nuevos. No matamos el servidor.
     $output = shell_exec("cd $dir && git reset --hard 2>&1 && git pull 2>&1");
     
     if (strpos($output, 'Already up to date') !== false || strpos($output, 'actualizado') !== false || strpos($output, 'uptodate') !== false) {
-        echo json_encode(['status' => 'uptodate', 'message' => 'Ya tienes la última versión instalada.', 'log' => $output]);
+        echo json_encode(['status' => 'uptodate', 'message' => 'Ya tienes la última versión instalada.', 'log' => $output], JSON_UNESCAPED_UNICODE);
     } 
     else if (strpos($output, 'Fast-forward') !== false || strpos($output, 'Updating') !== false || strpos($output, 'changed') !== false || strpos($output, 'cambiados') !== false) {
-        echo json_encode(['status' => 'updated', 'message' => '¡Actualización aplicada con éxito! Recargando...', 'log' => $output]);
+        echo json_encode(['status' => 'updated', 'message' => '¡Actualización aplicada con éxito! Recargando...', 'log' => $output], JSON_UNESCAPED_UNICODE);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Error al actualizar. Usa Termux.', 'log' => $output]);
+        echo json_encode(['status' => 'error', 'message' => 'Error al actualizar. Usa Termux.', 'log' => $output], JSON_UNESCAPED_UNICODE);
     }
     exit;
 }
 ?>
+
+
 
 
 
