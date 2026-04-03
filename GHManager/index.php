@@ -4,53 +4,6 @@
  * GOLDHEN MANAGER V2.1 (PS5/PS4)
  * DEVELOPED *By SeBaS* * ====================================================================
  */
-
-// ==========================================
-// 0. INTERCEPTOR MÁGICO PARA PKGS (Soluciona el rechazo del RPI)
-// ==========================================
-if (php_sapi_name() == 'cli-server') {
-    $req = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    if (preg_match('/\.pkg$/i', $req)) {
-        $file_path = __DIR__ . urldecode($req);
-        if (file_exists($file_path)) {
-            $size = filesize($file_path);
-            $start = 0; $end = $size - 1;
-            header('Accept-Ranges: bytes');
-            header('Content-Type: application/octet-stream');
-            
-            if (isset($_SERVER['HTTP_RANGE'])) {
-                list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-                if (strpos($range, ',') !== false) { header('HTTP/1.1 416 Requested Range Not Satisfiable'); header("Content-Range: bytes $start-$end/$size"); exit; }
-                if ($range == '-') { $c_start = $size - substr($range, 1); $c_end = $size - 1; }
-                else { $range = explode('-', $range); $c_start = $range[0]; $c_end = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $size - 1; }
-                $c_end = ($c_end > $end) ? $end : $c_end;
-                if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) { header('HTTP/1.1 416 Requested Range Not Satisfiable'); header("Content-Range: bytes $start-$end/$size"); exit; }
-                $start = $c_start; $end = $c_end;
-                header('HTTP/1.1 206 Partial Content');
-                header("Content-Range: bytes $start-$end/$size");
-            } else { header('HTTP/1.1 200 OK'); }
-            
-            $length = $end - $start + 1;
-            header("Content-Length: $length");
-            
-            $fp = @fopen($file_path, 'rb');
-            if ($fp) {
-                fseek($fp, $start);
-                $buffer_size = 1024 * 128; // Mandamos en trozos de 128KB para no ahogar a Termux
-                while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-                    if ($p + $buffer_size > $end) { $buffer_size = $end - $p + 1; }
-                    echo fread($fp, $buffer_size);
-                    flush();
-                }
-                fclose($fp);
-            }
-            exit;
-        }
-    }
-    // Si no es un PKG, que PHP sirva la foto o el script normalmente
-    if (is_file(__DIR__ . $req) && $req !== '/index.php') { return false; }
-}
-
 error_reporting(0);
 @ini_set('display_errors', 0);
 @ini_set('memory_limit', '512M'); 
@@ -2310,9 +2263,8 @@ if (isset($_GET['ota_update'])) {
                 if (!advertencia) return;
             }
 
-            // MAGIA 1: Forzar siempre el puerto 8080 para Termux
-            let port = window.location.port ? ':' + window.location.port : ':8080';
-            let baseUrl = window.location.protocol + '//' + phoneIp + port + window.location.pathname.replace(/index\.php$/, '').replace(/\/$/, '');
+                        // MAGIA 1: Forzar el puerto 8081 (Busybox HTTPD) para la descarga pesada
+            let baseUrl = window.location.protocol + '//' + phoneIp + ':8081';
 
             document.getElementById('custom-modal').classList.remove('hidden', 'opacity-0'); 
             document.getElementById('modal-card').classList.remove('scale-95');
@@ -2667,7 +2619,123 @@ if (isset($_GET['ota_update'])) {
         }
 
         // ==========================================
-        // 19. INICIALIZADOR FINAL
+        // 20. SISTEMA DE CAPTURAS (BÓVEDA Y GALERÍA)
+        // ==========================================
+        async function abrirGaleriaJuego() {
+            esBovedaGlobal = false;
+            const tituloEl = document.getElementById('capturas-game-cusa');
+            if(tituloEl) tituloEl.innerText = `${currentCusa} - ${currentTitle}`;
+            abrirPanelSecundario('sheet-capturas');
+            await cargarCapturas('get_caps', currentCusa);
+        }
+
+        async function abrirBovedaGlobal() {
+            esBovedaGlobal = true;
+            const tituloEl = document.getElementById('capturas-game-cusa');
+            if(tituloEl) tituloEl.innerText = "TODAS LAS CAPTURAS (BÓVEDA)";
+            
+            cerrarTodo();
+            document.getElementById('overlay-sheet').classList.add('open'); 
+            document.getElementById('sheet-capturas').classList.add('open');
+            
+            await cargarCapturas('get_all_caps', '');
+        }
+
+        async function cargarCapturas(action, cusa) {
+            const grid = document.getElementById('capturas-grid');
+            if(!grid) return;
+            grid.innerHTML = `<div class="col-span-2 text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Descargando capturas...</p></div>`;
+            
+            const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
+            if(!ip) { grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Falta conectar la IP de PS4.</div>`; return; }
+
+            const fd = new FormData(); 
+            fd.append('action', action); 
+            fd.append('host_ip', ip); 
+            if(cusa) fd.append('cusa_id', cusa);
+
+            try {
+                let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd }); 
+                let data = await res.json();
+                
+                if (data.status === 'success') {
+                    if (data.images.length === 0) { 
+                        grid.innerHTML = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-camera-slash text-4xl text-white/10 mb-3 block"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Sin Capturas</p></div>`; 
+                        return; 
+                    }
+                    
+                    let html = '';
+                    data.images.forEach(img => {
+                        html += `
+                        <div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group border border-white/10 hover:border-[var(--theme-prim)] transition-colors shadow-lg bg-black/50" onclick="abrirLightbox('${img.data}', '${img.name.replace(/'/g, "\\'")}')">
+                            <img src="${img.data}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 pointer-events-none">
+                                <span class="text-[8px] text-white font-mono truncate">${img.name}</span>
+                            </div>
+                        </div>`;
+                    });
+                    grid.innerHTML = html;
+                } else { 
+                    grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">${data.message}</div>`; 
+                }
+            } catch(e) { 
+                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Error de conexión.</div>`; 
+            }
+        }
+
+        let isZoomed = false;
+        function abrirLightbox(b64, name) {
+            isZoomed = false;
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const title = document.getElementById('lightbox-title');
+            const btnDL = document.getElementById('lightbox-download');
+            
+            if(!modal || !img) return;
+
+            img.src = b64;
+            img.classList.remove('scale-150', 'cursor-zoom-out');
+            img.classList.add('scale-100', 'cursor-zoom-in');
+            
+            if(title) title.innerText = name;
+            if(btnDL) {
+                btnDL.href = b64;
+                btnDL.download = name;
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function cerrarLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            if(!modal) return;
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('lightbox-img').src = '';
+            }, 300);
+        }
+
+        function cerrarLightboxSiFondo(e) {
+            if(e.target.id === 'lightbox-modal' || e.target.id === 'lightbox-img-container') {
+                cerrarLightbox();
+            }
+        }
+
+        function toggleZoom(img) {
+            isZoomed = !isZoomed;
+            if (isZoomed) {
+                img.classList.remove('scale-100', 'cursor-zoom-in');
+                img.classList.add('scale-150', 'cursor-zoom-out');
+            } else {
+                img.classList.remove('scale-150', 'cursor-zoom-out');
+                img.classList.add('scale-100', 'cursor-zoom-in');
+            }
+        }
+
+        // ==========================================
+        // 21. INICIALIZADOR FINAL (Movido al final)
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             const notifToggle = document.getElementById('toggle_notifications');
@@ -2686,11 +2754,11 @@ if (isset($_GET['ota_update'])) {
                 if (typeof crearBotonCarpeta === 'function') crearBotonCarpeta(folder, false);
             });
             
-            renderShortcuts(); 
-            actualizarGaleria(); 
-            actualizarPayloads(); 
-            renderCategorias(); 
-            cargarBibliotecaLocal(); 
+            if (typeof renderShortcuts === 'function') renderShortcuts(); 
+            if (typeof actualizarGaleria === 'function') actualizarGaleria(); 
+            if (typeof actualizarPayloads === 'function') actualizarPayloads(); 
+            if (typeof renderCategorias === 'function') renderCategorias(); 
+            if (typeof cargarBibliotecaLocal === 'function') cargarBibliotecaLocal(); 
             
             AudioEngine.loadSettings();
 
@@ -2715,6 +2783,6 @@ if (isset($_GET['ota_update'])) {
             document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', () => setTimeout(updateDynamicColors, 50)));
         });
     </script>
+
 </body>
 </html>
-
