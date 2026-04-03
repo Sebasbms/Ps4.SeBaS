@@ -1,11 +1,23 @@
 <?php
 /**
  * ARCHIVO: api/gallery.php
- * Descarga imágenes de internet, lee la galería local, lee los backups y elimina archivos.
+ * Descarga imágenes (Motor cURL Termux), lee galería local y backups.
  */
 header('Content-Type: application/json; charset=utf-8');
 
-// --- IMPORTAR DESDE URL O GITHUB ---
+function curl_descargar($url) {
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'GoldHen-Manager-Termux');
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita errores de certificados en Termux
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    $data = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return ($code >= 200 && $code < 300) ? $data : false;
+}
+
 if (isset($_POST['action']) && $_POST['action'] == 'import_url') {
     $url = trim($_POST['url'] ?? '');
     if (!$url) { echo json_encode(['status'=>'error', 'message'=>'URL vacía']); exit; }
@@ -15,35 +27,29 @@ if (isset($_POST['action']) && $_POST['action'] == 'import_url') {
     $imported_count = 0;
     
     try {
-        $opts = ['http' => ['method' => 'GET', 'header' => ['User-Agent: GoldHen-Manager']]];
-        $context = stream_context_create($opts);
-
         if (preg_match('/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.*)$/', $url, $matches)) {
             $user = $matches[1]; $repo = $matches[2]; $branch = $matches[3]; $path = $matches[4];
             $api_url = "https://api.github.com/repos/$user/$repo/contents/$path?ref=$branch";
             
-            $json = @file_get_contents($api_url, false, $context);
+            $json = curl_descargar($api_url);
             if ($json) {
                 $files = json_decode($json, true);
-                foreach ($files as $file) {
-                    if (isset($file['download_url']) && preg_match('/\.(png|jpe?g)$/i', $file['name'])) {
-                        $img_data = @file_get_contents($file['download_url'], false, $context);
-                        if ($img_data) { 
-                            file_put_contents($directorio_destino . '/' . basename($file['name']), $img_data); 
-                            $imported_count++; 
+                if(is_array($files)) {
+                    foreach ($files as $file) {
+                        if (isset($file['download_url']) && preg_match('/\.(png|jpe?g)$/i', $file['name'])) {
+                            $img_data = curl_descargar($file['download_url']);
+                            if ($img_data) { 
+                                file_put_contents($directorio_destino . '/' . basename($file['name']), $img_data); 
+                                $imported_count++; 
+                            }
                         }
                     }
                 }
             } else { 
-                // DETECCIÓN INTELIGENTE DE LÍMITE DE GITHUB
-                $headers = $http_response_header ?? [];
-                if (strpos(implode(' ', $headers), '403 Forbidden') !== false) {
-                    throw new Exception("Límite de GitHub alcanzado (60 descargas/hora). Intenta más tarde.");
-                }
-                throw new Exception("No se pudo leer la carpeta. Verifica que el repositorio sea público."); 
+                throw new Exception("Error de GitHub. Verifica que el enlace sea público o intenta más tarde."); 
             }
         } else {
-            $img_data = @file_get_contents($url, false, $context);
+            $img_data = curl_descargar($url);
             if ($img_data) {
                 $filename = basename(parse_url($url, PHP_URL_PATH));
                 if (!preg_match('/\.(png|jpe?g)$/i', $filename)) $filename = uniqid('cover_') . '.png';
@@ -57,7 +63,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'import_url') {
         if ($imported_count > 0) { 
             echo json_encode(['status'=>'success', 'message'=>"$imported_count portada(s) guardada(s)."]); 
         } else { 
-            echo json_encode(['status'=>'error', 'message'=>'No se encontraron imágenes válidas en ese enlace.']); 
+            echo json_encode(['status'=>'error', 'message'=>'No se encontraron imágenes válidas.']); 
         }
     } catch (Exception $e) { 
         echo json_encode(['status'=>'error', 'message'=>$e->getMessage()]); 
@@ -65,51 +71,34 @@ if (isset($_POST['action']) && $_POST['action'] == 'import_url') {
     exit;
 }
 
-// --- ELIMINAR IMAGEN ---
 if (isset($_POST['action']) && $_POST['action'] == 'delete_image') {
     $filename = basename($_POST['file_name'] ?? '');
     $folder = $_POST['folder'] ?? ''; 
-    
     $dir = ($folder === 'backup_icons') ? '../backup_icons' : '../iconos';
     $path = $dir . '/' . $filename;
     
     if ($filename && file_exists($path) && @unlink($path)) {
         echo json_encode(['status' => 'success', 'message' => 'Imagen eliminada correctamente.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar la imagen.']);
+        echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar la imagen en Termux.']);
     }
     exit;
 }
 
-// --- LEER GALERÍA LOCAL ---
-if (isset($_GET['action']) && $_GET['action'] == 'get_gallery') {
-    $iconos = [];
-    $directorio = '../iconos';
+if (isset($_GET['action']) && ($_GET['action'] == 'get_gallery' || $_GET['action'] == 'get_backups')) {
+    $lista = [];
+    $directorio = ($_GET['action'] == 'get_gallery') ? '../iconos' : '../backup_icons';
+    $url_base = ($_GET['action'] == 'get_gallery') ? 'iconos/' : 'backup_icons/';
+    
     if (file_exists($directorio) && is_dir($directorio)) {
         $archivos = glob($directorio . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
         if(is_array($archivos)) { 
             foreach($archivos as $archivo) { 
-                $iconos[] = ['nombre' => basename($archivo), 'url' => 'iconos/' . basename($archivo)]; 
+                $lista[] = ['nombre' => basename($archivo), 'url' => $url_base . basename($archivo)]; 
             } 
         }
     }
-    echo json_encode(['status'=>'success', 'data'=>$iconos]);
-    exit;
-}
-
-// --- LEER GALERÍA DE BACKUPS ---
-if (isset($_GET['action']) && $_GET['action'] == 'get_backups') {
-    $backups = [];
-    $directorio = '../backup_icons';
-    if (file_exists($directorio) && is_dir($directorio)) {
-        $archivos = glob($directorio . '/*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-        if(is_array($archivos)) {
-            foreach($archivos as $archivo) {
-                $backups[] = ['nombre' => basename($archivo), 'url' => 'backup_icons/' . basename($archivo)];
-            }
-        }
-    }
-    echo json_encode(['status'=>'success', 'data'=>$backups]);
+    echo json_encode(['status'=>'success', 'data'=>$lista]);
     exit;
 }
 ?>
