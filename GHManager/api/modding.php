@@ -23,7 +23,6 @@ if ($action === 'upload_icon') {
     $source = $_POST['source_type'] ?? '';
     $icon_data = '';
 
-    // Buscar la imagen en la galería o desde el archivo subido
     if ($source === 'local_gallery') {
         $path = __DIR__ . '/../' . ($_POST['icon_path'] ?? '');
         if (file_exists($path)) {
@@ -53,7 +52,10 @@ if ($action === 'upload_icon') {
     curl_setopt($ch, CURLOPT_INFILE, $stream);
     curl_setopt($ch, CURLOPT_INFILESIZE, strlen($icon_data));
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); // MAGIA: Evita que la PS4 rechace cURL
+    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
+    
+    // MAGIA: Modo Directo sin navegar (eliminada la orden de crear carpetas)
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
     
     $res = curl_exec($ch);
     $err = curl_error($ch);
@@ -83,7 +85,11 @@ if ($action === 'backup_original') {
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); // MAGIA: Evita cortes
+    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
+    
+    // MAGIA: Modo Directo sin navegar
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
+    
     $data = curl_exec($ch);
     $err = curl_error($ch);
     curl_close($ch);
@@ -95,7 +101,7 @@ if ($action === 'backup_original') {
         file_put_contents("$backup_dir/{$cusa}_original.png", $data);
         echo json_encode(['status' => 'success']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => "La PS4 denegó el acceso o no existe la portada."]);
+        echo json_encode(['status' => 'error', 'message' => "La PS4 denegó el acceso o no existe la portada para $cusa. $err"]);
     }
     exit;
 }
@@ -110,6 +116,7 @@ if ($action === 'get_all_cusa') {
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
     $res = curl_exec($ch);
     curl_close($ch);
     
@@ -117,7 +124,6 @@ if ($action === 'get_all_cusa') {
     if ($res) {
         $lines = explode("\n", trim($res));
         foreach ($lines as $line) {
-            // Buscamos cualquier carpeta que tenga formato CUSAXXXXX
             if (preg_match('/(CUSA\d{5})/i', $line, $matches)) {
                 $juegos[] = strtoupper($matches[1]);
             }
@@ -142,6 +148,7 @@ if ($action === 'get_ps4_profile') {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 3);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
     $data = curl_exec($ch);
     curl_close($ch);
 
