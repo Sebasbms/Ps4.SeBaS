@@ -1120,9 +1120,11 @@ if (isset($_GET['ota_update'])) {
 
 
 
+
+
 <script>
         // ==========================================
-        // PROTECCI脫N ANTI-CURIOSOS Y FIRMA
+        // PROTECCIÓN ANTI-CURIOSOS Y FIRMA
         // ==========================================
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => { 
@@ -1133,7 +1135,7 @@ if (isset($_GET['ota_update'])) {
         console.log('%c' + atob('R29sZEhlbiBNYW5hZ2VyIFYyLjEgfCBEZXZlbG9wZWQgYnkgU2VCYVM='), 'color:#22d3ee; font-size:18px; font-weight:900; text-shadow: 0 0 10px rgba(34,211,238,0.5);');
 
         // ==========================================
-        // 1. PARTICULAS DIN脕MICAS Y CONFIGURABLES
+        // 1. PARTICULAS DINÁMICAS Y CONFIGURABLES
         // ==========================================
         const canvas = document.getElementById('stardust'); 
         const ctx = canvas.getContext('2d'); 
@@ -1224,7 +1226,7 @@ if (isset($_GET['ota_update'])) {
                         localStorage.setItem('ps4_custom_wallpaper', base64);
                         if(typeof ps5Notification === 'function') ps5Notification("WALLPAPER", "Fondo aplicado.", "fa-image");
                     } catch(err) {
-                        if(typeof ps5Alert === 'function') ps5Alert("ESPACIO INSUFICIENTE", "Foto demasiado pesada. Intenta con una de menor resoluci贸n.", "fa-triangle-exclamation");
+                        if(typeof ps5Alert === 'function') ps5Alert("ESPACIO INSUFICIENTE", "Foto demasiado pesada. Intenta con una de menor resolución.", "fa-triangle-exclamation");
                     }
                 };
                 reader.readAsDataURL(file);
@@ -1302,7 +1304,7 @@ if (isset($_GET['ota_update'])) {
         }
 
         // ==========================================
-        // 3. INSTALACI脫N PWA
+        // 3. INSTALACIÓN PWA
         // ==========================================
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -1321,44 +1323,44 @@ if (isset($_GET['ota_update'])) {
         const i18n = {
             es: {
                 ps4_detected: "DETECTADA", ps4_disconnected: "DESCONECTADA", searching: "BUSCANDO...",
-                tab_transfer: "Transferir", desc_transfer: "Env铆a juegos o aplicaciones a tu consola.",
+                tab_transfer: "Transferir", desc_transfer: "Envía juegos o aplicaciones a tu consola.",
                 dest_routes: '<i class="fa-solid fa-folder-open mr-2" style="color: var(--theme-sec);"></i>RUTAS DE DESTINO',
                 files_pkg: '<i class="fa-solid fa-file-circle-plus mr-2" style="color: var(--theme-prim);"></i>ARCHIVOS (PKG/BIN)',
                 touch_select: "TOCA PARA SELECCIONAR", btn_send_files: "ENVIAR ARCHIVOS",
                 tab_mod: "Modding", desc_mod: "Personaliza el arte de tu biblioteca.",
-                gallery: "GALER脥A", backups: "BACKUPS", import: "IMPORTAR", local: "LOCAL",
-                btn_apply_art: "APLICAR PORTADA", import_desc: "Pega un link directo para descargar a tu galer铆a.",
-                btn_import: "INICIAR IMPORTACI脫N", touch_image: "TOCA PARA BUSCAR IMAGEN",
+                gallery: "GALERÍA", backups: "BACKUPS", import: "IMPORTAR", local: "LOCAL",
+                btn_apply_art: "APLICAR PORTADA", import_desc: "Pega un link directo para descargar a tu galería.",
+                btn_import: "INICIAR IMPORTACIÓN", touch_image: "TOCA PARA BUSCAR IMAGEN",
                 tab_exp: "Explorador", desc_exp: "Gestor de archivos interno.",
                 btn_paste: "PEGAR", btn_delete: "ELIMINAR", config_ip: "Configura tu IP.",
-                tab_pay: "Payloads", desc_pay: "Inyecci贸n de c贸digo BinLoader.",
+                tab_pay: "Payloads", desc_pay: "Inyección de código BinLoader.",
                 local_port: "PUERTO LOCAL", device: "DISPOSITIVO", touch_bin: "TOCA PARA BUSCAR .BIN", btn_inject: "INYECTAR PAYLOAD",
-                tab_set: "Ajustes", desc_set: "Configuraci贸n del sistema y visual.",
-                install_app: "Instalar App", install_desc: "A帽adir a pantalla de inicio", btn_install: "INSTALAR",
+                tab_set: "Ajustes", desc_set: "Configuración del sistema y visual.",
+                install_app: "Instalar App", install_desc: "Añadir a pantalla de inicio", btn_install: "INSTALAR",
                 opt_rename: "Renombrar", opt_move: "Mover", opt_delete: "Eliminar",
                 modal_pause: "PAUSAR", modal_close: "CERRAR", modal_cancel: "CANCELAR", modal_accept: "ACEPTAR",
                 j_err_ip: "FALTA IP", j_err_ip_m: "Escribe la IP.", j_err_file: "FALTA ARCHIVO", j_err_file_m: "Elige un archivo.",
-                j_prep: "PREPARANDO", j_prep_m: "Analizando...", j_resume: "REANUDAR", j_resume_m: "Reanudar subida?",
-                j_exist: "EXISTE", j_exist_m: "Ya existe. 驴Sobrescribir?", j_cancel: "CANCELADO", j_cancel_m: "Abortado.",
-                j_comp: "COMPLETADO", j_comp_m: "脡xito.", j_inj: "INYECCI脫N", j_inj_m: "Conectando...", j_succ: "脡XITO", j_err: "ERROR",
-                j_del_sel: "ELIMINAR SELECCI脫N", j_del_m1: "驴Eliminar", j_elem: "elementos",
-                j_warn: "鈿狅笍 ADVERTENCIA", j_warn_m: "Esta acci贸n NO se puede deshacer.",
-                j_ren: "RENOMBRAR", j_ren_m: "Nuevo nombre:", j_del1: "驴Eliminar",
+                j_prep: "PREPARANDO", j_prep_m: "Analizando...", j_resume: "REANUDAR", j_resume_m: "¿Reanudar subida?",
+                j_exist: "EXISTE", j_exist_m: "Ya existe. ¿Sobrescribir?", j_cancel: "CANCELADO", j_cancel_m: "Abortado.",
+                j_comp: "COMPLETADO", j_comp_m: "Éxito.", j_inj: "INYECCION", j_inj_m: "Conectando...", j_succ: "EXITO", j_err: "ERROR",
+                j_del_sel: "ELIMINAR SELECCION", j_del_m1: "¿Eliminar", j_elem: "elementos",
+                j_warn: "⚠️ ADVERTENCIA", j_warn_m: "Esta acción NO se puede deshacer.",
+                j_ren: "RENOMBRAR", j_ren_m: "Nuevo nombre:", j_del1: "¿Eliminar",
                 j_new_fold: "NUEVA CARPETA", j_new_fold_m: "Nombre:", j_scan_fail: "FALLO", j_scan_fail_m: "PS4 no encontrada.",
-                j_del_route: "ELIMINAR RUTA", j_del_route_m: "驴Quitar ruta?", j_files_sel: "ARCHIVOS", j_empty: "Vac铆a", j_sel: "seleccionados",
-                empty_gal_title: "Coloca tus im谩genes <b class='text-white/70'>512x512 .png</b> dentro de la carpeta <br><span class='font-mono bg-black/50 px-1.5 py-0.5 rounded' style='color: var(--theme-sec);'>htdocs/{folder}/</span><br>en tu Android.",
+                j_del_route: "ELIMINAR RUTA", j_del_route_m: "¿Quitar ruta?", j_files_sel: "ARCHIVOS", j_empty: "Vacía", j_sel: "seleccionados",
+                empty_gal_title: "Coloca tus imágenes <b class='text-white/70'>512x512 .png</b> dentro de la carpeta <br><span class='font-mono bg-black/50 px-1.5 py-0.5 rounded' style='color: var(--theme-sec);'>htdocs/{folder}/</span><br>en tu Android.",
                 empty_pay_title: "Coloca tus archivos <b class='text-white/70'>.bin</b> en la carpeta <br><span class='font-mono bg-black/50 px-1.5 py-0.5 rounded' style='color: var(--theme-prim);'>htdocs/payloads/</span>.",
-                del_all: "BORRAR TODAS", tab_biblio: "Biblioteca", titles_installed: "T脥TULOS INSTALADOS", search_placeholder: "Buscar juego o app...",
-                rpi_sender: "RPI SENDER", ftp_classic: "FTP CL脕SICO", games_on_phone: "JUEGOS EN EL CELULAR",
-                title_id: "TITLE ID", opt_view: "Ver Archivo", opt_download: "Descargar al celular", move_category: "Mover a categor铆a:",
-                opt_backup_saves: "Backup de Partidas (Saves)", opt_gallery_caps: "Galer铆a de Capturas", opt_modding: "Personalizar Portada",
+                del_all: "BORRAR TODAS", tab_biblio: "Biblioteca", titles_installed: "TITULOS INSTALADOS", search_placeholder: "Buscar juego o app...",
+                rpi_sender: "RPI SENDER", ftp_classic: "FTP CLÁSICO", games_on_phone: "JUEGOS EN EL CELULAR",
+                title_id: "TITLE ID", opt_view: "Ver Archivo", opt_download: "Descargar al celular", move_category: "Mover a categoría:",
+                opt_backup_saves: "Backup de Partidas (Saves)", opt_gallery_caps: "Galería de Capturas", opt_modding: "Personalizar Portada",
                 opt_manage_dlc: "Gestionar DLCs / Updates", opt_remove_lib: "Quitar de Biblioteca", dlc_manager_title: "Gestor de DLCs & Updates",
                 caps_ps4_title: "Capturas PS4", modal_loading: "CARGANDO", modal_wait: "Por favor espera...",
                 opt_move_btn: "MOVER", opt_delete_btn: "ELIMINAR", btn_install_ps4: "INSTALAR EN PS4",
                 set_lang_title: "Idioma", set_lang_desc: "Cambia el idioma.", set_wake_title: "Pantalla Activa", set_wake_desc: "Evita que se apague.",
                 set_notif_title: "Notificaciones", set_notif_desc: "Alertas flotantes.", set_sound_title: "UI Sounds", set_sound_desc: "Efectos interactivos.",
                 set_vol_title: "Volumen / Sonidos", set_vol_desc: "Ajusta la intensidad.",
-                set_temp_title: "Limpiar Temporales", set_temp_desc: "Libera cach茅 del servidor.", ip_placeholder: "192.168.x.x"
+                set_temp_title: "Limpiar Temporales", set_temp_desc: "Libera caché del servidor.", ip_placeholder: "192.168.x.x"
             },
             en: {
                 ps4_detected: "DETECTED", ps4_disconnected: "DISCONNECTED", searching: "SEARCHING...",
@@ -1383,7 +1385,7 @@ if (isset($_GET['ota_update'])) {
                 j_exist: "FILE EXISTS", j_exist_m: "already exists.<br>Overwrite?", j_cancel: "CANCELED", j_cancel_m: "Transfer aborted.",
                 j_comp: "COMPLETED", j_comp_m: "Success.", j_inj: "INJECTING", j_inj_m: "Connecting...", j_succ: "SUCCESS", j_err: "ERROR",
                 j_del_sel: "DELETE SELECTION", j_del_m1: "Delete", j_elem: "items",
-                j_warn: "鈿狅笍 FINAL WARNING", j_warn_m: "This cannot be undone.",
+                j_warn: "⚠️ FINAL WARNING", j_warn_m: "This cannot be undone.",
                 j_ren: "RENAME", j_ren_m: "Enter a new name:", j_del1: "Delete",
                 j_new_fold: "NEW FOLDER", j_new_fold_m: "Name:", j_scan_fail: "SCAN FAILED", j_scan_fail_m: "PS4 not found.",
                 j_del_route: "DELETE PATH", j_del_route_m: "Remove path?", j_files_sel: "FILES", j_empty: "Empty", j_sel: "selected",
@@ -1492,7 +1494,7 @@ if (isset($_GET['ota_update'])) {
         }
 
         // ==========================================
-        // 6. INICIO Y NAVEGACI脫N
+        // 6. INICIO Y NAVEGACIÓN
         // ==========================================
         window.addEventListener('load', () => {
             setLanguage(localStorage.getItem('ps4_ui_lang') || 'es'); 
@@ -1638,7 +1640,7 @@ if (isset($_GET['ota_update'])) {
         function cerrarTodo() { document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open')); const overlay = document.getElementById('overlay-global'); if(overlay) overlay.classList.remove('open'); }
 
         // ==========================================
-        // 9. BIBLIOTECA, CATEGOR脥AS Y OPCIONES
+        // 9. BIBLIOTECA, CATEGORÍAS Y OPCIONES
         // ==========================================
         function buscarEnBiblioteca(q) {
             q = q.toLowerCase(); const items = document.querySelectorAll('.item-biblio');
@@ -1726,13 +1728,11 @@ if (isset($_GET['ota_update'])) {
 
         function abrirPanelSecundario(id) { document.getElementById('sheet-opciones').classList.remove('open'); setTimeout(() => { document.getElementById(id).classList.add('open'); }, 100); }
 
-                function volverAOpcionesDesde(id) { 
+        function volverAOpcionesDesde(id) { 
             document.getElementById(id).classList.remove('open'); 
             if (esBovedaGlobal) {
-                // Si estamos en la B贸veda Global, simplemente cerramos todo
                 setTimeout(() => { document.getElementById('overlay-global').classList.remove('open'); }, 100);
             } else {
-                // Si estamos en un juego, volvemos a las opciones de ese juego
                 setTimeout(() => { document.getElementById('sheet-opciones').classList.add('open'); }, 100); 
             }
         }
@@ -1788,38 +1788,38 @@ if (isset($_GET['ota_update'])) {
         }
 
         async function crearNuevaCategoria() {
-            const nombre = await ps5Prompt("NUEVA CATEGOR脥A", "Escribe el nombre:");
+            const nombre = await ps5Prompt("NUEVA CATEGORÍA", "Escribe el nombre:");
             if(nombre && nombre.trim() !== "") {
                 const catId = nombre.trim().toLowerCase().replace(/[^a-z0-9]/g, '-');
                 if(catId === 'todos' || catId === 'juegos' || catId === 'apps') return; 
                 let customCats = JSON.parse(localStorage.getItem('ps4_custom_categories')) || [];
-                if(!customCats.find(c => c.id === catId)) { customCats.push({id: catId, name: nombre}); localStorage.setItem('ps4_custom_categories', JSON.stringify(customCats)); renderCategorias(); ps5Notification("脡XITO", `Categor铆a creada.`, "fa-folder-plus"); }
+                if(!customCats.find(c => c.id === catId)) { customCats.push({id: catId, name: nombre}); localStorage.setItem('ps4_custom_categories', JSON.stringify(customCats)); renderCategorias(); ps5Notification("EXITO", `Categoría creada.`, "fa-folder-plus"); }
             }
         }
 
         async function eliminarCategoria(catId) {
-            const seguro = await ps5Confirm("ELIMINAR CATEGOR脥A", "驴Borrar esta categor铆a? Los juegos volver谩n a su secci贸n por defecto.", "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
+            const seguro = await ps5Confirm("ELIMINAR CATEGORÍA", "¿Borrar esta categoría? Los juegos volverán a su sección por defecto.", "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
             if(!seguro) return;
             let customCats = JSON.parse(localStorage.getItem('ps4_custom_categories')) || []; customCats = customCats.filter(c => c.id !== catId); localStorage.setItem('ps4_custom_categories', JSON.stringify(customCats));
             let savedCats = JSON.parse(localStorage.getItem('ps4_game_categories')) || {}; for(let cusa in savedCats) { if(savedCats[cusa] === catId) delete savedCats[cusa]; } localStorage.setItem('ps4_game_categories', JSON.stringify(savedCats));
-            renderCategorias(); cargarBibliotecaLocal(); ps5Notification("ELIMINADA", "Categor铆a borrada.", "fa-trash");
+            renderCategorias(); cargarBibliotecaLocal(); ps5Notification("ELIMINADA", "Categoría borrada.", "fa-trash");
         }
 
         function moverAGrupo(cat) { 
             const items = document.querySelectorAll('.item-biblio');
             items.forEach(item => { if(item.getAttribute('data-name') === currentTitle) { item.setAttribute('data-category', cat); let savedCats = JSON.parse(localStorage.getItem('ps4_game_categories')) || {}; savedCats[currentCusa] = cat; localStorage.setItem('ps4_game_categories', JSON.stringify(savedCats)); } });
-            ps5Notification("MOVIDO", "Juego reubicado con 茅xito.", "fa-check"); renderizarCategoriasModal(currentCusa); const activeFilter = document.querySelector('.filter-pill.active'); if(activeFilter) filtrarCategoria(activeFilter.dataset.cat, activeFilter);
+            ps5Notification("MOVIDO", "Juego reubicado con éxito.", "fa-check"); renderizarCategoriasModal(currentCusa); const activeFilter = document.querySelector('.filter-pill.active'); if(activeFilter) filtrarCategoria(activeFilter.dataset.cat, activeFilter);
         }
 
         async function borrarJuegoDeBiblioteca() {
-            const seguro = await ps5Confirm("QUITAR JUEGO", `驴Ocultar de la biblioteca local?<br><br><span class="text-[9px] text-[var(--text-muted)] block mt-2">Solo borra la portada del celular, no borra el juego de tu PS4.</span>`, "fa-eye-slash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
+            const seguro = await ps5Confirm("QUITAR JUEGO", `¿Ocultar de la biblioteca local?<br><br><span class="text-[9px] text-[var(--text-muted)] block mt-2">Solo borra la portada del celular, no borra el juego de tu PS4.</span>`, "fa-eye-slash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
             if (!seguro) return;
             const fd = new FormData(); fd.append('action', 'delete_game'); fd.append('cusa_id', currentCusa);
             try { await fetch('api/library.php', { method: 'POST', body: fd }); ps5Notification("OCULTO", "Juego removido de la vista.", "fa-eye-slash"); cerrarTodo(); cargarBibliotecaLocal(); } catch(e) {}
         }
 
         async function limpiarBibliotecaEntera() {
-            const seguro = await ps5Confirm("VACIAR CACH脡", "驴Est谩s seguro de limpiar por completo la biblioteca local?<br><br><span class='text-[9px] text-[var(--text-muted)] block mt-2'>Tendr谩s que volver a sincronizar la consola para que aparezcan tus juegos.</span>", "fa-dumpster-fire", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_20px_rgba(220,38,38,0.5)]");
+            const seguro = await ps5Confirm("VACIAR CACHÉ", "¿Estás seguro de limpiar por completo la biblioteca local?<br><br><span class='text-[9px] text-[var(--text-muted)] block mt-2'>Tendrás que volver a sincronizar la consola para que aparezcan tus juegos.</span>", "fa-dumpster-fire", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_20px_rgba(220,38,38,0.5)]");
             if(!seguro) return;
             mostrarCarga("LIMPIANDO", "Borrando portadas...", "fa-trash fa-bounce text-red-500");
             const items = document.querySelectorAll('.item-biblio');
@@ -1835,9 +1835,9 @@ if (isset($_GET['ota_update'])) {
             const btnInstalar = grid.querySelector('[data-id="9999"]'); const icono = document.getElementById('icono-orden');
             cards.forEach(card => card.classList.add('sorting-anim')); if(btnInstalar) btnInstalar.classList.add('sorting-anim');
             setTimeout(() => {
-                if (ordenActual === 0) { icono.className = "fa-solid fa-arrow-down-short-wide text-sm transition-colors"; cards.sort((a, b) => parseInt(a.dataset.id) - parseInt(b.dataset.id)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Instalaci贸n (Por Defecto)", "fa-clock"); } 
-                else if (ordenActual === 1) { icono.className = "fa-solid fa-arrow-down-a-z text-sm transition-colors"; cards.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Alfab茅tico (A-Z)", "fa-font"); } 
-                else if (ordenActual === 2) { icono.className = "fa-solid fa-arrow-up-z-a text-sm transition-colors"; cards.sort((a, b) => b.dataset.name.localeCompare(a.dataset.name)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Alfab茅tico inverso (Z-A)", "fa-font"); }
+                if (ordenActual === 0) { icono.className = "fa-solid fa-arrow-down-short-wide text-sm transition-colors"; cards.sort((a, b) => parseInt(a.dataset.id) - parseInt(b.dataset.id)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Instalación (Por Defecto)", "fa-clock"); } 
+                else if (ordenActual === 1) { icono.className = "fa-solid fa-arrow-down-a-z text-sm transition-colors"; cards.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Alfabético (A-Z)", "fa-font"); } 
+                else if (ordenActual === 2) { icono.className = "fa-solid fa-arrow-up-z-a text-sm transition-colors"; cards.sort((a, b) => b.dataset.name.localeCompare(a.dataset.name)); if(typeof ps5Notification === 'function') ps5Notification("ORDEN", "Alfabético inverso (Z-A)", "fa-font"); }
                 grid.innerHTML = ''; cards.forEach(card => grid.appendChild(card)); if(btnInstalar) grid.appendChild(btnInstalar);
                 setTimeout(() => { const newCards = grid.querySelectorAll('.game-card'); newCards.forEach(c => c.classList.remove('sorting-anim')); const activeFilter = document.querySelector('.filter-pill.active'); if(activeFilter) filtrarCategoria(activeFilter.dataset.cat, activeFilter); }, 50);
             }, 200); 
@@ -1860,17 +1860,17 @@ if (isset($_GET['ota_update'])) {
                     let html = '';
                     data.items.forEach(item => {
                         let icon = item.type === 'update' ? `fa-arrow-up-right-dots` : `fa-puzzle-piece`;
-                        let title = item.type === 'update' ? 'UPDATE (PARCHE)' : 'EXPANSI脫N / DLC';
+                        let title = item.type === 'update' ? 'UPDATE (PARCHE)' : 'EXPANSIÓN / DLC';
                         html += `<div class="flex items-center justify-between p-4 rounded-2xl border group cursor-pointer hover:bg-white/5 transition-colors bg-black/40" style="border-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);"><div class="flex items-center gap-4 overflow-hidden"><div class="w-11 h-11 rounded-xl bg-black/60 flex items-center justify-center shrink-0 border border-white/5"><i class="fa-solid ${icon} text-lg" style="color: var(--theme-prim);"></i></div><div class="flex flex-col overflow-hidden pr-2"><span class="text-[9px] font-black tracking-widest text-[var(--text-muted)] uppercase mb-0.5">${title}</span><span class="text-xs font-bold text-[var(--text-main)] truncate">${item.name}</span><span class="text-[11px] font-mono text-green-400 font-bold mt-1 tracking-wider"><i class="fa-solid fa-weight-hanging text-[9px] mr-1 text-green-400/50"></i>${item.size_formatted}</span></div></div><button onclick="eliminarDLCUpdate('${item.path}', '${item.type}', '${item.size_formatted}')" class="w-12 h-12 rounded-2xl bg-red-900/20 border border-red-500/30 text-red-500 flex items-center justify-center shrink-0 hover:bg-red-600 hover:text-white transition-all active:scale-95"><i class="fa-solid fa-trash-can text-lg"></i></button></div>`;
                     });
                     container.innerHTML = html;
                 } else { container.innerHTML = `<div class="text-center py-10 text-red-400 text-xs font-bold">${data.message}</div>`; }
-            } catch(e) { container.innerHTML = `<div class="text-center py-10 text-red-400 text-xs font-bold">Error de conexi贸n al escanear.</div>`; }
+            } catch(e) { container.innerHTML = `<div class="text-center py-10 text-red-400 text-xs font-bold">Error de conexión al escanear.</div>`; }
         }
 
         async function eliminarDLCUpdate(path, type, size) {
-            let tipoNombre = type === 'update' ? 'la Actualizaci贸n' : 'este DLC';
-            const seguro = await ps5Confirm("LIBERAR ESPACIO", `驴Est谩s seguro de eliminar <b>${tipoNombre}</b>?<br><br>Se liberar谩n <b class="text-green-400">${size}</b>.<br><span class="text-[9px] text-red-400 block mt-2">No se borrar谩 el juego base.</span>`, "fa-dumpster-fire", "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] border border-red-500/50");
+            let tipoNombre = type === 'update' ? 'la Actualización' : 'este DLC';
+            const seguro = await ps5Confirm("LIBERAR ESPACIO", `¿Estás seguro de eliminar <b>${tipoNombre}</b>?<br><br>Se liberarán <b class="text-green-400">${size}</b>.<br><span class="text-[9px] text-red-400 block mt-2">No se borrará el juego base.</span>`, "fa-dumpster-fire", "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] border border-red-500/50");
             if (!seguro) return;
             mostrarCarga("BORRANDO", `Desinstalando...<br><span class='text-[10px] font-bold text-green-400 block mt-1'>Liberando ${size}</span>`, "fa-trash fa-bounce text-red-500");
             const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
@@ -1879,7 +1879,7 @@ if (isset($_GET['ota_update'])) {
                 let res = await fetch('api/dlc_manager.php', { method: 'POST', body: fd }); let data = await res.json();
                 closeCustomModal(); await new Promise(r => setTimeout(r, 350));
                 if (data.status === 'success') { if(typeof AudioEngine !== 'undefined') AudioEngine.playSuccess(); ps5Notification("ESPACIO RECUPERADO", `Se han liberado ${size}.`, "fa-broom"); abrirMenuDLCs(); } else { mostrarErrorFinal("ERROR", data.message); }
-            } catch(e) { mostrarErrorFinal("ERROR", "Fall贸 la conexi贸n al intentar borrar."); }
+            } catch(e) { mostrarErrorFinal("ERROR", "Falló la conexión al intentar borrar."); }
         }
 
         async function iniciarBackupSaves() {
@@ -1893,7 +1893,7 @@ if (isset($_GET['ota_update'])) {
                 let res = await fetch('api/saves.php', { method: 'POST', body: fdCheck }); let data = await res.json();
                 closeCustomModal(); await new Promise(r => setTimeout(r, 350));
                 if (data.status === 'success') {
-                    const msg = `Se encontraron <b>${data.files} archivos</b> de guardado.<br>Peso total: <b style="color: var(--theme-prim);">${data.size_mb} MB</b><br>Perfiles: <b>${data.users}</b><br><br>驴Deseas comprimir todo y descargar el ZIP a tu celular?`;
+                    const msg = `Se encontraron <b>${data.files} archivos</b> de guardado.<br>Peso total: <b style="color: var(--theme-prim);">${data.size_mb} MB</b><br>Perfiles: <b>${data.users}</b><br><br>¿Deseas comprimir todo y descargar el ZIP a tu celular?`;
                     const confirmar = await ps5Confirm("PARTIDAS ENCONTRADAS", msg, "fa-floppy-disk");
                     if (confirmar) {
                         mostrarCarga("CREANDO BACKUP", "Comprimiendo y descargando...<br><span class='text-[9px] mt-1 block uppercase tracking-widest text-[var(--text-muted)]'>No cierres la app.</span>", "fa-file-zipper fa-bounce");
@@ -1903,11 +1903,11 @@ if (isset($_GET['ota_update'])) {
                         if (dataBackup.status === 'success') { closeCustomModal(); ps5Notification("BACKUP", "Descarga iniciada.", "fa-check"); window.location.href = dataBackup.download_url; } else { mostrarErrorFinal("ERROR DE ZIP", dataBackup.message); }
                     }
                 } else { ps5Alert("SIN PARTIDAS", data.message, "fa-ghost"); }
-            } catch(e) { mostrarErrorFinal("ERROR", "Fall贸 la conexi贸n."); }
+            } catch(e) { mostrarErrorFinal("ERROR", "Falló la conexión."); }
         }
 
         // ==========================================
-        // 11. SINCRONIZACI脫N Y LIMPIEZA / OTA
+        // 11. SINCRONIZACIÓN Y LIMPIEZA / OTA
         // ==========================================
         let isSyncCanceled = false;
         function cancelarEnvio() { if (uploadAbortController) uploadAbortController.abort(); isSyncCanceled = true; const fUp = document.getElementById('file-upload'); if(fUp) { fUp.value = ''; updateFileName(fUp); } }
@@ -1921,7 +1921,7 @@ if (isset($_GET['ota_update'])) {
                 let data = await res.json();
                 if (data.status === 'success') {
                     const missing = data.missing; 
-                    if (missing.length === 0) { AudioEngine.playSuccess(); closeCustomModal(); ps5Notification("AL D脥A", "Biblioteca sincronizada.", "fa-check-double"); cargarBibliotecaLocal(); isTransferring = false; return; }
+                    if (missing.length === 0) { AudioEngine.playSuccess(); closeCustomModal(); ps5Notification("AL DIA", "Biblioteca sincronizada.", "fa-check-double"); cargarBibliotecaLocal(); isTransferring = false; return; }
                     
                     document.getElementById('modal-progress-container').classList.remove('hidden'); 
                     document.getElementById('modal-controls').classList.remove('hidden'); 
@@ -1940,21 +1940,20 @@ if (isset($_GET['ota_update'])) {
                         const fdData = new FormData(); fdData.append('action', 'get_game_data'); fdData.append('host_ip', ip); fdData.append('cusa_id', game.id);
                         try { await fetch('api/library.php', { method: 'POST', body: fdData }); } catch(e) {}
                     }
-                    if (isSyncCanceled) { mostrarErrorFinal("CANCELADO", "Sincronizaci贸n detenida."); cargarBibliotecaLocal(); } 
-                    else { AudioEngine.playSuccess(); closeCustomModal(); ps5Notification("NUEVOS", `${count} t铆tulos cargados.`, "fa-gamepad"); cargarBibliotecaLocal(); }
+                    if (isSyncCanceled) { mostrarErrorFinal("CANCELADO", "Sincronización detenida."); cargarBibliotecaLocal(); } 
+                    else { AudioEngine.playSuccess(); closeCustomModal(); ps5Notification("NUEVOS", `${count} títulos cargados.`, "fa-gamepad"); cargarBibliotecaLocal(); }
                 } else { mostrarErrorFinal("ERROR", data.message || "No se pudo leer la biblioteca."); }
-            } catch (e) { mostrarErrorFinal("ERROR", "Fall贸 la conexi贸n al escanear."); } finally { isTransferring = false; }
+            } catch (e) { mostrarErrorFinal("ERROR", "Falló la conexión al escanear."); } finally { isTransferring = false; }
         }
 
         async function limpiarTemporales() {
-            const ok = await ps5Confirm("LIMPIAR", "驴Borrar archivos temporales del servidor?", "fa-broom");
+            const ok = await ps5Confirm("LIMPIAR", "¿Borrar archivos temporales del servidor?", "fa-broom");
             if(!ok) return;
-            mostrarCarga("LIMPIANDO", "Borrando cach茅...", "fa-trash fa-bounce text-red-500");
+            mostrarCarga("LIMPIANDO", "Borrando caché...", "fa-trash fa-bounce text-red-500");
             try { await fetch('api/library.php?action=clear_temp'); closeCustomModal(); ps5Notification("LIMPIEZA", "Temporales borrados.", "fa-check"); } catch(e) { mostrarErrorFinal("ERROR", "No se pudo limpiar."); }
         }
 
-                        async function buscarActualizacionOTA() {
-            // Títulos limpios sin tildes, descripción con tildes normales.
+        async function buscarActualizacionOTA() {
             const confirm = await ps5Confirm("ACTUALIZACION OTA", "¿Buscar e instalar la última versión desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perderán.</span>", "fa-cloud-arrow-down");
             if(!confirm) return;
             
@@ -1971,7 +1970,6 @@ if (isset($_GET['ota_update'])) {
                     setTimeout(() => window.location.reload(), 1500);
                 } else if (data.status === 'uptodate') {
                     closeCustomModal();
-                    // Aquí también, título limpio sin tilde.
                     ps5Alert("AL DIA", "Ya tienes la última versión instalada.", "fa-check-double");
                 } else {
                     mostrarErrorFinal("ERROR OTA", data.message + "<br><br><span class='text-[8px] font-mono text-red-400 mt-2 block break-all'>" + data.log + "</span>");
@@ -1982,13 +1980,8 @@ if (isset($_GET['ota_update'])) {
         }
 
 
-
-
-
-
-
         // ==========================================
-        // 12. RPI SENDER Y FTP CL脕SICO
+        // 12. RPI SENDER Y FTP CLÁSICO
         // ==========================================
         let currentTransferMode = 'ftp';
         let rpiQueue = []; 
@@ -2166,9 +2159,9 @@ if (isset($_GET['ota_update'])) {
                     rpiRawList.forEach((pkg, idx) => {
                         let idCard = 'rpi-card-' + idx;
                         let iconOrigen = pkg.origen && pkg.origen.includes('MicroSD') ? '<i class="fa-solid fa-sd-card text-[9px]"></i>' : '<i class="fa-solid fa-mobile-screen text-[9px]"></i>';
-                        let origenHtml = pkg.origen ? `<span class="text-[8px] font-mono tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white flex items-center gap-1">${iconOrigen} ${pkg.origen.replace(/馃摫 |馃捑 /g, '')}</span>` : '';
+                        let origenHtml = pkg.origen ? `<span class="text-[8px] font-mono tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white flex items-center gap-1">${iconOrigen} ${pkg.origen.replace(/💾 |📱 /g, '')}</span>` : '';
                         
-                        // Dise帽o Pro a 3 Columnas: aspect-[3/4]
+                        // Diseño Pro a 3 Columnas: aspect-[3/4]
                         htmlCards += `
                         <div id="${idCard}" class="rpi-card rounded-2xl overflow-hidden aspect-[3/4] flex flex-col relative group bg-black/40 border border-white/5 cursor-pointer shadow-lg" onclick="selectRpiPkg('${pkg.path || pkg.nombre}', '${idCard}')">
                             <div class="rpi-card-check"><i class="fa-solid fa-check"></i></div>
@@ -2280,7 +2273,7 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-                async function iniciarColaInstalacionRPI() {
+        async function iniciarColaInstalacionRPI() {
             if(rpiQueue.length === 0) { await ps5Alert(t('j_err_file'), "Selecciona al menos un juego de la lista.", "fa-hand-pointer"); return; }
             const ps4Ip = document.getElementById('host-ip').value;
             if(!ps4Ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), "fa-network-wired"); return; }
@@ -2291,11 +2284,11 @@ if (isset($_GET['ota_update'])) {
             
             let getSubnet = (ip) => ip.split('.').slice(0, 3).join('.');
             if (getSubnet(ps4Ip) !== getSubnet(phoneIp) || phoneIp === '127.0.0.1' || phoneIp === 'localhost' || phoneIp === '::1' || phoneIp.startsWith('fe80:')) {
-                let advertencia = await ps5Confirm("ADVERTENCIA DE RED", `Detectamos que tu celular y la PS4 est谩n en redes diferentes o Android bloque贸 la IP autom谩tica.<br><br>Celular (Wi-Fi): <b class="text-yellow-400">${phoneIp}</b><br>PS4: <b style="color: var(--theme-prim);">${ps4Ip}</b><br><br>Para evitar que el env铆o falle, toca "CANCELAR", luego ve al bot贸n "EDITAR IP" y coloca tu IP Wi-Fi actual. 驴O quieres forzar el env铆o de todos modos?`, "fa-network-wired", "bg-yellow-500 text-black border border-yellow-400/50");
+                let advertencia = await ps5Confirm("ADVERTENCIA DE RED", `Detectamos que tu celular y la PS4 están en redes diferentes o Android bloqueó la IP automática.<br><br>Celular (Wi-Fi): <b class="text-yellow-400">${phoneIp}</b><br>PS4: <b style="color: var(--theme-prim);">${ps4Ip}</b><br><br>Para evitar que el envío falle, toca "CANCELAR", luego ve al botón "EDITAR IP" y coloca tu IP Wi-Fi actual. ¿O quieres forzar el envío de todos modos?`, "fa-network-wired", "bg-yellow-500 text-black border border-yellow-400/50");
                 if (!advertencia) return;
             }
 
-                        // MAGIA 1: Forzar el puerto 8081 (Busybox HTTPD) para la descarga pesada
+            // MAGIA 1: Forzar el puerto 8081 (Busybox HTTPD) para la descarga pesada
             let baseUrl = window.location.protocol + '//' + phoneIp + ':8081';
 
             document.getElementById('custom-modal').classList.remove('hidden', 'opacity-0'); 
@@ -2356,7 +2349,7 @@ if (isset($_GET['ota_update'])) {
             
             setTimeout(() => {
                 if (errores.length === 0) {
-                    AudioEngine.playSuccess(); ps5Notification("INSTALACI脫N", `Se enviaron ${exitos} juegos a la consola.`, "fa-check-double"); renderRpiList(); 
+                    AudioEngine.playSuccess(); ps5Notification("INSTALACIÓN", `Se enviaron ${exitos} juegos a la consola.`, "fa-check-double"); renderRpiList(); 
                 } else {
                     AudioEngine.playError();
                     let logErrores = errores.join('\n');
@@ -2368,9 +2361,9 @@ if (isset($_GET['ota_update'])) {
         // ==========================================
         // 13. EXPLORADOR FTP: VISOR, DESCARGA Y MULTI-MOVER
         // ==========================================
-        function renderShortcuts() { let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; const container = document.getElementById('explorer-shortcuts'); if(shortcuts.length === 0) { container.classList.add('hidden'); return; } container.classList.remove('hidden'); let html = '<i class="fa-solid fa-star text-yellow-500 text-[10px] mr-1 shrink-0"></i>'; shortcuts.forEach(path => { let name = path === '/' ? 'RA脥Z' : path.split('/').filter(Boolean).pop(); html += `<div class="flex items-center gap-1 bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--text-main)] cursor-pointer whitespace-nowrap group"><span onclick="loadExplorerPath('${path}')" class="truncate max-w-[80px]">${name}</span><div onclick="removeShortcut('${path}', event)" class="w-4 h-4 rounded-full bg-black/40 hover:bg-red-500/80 flex items-center justify-center ml-1 transition-colors"><i class="fa-solid fa-xmark text-[10px] text-[var(--text-muted)] group-hover:text-white"></i></div></div>`; }); container.innerHTML = html; }
-        function addCurrentPathToShortcuts() { if(!currentExplorerPath) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; if(!shortcuts.includes(currentExplorerPath)) { shortcuts.push(currentExplorerPath); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Ruta a帽adida.", "fa-star"); } }
-        async function removeShortcut(path, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Quitar acceso a <br><b class="mt-1 block" style="color: var(--theme-prim);">${path}</b>?`, 'fa-star-half-stroke', 'bg-red-600 text-white border border-red-500/50'); if(!seguro) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; shortcuts = shortcuts.filter(p => p !== path); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Removido.", "fa-trash"); }
+        function renderShortcuts() { let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; const container = document.getElementById('explorer-shortcuts'); if(shortcuts.length === 0) { container.classList.add('hidden'); return; } container.classList.remove('hidden'); let html = '<i class="fa-solid fa-star text-yellow-500 text-[10px] mr-1 shrink-0"></i>'; shortcuts.forEach(path => { let name = path === '/' ? 'RAÍZ' : path.split('/').filter(Boolean).pop(); html += `<div class="flex items-center gap-1 bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--text-main)] cursor-pointer whitespace-nowrap group"><span onclick="loadExplorerPath('${path}')" class="truncate max-w-[80px]">${name}</span><div onclick="removeShortcut('${path}', event)" class="w-4 h-4 rounded-full bg-black/40 hover:bg-red-500/80 flex items-center justify-center ml-1 transition-colors"><i class="fa-solid fa-xmark text-[10px] text-[var(--text-muted)] group-hover:text-white"></i></div></div>`; }); container.innerHTML = html; }
+        function addCurrentPathToShortcuts() { if(!currentExplorerPath) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; if(!shortcuts.includes(currentExplorerPath)) { shortcuts.push(currentExplorerPath); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Ruta añadida.", "fa-star"); } }
+        async function removeShortcut(path, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `¿Quitar acceso a <br><b class="mt-1 block" style="color: var(--theme-prim);">${path}</b>?`, 'fa-star-half-stroke', 'bg-red-600 text-white border border-red-500/50'); if(!seguro) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; shortcuts = shortcuts.filter(p => p !== path); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Removido.", "fa-trash"); }
         function toggleSelectMode() { isSelectMode = !isSelectMode; selectedItems = []; const btn = document.getElementById('btn-select-mode'), panel = document.getElementById('multi-action-panel'); if (isSelectMode) { btn.style.backgroundColor = 'var(--theme-prim)'; btn.style.color = 'black'; btn.style.borderColor = 'var(--theme-prim)'; btn.classList.remove('bg-white/5', 'border-white/10', 'text-white'); panel.classList.remove('hidden'); } else { btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.borderColor = ''; btn.classList.add('bg-white/5', 'border-white/10', 'text-white'); panel.classList.add('hidden'); } if(currentExplorerItems) renderExplorer(currentExplorerItems, currentExplorerPath); }
         function toggleSelectItem(path, isDir, name) { let idx = selectedItems.findIndex(i => i.path === path); if(idx > -1) { selectedItems.splice(idx, 1); } else { selectedItems.push({path, isDir, name}); } document.getElementById('multi-select-count').innerText = `${selectedItems.length} ${t('j_sel')}`; renderExplorer(currentExplorerItems, currentExplorerPath); }
         async function deleteSelectedItems() { if (selectedItems.length === 0) return; const seguro1 = await ps5Confirm(t('j_del_sel'), `${t('j_del_m1')} <b class="text-[var(--text-main)]">${selectedItems.length} ${t('j_elem')}</b>?`, 'fa-trash', 'bg-red-600 text-white border border-red-500/50'); if(!seguro1) return; const seguro2 = await ps5Confirm(t('j_warn'), t('j_warn_m'), 'fa-triangle-exclamation', 'bg-red-600 text-white border border-red-500/50'); if(!seguro2) return; mostrarCarga(t('j_del_sel'), `Borrando...`, "fa-trash fa-bounce text-red-500"); let successCount = 0; const ip = document.getElementById('host-ip').value; isTransferring = true; for (let i = 0; i < selectedItems.length; i++) { let item = selectedItems[i]; const fd = new FormData(); fd.append('action', 'delete_item'); fd.append('host_ip', ip); fd.append('path', item.path); fd.append('is_dir', item.isDir); try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') successCount++; } catch(e) {} } isTransferring = false; closeCustomModal(); toggleSelectMode(); loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), `${successCount} borrados.`, "fa-trash"); }
@@ -2381,16 +2374,16 @@ if (isset($_GET['ota_update'])) {
         async function viewCurrentFile() { closeItemOptions(); mostrarCarga("LEYENDO", "Obteniendo archivo...", "fa-file-lines fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; const ip = document.getElementById('host-ip').value; const fd = new FormData(); fd.append('action', 'read_file'); fd.append('host_ip', ip); fd.append('path', optionsPath); try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); closeCustomModal(); if (data.status === 'success') { const viewer = document.getElementById('file-viewer-modal'), content = document.getElementById('file-viewer-content'); document.getElementById('file-viewer-title').innerText = optionsName; if (data.type === 'image') { content.innerHTML = `<img src="${data.data}" class="max-w-full max-h-full object-contain rounded-lg shadow-[0_0_30px_rgba(0,0,0,0.8)] border border-white/10">`; } else { content.innerHTML = `<pre class="text-[10px] text-[var(--text-muted)] font-mono whitespace-pre-wrap break-words w-full h-full text-left bg-black/60 p-4 rounded-xl border shadow-inner" style="border-color: var(--theme-prim);">${data.data}</pre>`; } viewer.classList.remove('hidden'); setTimeout(() => viewer.classList.remove('opacity-0'), 10); } else { ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } } catch(e) { closeCustomModal(); ps5Alert(t('j_err'), "Error al leer.", "fa-wifi"); } }
         function closeFileViewer() { const viewer = document.getElementById('file-viewer-modal'); viewer.classList.add('opacity-0'); setTimeout(() => { viewer.classList.add('hidden'); document.getElementById('file-viewer-content').innerHTML = ''; }, 300); }
         function downloadCurrentFile() { closeItemOptions(); const ip = document.getElementById('host-ip').value; window.location.href = `api/explorer.php?action=download&host_ip=${ip}&path=${encodeURIComponent(optionsPath)}`; ps5Notification(t('j_comp'), "Iniciada.", "fa-download"); }
-        async function renameCurrentItem() { closeItemOptions(); let newName = await ps5Prompt(t('j_ren'), t('j_ren_m'), optionsName); if(!newName || newName === optionsName) return; let pathParts = optionsPath.split('/').filter(Boolean); pathParts.pop(); let basePath = '/' + pathParts.join('/') + (pathParts.length > 0 ? '/' : ''); let newPath = basePath + newName + (optionsIsDir ? '/' : ''); const fd = new FormData(); fd.append('action', 'rename'); fd.append('host_ip', document.getElementById('host-ip').value); fd.append('old_path', optionsPath); fd.append('new_path', newPath); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), "脡xito.", "fa-pen"); } } catch(e) {} finally { isTransferring = false; } }
+        async function renameCurrentItem() { closeItemOptions(); let newName = await ps5Prompt(t('j_ren'), t('j_ren_m'), optionsName); if(!newName || newName === optionsName) return; let pathParts = optionsPath.split('/').filter(Boolean); pathParts.pop(); let basePath = '/' + pathParts.join('/') + (pathParts.length > 0 ? '/' : ''); let newPath = basePath + newName + (optionsIsDir ? '/' : ''); const fd = new FormData(); fd.append('action', 'rename'); fd.append('host_ip', document.getElementById('host-ip').value); fd.append('old_path', optionsPath); fd.append('new_path', newPath); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), "Éxito.", "fa-pen"); } } catch(e) {} finally { isTransferring = false; } }
         function cutCurrentItem() { closeItemOptions(); clipboardItems = [{path: optionsPath, name: optionsName, isDir: optionsIsDir}]; isCutMode = true; document.getElementById('clipboard-panel').classList.remove('hidden'); document.getElementById('clipboard-text').innerText = optionsName; ps5Notification(t('j_comp'), "Listo para mover.", "fa-scissors"); }
         function cutSelectedItems() { if (selectedItems.length === 0) return; clipboardItems = [...selectedItems]; isCutMode = true; toggleSelectMode(); document.getElementById('clipboard-panel').classList.remove('hidden'); document.getElementById('clipboard-text').innerText = `${clipboardItems.length} copiados`; ps5Notification(t('j_comp'), "Listos para mover.", "fa-scissors"); }
         function cancelPaste() { clipboardItems = []; isCutMode = false; document.getElementById('clipboard-panel').classList.add('hidden'); ps5Notification(t('j_cancel'), "", "fa-xmark"); }
         async function executePaste() { if(clipboardItems.length === 0) return; const ip = document.getElementById('host-ip').value; mostrarCarga("MOVIENDO", "Reubicando...", "fa-people-carry-box fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; let successCount = 0; isTransferring = true; for (let item of clipboardItems) { let name = item.name || item.path.split('/').filter(Boolean).pop(); let newPath = currentExplorerPath.endsWith('/') ? currentExplorerPath + name : currentExplorerPath + '/' + name; const fd = new FormData(); fd.append('action', 'rename'); fd.append('host_ip', ip); fd.append('old_path', item.path); fd.append('new_path', newPath); try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') successCount++; } catch(e) {} } isTransferring = false; cancelPaste(); closeCustomModal(); loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), `${successCount} reubicados.`, "fa-check"); }
-        async function deleteCurrentItem() { closeItemOptions(); const seguro1 = await ps5Confirm(t('j_del1'), `${t('j_del1')} <b class="text-[var(--text-main)]">${optionsName}</b>?`, 'fa-trash', 'bg-red-600 text-white border border-red-500/50'); if(!seguro1) return; const seguro2 = await ps5Confirm(t('j_warn'), t('j_warn_m'), 'fa-triangle-exclamation', 'bg-red-600 text-white border border-red-500/50'); if(!seguro2) return; const fd = new FormData(); fd.append('action', 'delete_item'); fd.append('host_ip', document.getElementById('host-ip').value); fd.append('path', optionsPath); fd.append('is_dir', optionsIsDir); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), "脡xito.", "fa-trash"); } } catch(e) {} finally { isTransferring = false; } }
+        async function deleteCurrentItem() { closeItemOptions(); const seguro1 = await ps5Confirm(t('j_del1'), `${t('j_del1')} <b class="text-[var(--text-main)]">${optionsName}</b>?`, 'fa-trash', 'bg-red-600 text-white border border-red-500/50'); if(!seguro1) return; const seguro2 = await ps5Confirm(t('j_warn'), t('j_warn_m'), 'fa-triangle-exclamation', 'bg-red-600 text-white border border-red-500/50'); if(!seguro2) return; const fd = new FormData(); fd.append('action', 'delete_item'); fd.append('host_ip', document.getElementById('host-ip').value); fd.append('path', optionsPath); fd.append('is_dir', optionsIsDir); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), "Éxito.", "fa-trash"); } } catch(e) {} finally { isTransferring = false; } }
         async function promptCreateFolder() { let name = await ps5Prompt(t('j_new_fold'), t('j_new_fold_m')); if(!name) return; let newPath = currentExplorerPath.endsWith('/') ? currentExplorerPath + name : currentExplorerPath + '/' + name; const fd = new FormData(); fd.append('action', 'mkdir'); fd.append('host_ip', document.getElementById('host-ip').value); fd.append('path', newPath); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), "Creada.", "fa-folder-plus"); } } catch(e) {} finally { isTransferring = false; } }
 
         // ==========================================
-        // 14. GALER脥AS Y MODDING (ICONOS)
+        // 14. GALERÍAS Y MODDING (ICONOS)
         // ==========================================
         function cargarGaleria(lista, containerId, folder) {
             const container = document.getElementById(containerId); container.innerHTML = '';
@@ -2402,17 +2395,17 @@ if (isset($_GET['ota_update'])) {
             container.appendChild(grid);
         }
         
-        async function eliminarImagenGaleria(nombre, folder, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Borrar la imagen <b>${nombre}</b> del servidor?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_image'); fd.append('folder', folder); fd.append('file_name', nombre); try { let res = await fetch('api/gallery.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { if(folder === 'iconos') actualizarGaleria(); else actualizarBackups(); ps5Notification(t('j_comp'), "Imagen borrada del servidor.", "fa-trash"); document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); } else { ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } } catch(err) {} }
-        async function eliminarTodasLasImagenes(folder) { const seguro = await ps5Confirm(t('del_all'), `驴Est谩s seguro de eliminar <b class="text-[var(--text-main)]">TODAS</b> las im谩genes?`, "fa-skull-crossbones", "bg-red-600 text-white border border-red-500/50"); if(!seguro) return; mostrarCarga(t('j_del_sel'), "Eliminando im谩genes...", "fa-trash fa-bounce text-red-500"); let list = folder === 'iconos' ? ICONOS_LOCALES : BACKUPS_LOCALES; for(let img of list) { const fd = new FormData(); fd.append('action', 'delete_image'); fd.append('folder', folder); fd.append('file_name', img.nombre); try { await fetch('api/gallery.php', { method:'POST', body: fd }); } catch(e){} } closeCustomModal(); if(folder === 'iconos') actualizarGaleria(); else actualizarBackups(); ps5Notification(t('j_comp'), "Carpeta vaciada completamente.", "fa-trash-can"); document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); }
+        async function eliminarImagenGaleria(nombre, folder, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `¿Borrar la imagen <b>${nombre}</b> del servidor?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_image'); fd.append('folder', folder); fd.append('file_name', nombre); try { let res = await fetch('api/gallery.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { if(folder === 'iconos') actualizarGaleria(); else actualizarBackups(); ps5Notification(t('j_comp'), "Imagen borrada del servidor.", "fa-trash"); document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); } else { ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } } catch(err) {} }
+        async function eliminarTodasLasImagenes(folder) { const seguro = await ps5Confirm(t('del_all'), `¿Estás seguro de eliminar <b class="text-[var(--text-main)]">TODAS</b> las imágenes?`, "fa-skull-crossbones", "bg-red-600 text-white border border-red-500/50"); if(!seguro) return; mostrarCarga(t('j_del_sel'), "Eliminando imágenes...", "fa-trash fa-bounce text-red-500"); let list = folder === 'iconos' ? ICONOS_LOCALES : BACKUPS_LOCALES; for(let img of list) { const fd = new FormData(); fd.append('action', 'delete_image'); fd.append('folder', folder); fd.append('file_name', img.nombre); try { await fetch('api/gallery.php', { method:'POST', body: fd }); } catch(e){} } closeCustomModal(); if(folder === 'iconos') actualizarGaleria(); else actualizarBackups(); ps5Notification(t('j_comp'), "Carpeta vaciada completamente.", "fa-trash-can"); document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); }
         function previewLocal(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('preview-img-local').src = e.target.result; document.getElementById('preview-img-local').classList.remove('hidden'); document.getElementById('icon-file-placeholder').classList.add('hidden'); document.getElementById('icon-file-name').innerText = input.files[0].name; document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); }; reader.readAsDataURL(input.files[0]); } }
         function ejecutarFormIconos() { const form = document.getElementById('icon-form'); if (form.reportValidity()) document.getElementById('icon-form-submit').click(); }
         function switchIconSource(type) { currentIconSource = type; ['btn-src-gallery', 'btn-src-backup', 'btn-src-import', 'btn-src-local'].forEach(id => { let btn = document.getElementById(id); btn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"; btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.boxShadow = ''; }); ['box-src-gallery', 'box-src-backup', 'box-src-import', 'box-src-local'].forEach(id => document.getElementById(id).classList.add('hidden')); let activeBtn = document.getElementById(`btn-src-${type}`); activeBtn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl whitespace-nowrap"; activeBtn.style.backgroundColor = 'var(--theme-prim)'; activeBtn.style.color = '#000'; document.getElementById(`box-src-${type}`).classList.remove('hidden'); if(type === 'import') document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); else document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); if(type === 'gallery') actualizarGaleria(); if(type === 'backup') actualizarBackups(); }
-        async function importarURL() { const urlInput = document.getElementById('import-url').value.trim(); if (!urlInput) return; mostrarCarga("IMPORTANDO", "Descargando im谩genes...", "fa-cloud-arrow-down fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; const fd = new FormData(); fd.append('action', 'import_url'); fd.append('url', urlInput); try { let res = await fetch('api/gallery.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); closeCustomModal(); document.getElementById('import-url').value = ''; await actualizarGaleria(); switchIconSource('gallery'); ps5Notification(t('j_comp'), "Im谩genes guardadas.", "fa-download"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (e) { mostrarErrorFinal(t('j_err'), "Error de red."); } finally { isTransferring = false; } }
+        async function importarURL() { const urlInput = document.getElementById('import-url').value.trim(); if (!urlInput) return; mostrarCarga("IMPORTANDO", "Descargando imágenes...", "fa-cloud-arrow-down fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; const fd = new FormData(); fd.append('action', 'import_url'); fd.append('url', urlInput); try { let res = await fetch('api/gallery.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); closeCustomModal(); document.getElementById('import-url').value = ''; await actualizarGaleria(); switchIconSource('gallery'); ps5Notification(t('j_comp'), "Imágenes guardadas.", "fa-download"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (e) { mostrarErrorFinal(t('j_err'), "Error de red."); } finally { isTransferring = false; } }
         async function actualizarGaleria() { try { let res = await fetch('api/gallery.php?action=get_gallery&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { ICONOS_LOCALES = data.data; cargarGaleria(ICONOS_LOCALES, 'gallery-container', 'iconos'); } } catch(e) {} }
         async function actualizarBackups() { try { let res = await fetch('api/gallery.php?action=get_backups&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { BACKUPS_LOCALES = data.data; cargarGaleria(BACKUPS_LOCALES, 'backup-container', 'backup_icons'); } } catch(e) {} }
         async function respaldarOriginal() { const ip = document.getElementById('host-ip').value, cusa = document.getElementById('icon-cusa').value.trim().toUpperCase(); if (!ip || !cusa) return; mostrarCarga("EXTRAYENDO", "Descargando portada...", "fa-download fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; const fd = new FormData(); fd.append('action', 'backup_original'); fd.append('host_ip', ip); fd.append('cusa_id', cusa); try { let res = await fetch('api/modding.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); closeCustomModal(); switchIconSource('backup'); ps5Notification(t('j_comp'), `Portada guardada.`, "fa-download"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (e) { mostrarErrorFinal(t('j_err'), "Error de red."); } finally { isTransferring = false; } }
-        async function respaldarTodos() { const ip = document.getElementById('host-ip').value; if (!ip) return; mostrarCarga("ESCANEO", "Leyendo biblioteca...", "fa-brands fa-playstation"); isTransferring = true; try { const fd = new FormData(); fd.append('action', 'get_all_cusa'); fd.append('host_ip', ip); let res = await fetch('api/modding.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success' && data.juegos.length > 0) { await actualizarBackups(); let existentes = BACKUPS_LOCALES.map(b => b.nombre.split('_')[0]); let juegosFaltantes = data.juegos.filter(c => !existentes.includes(c)); if(juegosFaltantes.length === 0) { closeCustomModal(); ps5Notification(t('j_comp'), "Todas respaldadas.", "fa-check-double"); isTransferring = false; return; } let exitos = 0; document.getElementById('modal-progress-container').classList.remove('hidden'); document.getElementById('modal-controls').classList.add('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-layer-group text-3xl relative z-10" style="color: var(--theme-prim);"></i>`; for(let i=0; i < juegosFaltantes.length; i++) { let cusa = juegosFaltantes[i]; document.getElementById('modal-title').innerText = `SAQUEO (${i+1}/${juegosFaltantes.length})`; let pct = ((i) / juegosFaltantes.length) * 100; document.getElementById('modal-progress-bar').style.width = pct + '%'; document.getElementById('modal-percentage').innerText = pct.toFixed(0) + '%'; const fdBak = new FormData(); fdBak.append('action', 'backup_original'); fdBak.append('host_ip', ip); fdBak.append('cusa_id', cusa); try { let r = await fetch('api/modding.php', { method: 'POST', body: fdBak }); let d = await r.json(); if (d.status === 'success') exitos++; if (exitos % 2 === 0) actualizarBackups(); } catch(e) {} } document.getElementById('modal-progress-bar').style.width = '100%'; document.getElementById('modal-percentage').innerText = '100%'; AudioEngine.playSuccess(); closeCustomModal(); switchIconSource('backup'); ps5Notification(t('j_comp'), "Completado.", "fa-layer-group"); } else { mostrarErrorFinal(t('j_err'), "No se encontraron juegos."); } } catch(e) { mostrarErrorFinal(t('j_err'), "Fall贸 la conexi贸n."); } finally { isTransferring = false; } }
-        async function enviarIcono(e) { e.preventDefault(); const ip = document.getElementById('host-ip').value, cusa = document.getElementById('icon-cusa').value.trim().toUpperCase(); if (!ip || !cusa) return; const formData = new FormData(); formData.append('action', 'upload_icon'); formData.append('host_ip', ip); formData.append('cusa_id', cusa); if (currentIconSource === 'gallery' || currentIconSource === 'backup') { if (!selectedIconValue) { await ps5Alert(t('j_err_file'), "Selecciona una imagen.", 'fa-image'); return; } formData.append('source_type', 'local_gallery'); formData.append('icon_path', selectedIconValue); } else { const fileInput = document.getElementById('icon-file'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { await ps5Alert(t('j_err_file'), "Busca una imagen.", 'fa-folder-open'); return; } formData.append('source_type', 'local'); formData.append('local_icon', fileInput.files[0]); } mostrarCarga("MODDING", "Inyectando portada...", "fa-wand-magic-sparkles fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; try { let res = await fetch('api/modding.php', { method: 'POST', body: formData }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); document.getElementById('modal-title').innerText = t('j_succ'); document.getElementById('modal-text').innerHTML = "Portada inyectada."; document.getElementById('modal-close-btn').classList.remove('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-palette text-4xl relative z-10" style="color: var(--theme-prim);"></i>`; ps5Notification("MODDING", "Arte aplicado.", "fa-palette"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (error) { mostrarErrorFinal(t('j_err'), "Error de conexi贸n."); } finally { isTransferring = false; } }
+        async function respaldarTodos() { const ip = document.getElementById('host-ip').value; if (!ip) return; mostrarCarga("ESCANEO", "Leyendo biblioteca...", "fa-brands fa-playstation"); isTransferring = true; try { const fd = new FormData(); fd.append('action', 'get_all_cusa'); fd.append('host_ip', ip); let res = await fetch('api/modding.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success' && data.juegos.length > 0) { await actualizarBackups(); let existentes = BACKUPS_LOCALES.map(b => b.nombre.split('_')[0]); let juegosFaltantes = data.juegos.filter(c => !existentes.includes(c)); if(juegosFaltantes.length === 0) { closeCustomModal(); ps5Notification(t('j_comp'), "Todas respaldadas.", "fa-check-double"); isTransferring = false; return; } let exitos = 0; document.getElementById('modal-progress-container').classList.remove('hidden'); document.getElementById('modal-controls').classList.add('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-layer-group text-3xl relative z-10" style="color: var(--theme-prim);"></i>`; for(let i=0; i < juegosFaltantes.length; i++) { let cusa = juegosFaltantes[i]; document.getElementById('modal-title').innerText = `SAQUEO (${i+1}/${juegosFaltantes.length})`; let pct = ((i) / juegosFaltantes.length) * 100; document.getElementById('modal-progress-bar').style.width = pct + '%'; document.getElementById('modal-percentage').innerText = pct.toFixed(0) + '%'; const fdBak = new FormData(); fdBak.append('action', 'backup_original'); fdBak.append('host_ip', ip); fdBak.append('cusa_id', cusa); try { let r = await fetch('api/modding.php', { method: 'POST', body: fdBak }); let d = await r.json(); if (d.status === 'success') exitos++; if (exitos % 2 === 0) actualizarBackups(); } catch(e) {} } document.getElementById('modal-progress-bar').style.width = '100%'; document.getElementById('modal-percentage').innerText = '100%'; AudioEngine.playSuccess(); closeCustomModal(); switchIconSource('backup'); ps5Notification(t('j_comp'), "Completado.", "fa-layer-group"); } else { mostrarErrorFinal(t('j_err'), "No se encontraron juegos."); } } catch(e) { mostrarErrorFinal(t('j_err'), "Falló la conexión."); } finally { isTransferring = false; } }
+        async function enviarIcono(e) { e.preventDefault(); const ip = document.getElementById('host-ip').value, cusa = document.getElementById('icon-cusa').value.trim().toUpperCase(); if (!ip || !cusa) return; const formData = new FormData(); formData.append('action', 'upload_icon'); formData.append('host_ip', ip); formData.append('cusa_id', cusa); if (currentIconSource === 'gallery' || currentIconSource === 'backup') { if (!selectedIconValue) { await ps5Alert(t('j_err_file'), "Selecciona una imagen.", 'fa-image'); return; } formData.append('source_type', 'local_gallery'); formData.append('icon_path', selectedIconValue); } else { const fileInput = document.getElementById('icon-file'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { await ps5Alert(t('j_err_file'), "Busca una imagen.", 'fa-folder-open'); return; } formData.append('source_type', 'local'); formData.append('local_icon', fileInput.files[0]); } mostrarCarga("MODDING", "Inyectando portada...", "fa-wand-magic-sparkles fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; try { let res = await fetch('api/modding.php', { method: 'POST', body: formData }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); document.getElementById('modal-title').innerText = t('j_succ'); document.getElementById('modal-text').innerHTML = "Portada inyectada."; document.getElementById('modal-close-btn').classList.remove('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-palette text-4xl relative z-10" style="color: var(--theme-prim);"></i>`; ps5Notification("MODDING", "Arte aplicado.", "fa-palette"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (error) { mostrarErrorFinal(t('j_err'), "Error de conexión."); } finally { isTransferring = false; } }
 
         // ==========================================
         // 15. PAYLOADS (RESTAURADOS)
@@ -2425,14 +2418,14 @@ if (isset($_GET['ota_update'])) {
             lista.forEach(bin => { const item = document.createElement('div'); item.className = 'payload-item flex items-center justify-between p-3 rounded-xl cursor-pointer bg-black/40 hover:bg-white/5 border border-white/5 transition-colors group shadow-[0_0_10px_rgba(0,0,0,0.5)]'; item.onclick = function() { document.querySelectorAll(`#${containerId} .payload-item`).forEach(el => { el.classList.remove('selected'); el.style.borderColor = 'transparent'; }); this.classList.add('selected'); this.style.borderColor = 'var(--theme-prim)'; selectedPayloadValue = 'payloads/' + bin.nombre; }; item.innerHTML = `<div class="flex items-center gap-3"><i class="fa-solid fa-file-code text-lg" style="color: var(--theme-prim); opacity: 0.8;"></i><span class="text-xs font-mono text-[var(--text-main)] tracking-wide">${bin.nombre}</span></div><button type="button" onclick="eliminarPayloadServidor('${bin.nombre}', event)" class="w-8 h-8 rounded-full bg-red-900/20 border border-red-500/30 text-red-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors z-10 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.2)]"><i class="fa-solid fa-trash text-xs"></i></button>`; grid.appendChild(item); }); container.appendChild(grid); 
         }
         
-        async function eliminarPayloadServidor(nombre, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Borrar <b>${nombre}</b>?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_payload'); fd.append('file_name', nombre); try { let res = await fetch('api/payload.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { actualizarPayloads(); ps5Notification(t('j_comp'), "Payload borrado.", "fa-trash"); } else ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } catch(err) {} }
+        async function eliminarPayloadServidor(nombre, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `¿Borrar <b>${nombre}</b>?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_payload'); fd.append('file_name', nombre); try { let res = await fetch('api/payload.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { actualizarPayloads(); ps5Notification(t('j_comp'), "Payload borrado.", "fa-trash"); } else ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } catch(err) {} }
         async function actualizarPayloads() { try { let res = await fetch('api/payload.php?action=get_payloads&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { PAYLOADS_LOCALES = data.data; } } catch(e) {} cargarPayloads(PAYLOADS_LOCALES, 'payload-gallery-container'); }
         
         function switchPayloadSource(type) { currentPayloadSource = type; ['btn-pay-gallery', 'btn-pay-local'].forEach(id => { let btn = document.getElementById(id); btn.className = "flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"; btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.boxShadow = ''; }); ['box-pay-gallery', 'box-pay-local'].forEach(id => document.getElementById(id).classList.add('hidden')); let activeBtn = document.getElementById(`btn-pay-${type}`); activeBtn.className = "flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl"; activeBtn.style.backgroundColor = 'var(--theme-prim)'; activeBtn.style.color = '#000'; activeBtn.style.boxShadow = '0 0 10px color-mix(in srgb, var(--theme-prim) 40%, transparent)'; document.getElementById(`box-pay-${type}`).classList.remove('hidden'); if(type === 'gallery') actualizarPayloads(); }
         
         function updatePayloadName(input) { const display = document.getElementById('payload-name-display'), iconContainer = document.getElementById('payload-icon-container'); if (input.files.length > 0) { display.innerText = input.files[0].name; display.classList.replace('text-[var(--text-muted)]', 'text-[var(--text-main)]'); iconContainer.innerHTML = '<i class="fa-solid fa-check text-2xl text-black"></i>'; iconContainer.style.backgroundColor = 'var(--theme-prim)'; iconContainer.style.color = '#000'; } else { display.innerText = t('touch_bin'); display.classList.replace('text-[var(--text-main)]', 'text-[var(--text-muted)]'); iconContainer.innerHTML = '<i class="fa-solid fa-file-code text-2xl"></i>'; iconContainer.style.backgroundColor = 'color-mix(in srgb, var(--theme-prim) 10%, transparent)'; iconContainer.style.color = 'var(--theme-prim)'; } }
         
-        async function enviarPayload(e) { e.preventDefault(); const ip = document.getElementById('host-ip').value, port = document.getElementById('payload-port').value; if (!ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), 'fa-network-wired'); return; } const formData = new FormData(); formData.append('action', 'send_payload'); formData.append('host_ip', ip); formData.append('port', port); if (currentPayloadSource === 'gallery') { if (!selectedPayloadValue) { await ps5Alert(t('j_err_file'), t('j_err_file_m'), 'fa-microchip'); return; } formData.append('source_type', 'gallery'); formData.append('payload_path', selectedPayloadValue); } else { const fileInput = document.getElementById('payload-file'); if (!fileInput.files.length) { await ps5Alert(t('j_err_file'), t('j_err_file_m'), 'fa-file-code'); return; } formData.append('source_type', 'local'); formData.append('payload_file', fileInput.files[0]); } mostrarCarga(t('j_inj'), t('j_inj_m'), "fa-microchip fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; try { let res = await fetch('api/payload.php', { method: 'POST', body: formData }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); document.getElementById('modal-title').innerText = t('j_succ'); document.getElementById('modal-text').innerHTML = data.message; document.getElementById('modal-close-btn').classList.remove('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: color-mix(in srgb, var(--theme-prim) 40%, transparent);"></div><i class="fa-solid fa-check text-4xl relative z-10" style="color: var(--theme-prim);"></i>`; if(currentPayloadSource === 'local') { document.getElementById('payload-file').value = ''; updatePayloadName(document.getElementById('payload-file')); } ps5Notification("INYECCI脫N", "Payload enviado.", "fa-bolt"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (error) { mostrarErrorFinal(t('j_err'), t('j_err_net')); } finally { isTransferring = false; } }
+        async function enviarPayload(e) { e.preventDefault(); const ip = document.getElementById('host-ip').value, port = document.getElementById('payload-port').value; if (!ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), 'fa-network-wired'); return; } const formData = new FormData(); formData.append('action', 'send_payload'); formData.append('host_ip', ip); formData.append('port', port); if (currentPayloadSource === 'gallery') { if (!selectedPayloadValue) { await ps5Alert(t('j_err_file'), t('j_err_file_m'), 'fa-microchip'); return; } formData.append('source_type', 'gallery'); formData.append('payload_path', selectedPayloadValue); } else { const fileInput = document.getElementById('payload-file'); if (!fileInput.files.length) { await ps5Alert(t('j_err_file'), t('j_err_file_m'), 'fa-file-code'); return; } formData.append('source_type', 'local'); formData.append('payload_file', fileInput.files[0]); } mostrarCarga(t('j_inj'), t('j_inj_m'), "fa-microchip fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; try { let res = await fetch('api/payload.php', { method: 'POST', body: formData }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); document.getElementById('modal-title').innerText = t('j_succ'); document.getElementById('modal-text').innerHTML = data.message; document.getElementById('modal-close-btn').classList.remove('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: color-mix(in srgb, var(--theme-prim) 40%, transparent);"></div><i class="fa-solid fa-check text-4xl relative z-10" style="color: var(--theme-prim);"></i>`; if(currentPayloadSource === 'local') { document.getElementById('payload-file').value = ''; updatePayloadName(document.getElementById('payload-file')); } ps5Notification("INYECCIÓN", "Payload enviado.", "fa-bolt"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (error) { mostrarErrorFinal(t('j_err'), t('j_err_net')); } finally { isTransferring = false; } }
 
         // ==========================================
         // 16. ESCANER DE RED Y PERFIL (EL RADAR HACKER RESTAURADO)
@@ -2443,7 +2436,7 @@ if (isset($_GET['ota_update'])) {
         function resetAvatarLocal() { const av = document.getElementById('profile-avatar'), ini = document.getElementById('profile-initial'), nm = document.getElementById('profile-name'); if(!av) return; av.style.backgroundImage = ''; av.style.backgroundColor = 'rgba(0,0,0,0.5)'; av.classList.remove('rounded-xl'); av.classList.add('rounded-full'); if(ini) { ini.innerText = 'S'; ini.classList.remove('hidden'); } if(nm) { nm.innerText = 'BY SEBAS'; nm.style.color = 'var(--theme-prim)'; } }
 
         const SUBRED_PHP = "<?php echo isset($subred_actual) ? $subred_actual : ''; ?>";
-        function setPS4State(isConnected) { if (wasConnected === true && isConnected === false) { AudioEngine.playDisconnect(); resetAvatarLocal(); ps5Notification(t('j_err'), "Se perdi贸 la conexi贸n.", "fa-plug-circle-xmark"); } wasConnected = isConnected; const badgeOn = document.getElementById('badge-detectada'), badgeOff = document.getElementById('badge-desconectada'); if(isConnected) { badgeOn.classList.remove('hidden'); badgeOn.classList.add('flex'); badgeOff.classList.add('hidden'); badgeOff.classList.remove('flex'); const ipEl = document.getElementById('host-ip'); if(ipEl && ipEl.value) fetchPS4Profile(ipEl.value); } else { badgeOff.classList.remove('hidden'); badgeOff.classList.add('flex'); badgeOn.classList.add('hidden'); badgeOn.classList.remove('flex'); resetAvatarLocal(); } }
+        function setPS4State(isConnected) { if (wasConnected === true && isConnected === false) { AudioEngine.playDisconnect(); resetAvatarLocal(); ps5Notification(t('j_err'), "Se perdió la conexión.", "fa-plug-circle-xmark"); } wasConnected = isConnected; const badgeOn = document.getElementById('badge-detectada'), badgeOff = document.getElementById('badge-desconectada'); if(isConnected) { badgeOn.classList.remove('hidden'); badgeOn.classList.add('flex'); badgeOff.classList.add('hidden'); badgeOff.classList.remove('flex'); const ipEl = document.getElementById('host-ip'); if(ipEl && ipEl.value) fetchPS4Profile(ipEl.value); } else { badgeOff.classList.remove('hidden'); badgeOff.classList.add('flex'); badgeOn.classList.add('hidden'); badgeOn.classList.remove('flex'); resetAvatarLocal(); } }
         function startConnectionMonitor(ip) { if(connectionMonitorInterval) clearInterval(connectionMonitorInterval); failedPings = 0; setPS4State(true); connectionMonitorInterval = setInterval(async () => { if (isTransferring) return; try { const checkController = new AbortController(); const timeoutId = setTimeout(() => checkController.abort(), 6000); let res = await fetch(`api/scanner.php?ip=${ip}`, { signal: checkController.signal, cache: 'no-store' }); clearTimeout(timeoutId); let data = await res.json(); if (data.status === 'success') { failedPings = 0; setPS4State(true); } else { failedPings++; if (failedPings >= 2) setPS4State(false); } } catch(e) { failedPings++; if (failedPings >= 2) setPS4State(false); } }, 12000); }
         window.addEventListener('online', () => { const ipEl = document.getElementById('host-ip'); if(ipEl && ipEl.value) startConnectionMonitor(ipEl.value); });
         function clearIP() { if(isScanning) toggleRealScan(); document.getElementById('host-ip').value = ''; localStorage.removeItem('ps4_ip_guardada'); setPS4State(false); if(connectionMonitorInterval) clearInterval(connectionMonitorInterval); }
@@ -2536,7 +2529,7 @@ if (isset($_GET['ota_update'])) {
                                 if (!override) continue; 
                                 startChunk = 0;
                             } else if (dataCheck.size < file.size) {
-                                const resume = await ps5Confirm(t('j_resume'), `Se encontr贸 una transferencia incompleta de <b class="text-white">${file.name}</b>.<br><br>${t('j_resume_m')}`, 'fa-forward', 'bg-green-500 text-black border-green-400');
+                                const resume = await ps5Confirm(t('j_resume'), `Se encontró una transferencia incompleta de <b class="text-white">${file.name}</b>.<br><br>${t('j_resume_m')}`, 'fa-forward', 'bg-green-500 text-black border-green-400');
                                 if (resume) {
                                     startChunk = Math.floor(dataCheck.size / CHUNK_SIZE);
                                     let remainingSize = dataCheck.size % CHUNK_SIZE;
@@ -2609,7 +2602,7 @@ if (isset($_GET['ota_update'])) {
                         if (e.name === 'AbortError') {
                             break;
                         } else {
-                            mostrarErrorFinal("ERROR", `Fall贸 el env铆o en el chunk ${chunkIndex}.<br><br><span class="text-[9px] text-white/50">${e.message}</span>`);
+                            mostrarErrorFinal("ERROR", `Falló el envío en el chunk ${chunkIndex}.<br><br><span class="text-[9px] text-white/50">${e.message}</span>`);
                             isTransferring = false;
                             return;
                         }
@@ -2650,149 +2643,15 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-        //==========================================
-        // 20. SISTEMA DE CAPTURAS (B脫VEDA Y GALER脥A)
         // ==========================================
-        let cacheCapturas = {}; // Almacena las fotos en la RAM del navegador
-
-        async function abrirGaleriaJuego() {
-            esBovedaGlobal = false;
-            const tituloEl = document.getElementById('capturas-game-cusa');
-            if(tituloEl) tituloEl.innerText = `${currentCusa} - ${currentTitle}`;
-            abrirPanelSecundario('sheet-capturas');
-            await cargarCapturas('get_caps', currentCusa);
-        }
-
-        async function abrirBovedaGlobal() {
-            esBovedaGlobal = true;
-            const tituloEl = document.getElementById('capturas-game-cusa');
-            if(tituloEl) tituloEl.innerText = "TODAS LAS CAPTURAS (B脫VEDA)";
-            
-            cerrarTodo();
-            document.getElementById('overlay-global').classList.add('open'); 
-            document.getElementById('sheet-capturas').classList.add('open');
-            
-            await cargarCapturas('get_all_caps', '');
-        }
-
-        async function cargarCapturas(action, cusa) {
-            const grid = document.getElementById('capturas-grid');
-            if(!grid) return;
-
-            // MEMORIA CACH脡: Si ya cargamos estas fotos, las mostramos en 0 segundos
-            let cacheKey = action === 'get_all_caps' ? 'BOVEDA_GLOBAL' : cusa;
-            if (cacheCapturas[cacheKey]) {
-                grid.innerHTML = cacheCapturas[cacheKey];
-                return;
-            }
-
-            grid.innerHTML = `<div class="col-span-2 text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Descargando enlaces...</p></div>`;
-            
-            const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
-            if(!ip) { grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Falta conectar la IP de PS4.</div>`; return; }
-
-            const fd = new FormData(); 
-            fd.append('action', action); 
-            fd.append('host_ip', ip); 
-            if(cusa) fd.append('cusa_id', cusa);
-
-            isTransferring = true; 
-
-            try {
-                let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd }); 
-                let data = await res.json();
-                
-                if (data.status === 'success') {
-                    if (data.images.length === 0) { 
-                        let htmlVacio = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-camera-slash text-4xl text-white/10 mb-3 block"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Sin Capturas</p></div>`;
-                        grid.innerHTML = htmlVacio;
-                        cacheCapturas[cacheKey] = htmlVacio;
-                        isTransferring = false;
-                        return; 
-                    }
-                    
-                    let html = '';
-                    data.images.forEach(img => {
-                        html += `
-                        <div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group border border-white/10 hover:border-[var(--theme-prim)] transition-colors shadow-lg bg-black/50" onclick="abrirLightbox('${img.url}', '${img.name.replace(/'/g, "\\'")}')">
-                            <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 pointer-events-none">
-                                <span class="text-[8px] text-white font-mono truncate">${img.name}</span>
-                            </div>
-                        </div>`;
-                    });
-                    grid.innerHTML = html;
-                    cacheCapturas[cacheKey] = html; // Guardamos en memoria para la pr贸xima vez
-                } else { 
-                    grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">${data.message}</div>`; 
-                }
-            } catch(e) { 
-                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Error de red local.</div>`; 
-            }
-
-            setTimeout(() => { isTransferring = false; }, 3000);
-        }
-
-        let isZoomed = false;
-        function abrirLightbox(url, name) {
-            isZoomed = false;
-            const modal = document.getElementById('lightbox-modal');
-            const img = document.getElementById('lightbox-img');
-            const title = document.getElementById('lightbox-title');
-            const btnDL = document.getElementById('lightbox-download');
-            
-            if(!modal || !img) return;
-
-            img.src = url;
-            img.classList.remove('scale-150', 'cursor-zoom-out');
-            img.classList.add('scale-100', 'cursor-zoom-in');
-            
-            if(title) title.innerText = name;
-            if(btnDL) {
-                btnDL.href = url;
-                btnDL.download = name;
-            }
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function cerrarLightbox() {
-            const modal = document.getElementById('lightbox-modal');
-            if(!modal) return;
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.getElementById('lightbox-img').src = '';
-            }, 300);
-        }
-
-        function cerrarLightboxSiFondo(e) {
-            if(e.target.id === 'lightbox-modal' || e.target.id === 'lightbox-img-container') {
-                cerrarLightbox();
-            }
-        }
-
-        function toggleZoom(img) {
-            isZoomed = !isZoomed;
-            if (isZoomed) {
-                img.classList.remove('scale-100', 'cursor-zoom-in');
-                img.classList.add('scale-150', 'cursor-zoom-out');
-            } else {
-                img.classList.remove('scale-150', 'cursor-zoom-out');
-                img.classList.add('scale-100', 'cursor-zoom-in');
-            }
-        }
-
-        // ==========================================
-        // 21. INICIALIZADOR FINAL (Movido al final)
+        // 21. INICIALIZADOR FINAL
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             const notifToggle = document.getElementById('toggle_notifications');
             if (notifToggle) { let savedNotif = localStorage.getItem('ps4_ui_notif'); if (savedNotif !== null) notifToggle.checked = (savedNotif === 'true'); notifToggle.addEventListener('change', (e) => { localStorage.setItem('ps4_ui_notif', e.target.checked); if(e.target.checked) ps5Notification("SISTEMA", "Notificaciones encendidas.", "fa-message"); }); }
             document.querySelectorAll('.dock-item').forEach(btn => { btn.addEventListener('click', function(e) { let ripple = document.createElement('div'); ripple.className = 'dock-ripple'; this.appendChild(ripple); setTimeout(() => ripple.remove(), 500); }); });
             
-            // Cargar Tema, Wallpaper, Blur y Part铆culas
+            // Cargar Tema, Wallpaper, Blur y Partículas
             loadThemeAndWallpaper();
 
             if(localStorage.getItem('ps4_custom_username')) customUserName = localStorage.getItem('ps4_custom_username');
@@ -2823,7 +2682,7 @@ if (isset($_GET['ota_update'])) {
                 partSlider.addEventListener('change', (e) => updateParticlesCount(e.target.value)); 
             }
             
-            // Forzar actualizaci贸n de colores din谩micos al iniciar y al cambiar tema
+            // Forzar actualización de colores dinámicos al iniciar y al cambiar tema
             const updateDynamicColors = () => {
                 const primColor = getComputedStyle(document.documentElement).getPropertyValue('--theme-prim');
                 const btnScan = document.getElementById('btn-scan');
@@ -2833,6 +2692,5 @@ if (isset($_GET['ota_update'])) {
             document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', () => setTimeout(updateDynamicColors, 50)));
         });
     </script>
-
 </body>
 </html>
