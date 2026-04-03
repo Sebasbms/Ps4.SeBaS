@@ -1,167 +1,196 @@
 <?php
 /**
  * ARCHIVO: api/modding.php
- * Sistema de inyección y extracción de portadas (CUSA) - RUTAS CORREGIDAS
+ * Motor de Modding (Actualizado para leer Discos Externos)
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
 
 $action = $_POST['action'] ?? '';
-$host = $_POST['host_ip'] ?? '';
-$cusa = strtoupper(trim($_POST['cusa_id'] ?? ''));
+$host_ip = $_POST['host_ip'] ?? '';
+$cusa_id = strtoupper(trim($_POST['cusa_id'] ?? ''));
 $port = 2121;
 
-if (!$host) {
-    echo json_encode(['status' => 'error', 'message' => 'Falta IP de PS4']);
-    exit;
-}
+if (!$host_ip) { echo json_encode(['status' => 'error', 'message' => 'Faltan datos de IP']); exit; }
 
-// ==========================================
-// 1. INYECTAR PORTADA (UPLOAD)
-// ==========================================
-if ($action === 'upload_icon') {
-    $source = $_POST['source_type'] ?? '';
-    $icon_data = '';
-
-    if ($source === 'local_gallery') {
-        $path = __DIR__ . '/../' . ($_POST['icon_path'] ?? '');
-        if (file_exists($path)) {
-            $icon_data = file_get_contents($path);
-        }
-    } else {
-        if (isset($_FILES['local_icon']['tmp_name'])) {
-            $icon_data = file_get_contents($_FILES['local_icon']['tmp_name']);
-        }
-    }
-
-    if (empty($icon_data)) {
-        echo json_encode(['status' => 'error', 'message' => 'No se encontró la imagen en el celular.']);
-        exit;
-    }
-
-    // EL ERROR ESTABA AQUÍ: Era appmeta, no app/meta
-    $dest_path = "/user/appmeta/$cusa/icon0.png";
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$dest_path");
-    curl_setopt($ch, CURLOPT_UPLOAD, 1);
-    
-    $stream = fopen('php://temp', 'r+');
-    fwrite($stream, $icon_data);
-    rewind($stream);
-    
-    curl_setopt($ch, CURLOPT_INFILE, $stream);
-    curl_setopt($ch, CURLOPT_INFILESIZE, strlen($icon_data));
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
-    
-    $res = curl_exec($ch);
-    $err = curl_error($ch);
-    curl_close($ch);
-    fclose($stream);
-
-    if ($res) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => "Error al inyectar: $err"]);
-    }
-    exit;
-}
-
-// ==========================================
-// 2. EXTRAER PORTADA ORIGINAL (BACKUP)
-// ==========================================
-if ($action === 'backup_original') {
-    if (!$cusa) {
-        echo json_encode(['status' => 'error', 'message' => 'Falta el ID del juego (CUSA)']);
-        exit;
-    }
-
-    // EL ERROR ESTABA AQUÍ: Era appmeta, no app/meta
-    $remote = "/user/appmeta/$cusa/icon0.png";
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
+function curl_download($ip, $port, $remote_path, $local_path) {
+    $ch = curl_init("ftp://$ip:$port$remote_path");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
-    
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);
     $data = curl_exec($ch);
-    $err = curl_error($ch);
     curl_close($ch);
-
-    if ($data && empty($err)) {
-        $backup_dir = __DIR__ . '/../backup_icons';
-        if (!is_dir($backup_dir)) @mkdir($backup_dir, 0777, true);
-        
-        file_put_contents("$backup_dir/{$cusa}_original.png", $data);
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => "La portada no existe. ¿Está el juego instalado? (Error: $err)"]);
+    if ($data !== false && strlen($data) > 0) {
+        file_put_contents($local_path, $data);
+        return true;
     }
-    exit;
+    return false;
 }
 
-// ==========================================
-// 3. ESCANEAR TODOS LOS JUEGOS
-// ==========================================
-if ($action === 'get_all_cusa') {
-    $ch = curl_init();
-    
-    // EL ERROR ESTABA AQUÍ TAMBIÉN
-    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port/user/appmeta/");
-    
+function curl_upload($ip, $port, $remote_path, $local_path) {
+    $fp = fopen($local_path, 'r');
+    $ch = curl_init("ftp://$ip:$port$remote_path");
+    curl_setopt($ch, CURLOPT_UPLOAD, 1);
+    curl_setopt($ch, CURLOPT_INFILE, $fp);
+    curl_setopt($ch, CURLOPT_INFILESIZE, filesize($local_path));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+    $res = curl_exec($ch);
+    curl_close($ch);
+    fclose($fp);
+    return $res;
+}
+
+function check_folder_exists($ip, $port, $path) {
+    $ch = curl_init("ftp://$ip:$port$path/");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    $res = curl_exec($ch);
+    curl_close($ch);
+    return ($res !== false && strlen(trim($res)) > 0);
+}
+
+// AQUÍ ESTÁN LAS 4 RUTAS INTELIGENTES (Internas y USBs Externos)
+$rutas_appmeta = [
+    "/user/appmeta/", 
+    "/user/appmeta/external/", 
+    "/system_data/priv/appmeta/", 
+    "/system_data/priv/appmeta/external/"
+];
+
+if ($action === 'get_ps4_profile') {
+    $ch = curl_init("ftp://$host_ip:$port/user/home/");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     $res = curl_exec($ch);
     curl_close($ch);
     
-    $juegos = [];
+    $avatar_path = null;
     if ($res) {
         $lines = explode("\n", trim($res));
         foreach ($lines as $line) {
-            if (preg_match('/(CUSA\d{5})/i', $line, $matches)) {
-                $juegos[] = strtoupper($matches[1]);
+            if (empty(trim($line))) continue;
+            $parts = preg_split('/\s+/', trim($line), 9);
+            if (count($parts) >= 9 && is_numeric(trim($parts[8]))) {
+                $avatar_path = "/user/home/" . trim($parts[8]) . "/avatar.png";
+                break; 
             }
         }
     }
     
-    if (!empty($juegos)) {
-        echo json_encode(['status' => 'success', 'juegos' => array_unique($juegos)]);
+    if ($avatar_path) {
+        $ch = curl_init("ftp://$host_ip:$port$avatar_path");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        if ($data !== false && strlen($data) > 0) {
+            $base64 = 'data:image/png;base64,' . base64_encode($data);
+            echo json_encode(['status' => 'success', 'avatar' => $base64]);
+            exit;
+        }
+    }
+    echo json_encode(['status' => 'error']);
+    exit;
+}
+
+if (!$cusa_id) { echo json_encode(['status' => 'error', 'message' => 'Falta Title ID']); exit; }
+
+if ($action === 'backup_original') {
+    $backup_dir = '../backup_icons';
+    if (!file_exists($backup_dir)) mkdir($backup_dir, 0777, true);
+    
+    $local_path = $backup_dir . '/' . $cusa_id . '_' . time() . '.png';
+    $encontrado = false;
+
+    foreach ($rutas_appmeta as $base) {
+        if (curl_download($host_ip, $port, $base . $cusa_id . "/icon0.png", $local_path)) {
+            $encontrado = true;
+            break;
+        }
+    }
+
+    if ($encontrado) echo json_encode(['status' => 'success']);
+    else echo json_encode(['status' => 'error', 'message' => "No se encontró el icono original de $cusa_id en la PS4."]);
+    exit;
+}
+
+if ($action === 'upload_icon') {
+    $source_type = $_POST['source_type'] ?? '';
+    $local_file = '';
+    
+    if ($source_type === 'local' && isset($_FILES['local_icon'])) {
+        $local_file = $_FILES['local_icon']['tmp_name'];
+    } elseif ($source_type === 'local_gallery' && isset($_POST['icon_path'])) {
+        $local_file = '../' . $_POST['icon_path'];
+    }
+
+    if (!$local_file || !file_exists($local_file)) {
+        echo json_encode(['status' => 'error', 'message' => 'Imagen no recibida.']); exit;
+    }
+
+    $img = @imagecreatefrompng($local_file);
+    if (!$img) $img = @imagecreatefromjpeg($local_file);
+    if (!$img) { echo json_encode(['status' => 'error', 'message' => 'Formato no soportado. Usa PNG o JPG.']); exit; }
+    
+    $resized = imagecreatetruecolor(512, 512);
+    imagealphablending($resized, false);
+    imagesavealpha($resized, true);
+    $transparent = imagecolorallocatealpha($resized, 255, 255, 255, 127);
+    imagefilledrectangle($resized, 0, 0, 512, 512, $transparent);
+    imagecopyresampled($resized, $img, 0, 0, 0, 0, 512, 512, imagesx($img), imagesy($img));
+    
+    $temp_png = sys_get_temp_dir() . '/' . uniqid() . '.png';
+    imagepng($resized, $temp_png);
+    imagedestroy($img);
+    imagedestroy($resized);
+
+    $exitos = 0;
+    foreach ($rutas_appmeta as $base) {
+        $carpeta_juego = $base . $cusa_id;
+        if (check_folder_exists($host_ip, $port, $carpeta_juego)) {
+            if (curl_upload($host_ip, $port, $carpeta_juego . "/icon0.png", $temp_png)) {
+                $exitos++;
+            }
+        }
+    }
+    
+    @unlink($temp_png);
+
+    if ($exitos > 0) {
+        @unlink("../cache_biblioteca/$cusa_id.png"); // Borrar caché del cel para que actualice
+        echo json_encode(['status' => 'success', 'message' => 'Portada aplicada en la PS4.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'No se encontraron juegos instalados.']);
+        echo json_encode(['status' => 'error', 'message' => 'La portada no existe. ¿Está el juego instalado? (Ruta no hallada)']);
     }
     exit;
 }
 
-// ==========================================
-// 4. OBTENER AVATAR DEL PERFIL PS4
-// ==========================================
-if ($action === 'get_ps4_profile') {
-    $remote = "/user/home/10000000/avatar.png"; 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
-    $data = curl_exec($ch);
-    curl_close($ch);
-
-    if ($data) {
-        $base64 = 'data:image/png;base64,' . base64_encode($data);
-        echo json_encode(['status' => 'success', 'avatar' => $base64]);
-    } else {
-        echo json_encode(['status' => 'error']);
+if ($action === 'get_all_cusa') {
+    $cusa_list = [];
+    $patron = '/^[A-Z]{4}\d{5}$/i';
+    
+    foreach ($rutas_appmeta as $base) {
+        $ch = curl_init("ftp://$host_ip:$port" . rtrim($base, '/') . '/');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        
+        if ($res) {
+            $lines = explode("\n", trim($res));
+            foreach ($lines as $line) {
+                if (empty(trim($line))) continue;
+                $parts = preg_split('/\s+/', trim($line), 9);
+                if (count($parts) >= 9) {
+                    $name = strtoupper(trim($parts[8]));
+                    if (preg_match($patron, $name)) $cusa_list[] = $name;
+                }
+            }
+        }
     }
+    echo json_encode(['status' => 'success', 'juegos' => array_values(array_unique($cusa_list))]);
     exit;
 }
-
-// Acción no encontrada
-echo json_encode(['status' => 'error', 'message' => 'Comando no válido.']);
 ?>
