@@ -1,7 +1,7 @@
 <?php
 /**
  * ARCHIVO: api/ps4_screenshots.php
- * Extractor de Capturas (Versión Streaming Ultra-Rápida)
+ * Extractor de Capturas (Escanea los perfiles de usuario reales)
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -18,8 +18,7 @@ function get_ftp_list($host, $port, $dir) {
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port" . rtrim($dir, '/') . '/');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 8);
     $res = curl_exec($ch);
     curl_close($ch);
     
@@ -39,56 +38,66 @@ function get_ftp_list($host, $port, $dir) {
     return $files;
 }
 
+// 1. Escanear qué usuarios existen en la consola (Ej: 10000000)
+$user_folders = get_ftp_list($host, $port, '/user/home/');
+$user_ids = [];
+foreach ($user_folders as $uf) {
+    if ($uf['is_dir'] && is_numeric($uf['name'])) {
+        $user_ids[] = $uf['name'];
+    }
+}
+if (empty($user_ids)) $user_ids = ['10000000', 'system']; // Salvavidas por defecto
+
 if ($action === 'count_only') {
-    $path = "/user/system/share/screenshots/$cusa/";
-    $items = get_ftp_list($host, $port, $path);
     $count = 0;
-    foreach($items as $item) {
-        $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
-        if (!$item['is_dir'] && in_array($ext, ['jpg', 'png'])) $count++;
+    foreach ($user_ids as $uid) {
+        $path = "/user/home/$uid/share/screenshots/$cusa/";
+        $items = get_ftp_list($host, $port, $path);
+        foreach($items as $item) {
+            $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
+            if (!$item['is_dir'] && in_array($ext, ['jpg', 'png'])) $count++;
+        }
     }
     echo json_encode(['status' => 'success', 'count' => $count]);
     exit;
 }
 
-// Extraer galería de un juego específico
 if ($action === 'get_caps') {
-    $path = "/user/system/share/screenshots/$cusa/";
-    $items = get_ftp_list($host, $port, $path);
-    
     $images = [];
-    foreach ($items as $item) {
-        $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
-        if (!$item['is_dir'] && in_array($ext, ['jpg', 'png'])) {
-            $images[] = [
-                'name' => $item['name'],
-                'url'  => "api/stream_image.php?ip=$host&path=" . urlencode($path . $item['name'])
-            ];
+    foreach ($user_ids as $uid) {
+        $path = "/user/home/$uid/share/screenshots/$cusa/";
+        $items = get_ftp_list($host, $port, $path);
+        foreach ($items as $item) {
+            $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
+            if (!$item['is_dir'] && in_array($ext, ['jpg', 'png'])) {
+                $images[] = [
+                    'name' => $item['name'],
+                    'url'  => "api/stream_image.php?ip=$host&path=" . urlencode($path . $item['name'])
+                ];
+            }
         }
     }
-    // Devolvemos la lista al revés para que las fotos nuevas salgan primero
     echo json_encode(['status' => 'success', 'images' => array_reverse($images)]); 
     exit;
 }
 
-// BÓVEDA GLOBAL: Escanear TODO el disco en busca de carpetas huérfanas
 if ($action === 'get_all_caps') {
-    $base_path = "/user/system/share/screenshots/";
-    $items = get_ftp_list($host, $port, $base_path);
-    
     $images = [];
-    foreach ($items as $item) {
-        if ($item['is_dir']) {
-            $folder = $item['name'];
-            $sub_items = get_ftp_list($host, $port, $base_path . $folder . '/');
-            
-            foreach ($sub_items as $sub_item) {
-                $ext = strtolower(pathinfo($sub_item['name'], PATHINFO_EXTENSION));
-                if (!$sub_item['is_dir'] && in_array($ext, ['jpg', 'png'])) {
-                    $images[] = [
-                        'name' => "[$folder] " . $sub_item['name'],
-                        'url'  => "api/stream_image.php?ip=$host&path=" . urlencode($base_path . $folder . '/' . $sub_item['name'])
-                    ];
+    foreach ($user_ids as $uid) {
+        $base_path = "/user/home/$uid/share/screenshots/";
+        $items = get_ftp_list($host, $port, $base_path);
+        foreach ($items as $item) {
+            if ($item['is_dir']) {
+                $folder = $item['name'];
+                $sub_items = get_ftp_list($host, $port, $base_path . $folder . '/');
+                foreach ($sub_items as $sub_item) {
+                    $ext = strtolower(pathinfo($sub_item['name'], PATHINFO_EXTENSION));
+                    if (!$sub_item['is_dir'] && in_array($ext, ['jpg', 'png'])) {
+                        $images[] = [
+                            'name' => "[$folder] " . $sub_item['name'],
+                            'url'  => "api/stream_image.php?ip=$host&path=" . urlencode($base_path . $folder . '/' . $sub_item['name'])
+                        ];
+                    }
                 }
             }
         }
@@ -97,5 +106,5 @@ if ($action === 'get_all_caps') {
     exit;
 }
 
-echo json_encode(['status' => 'error', 'message' => 'Comando no válido.']);
+echo json_encode(['status' => 'error', 'message' => 'Comando inválido.']);
 ?>
