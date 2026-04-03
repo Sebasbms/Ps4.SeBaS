@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # 1. Esperar a que el usuario conceda los permisos de almacenamiento
+termux-setup-storage
 while ! ls ~/storage/shared >/dev/null 2>&1; do sleep 2; done
 
 # 2. Actualizar sistema e instalar paquetes en modo SILENCIOSO (Sin hacer preguntas)
@@ -55,7 +56,7 @@ am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/de
 
 # Encendemos Busybox (8081) y luego PHP con sus 5 carriles (8080)
 busybox httpd -p 8081 -h ~/PS4Manager/GHManager
-PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
+PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080
 EOF
 
 # 7. Ejecutar la app por primera vez tras la instalación
@@ -84,4 +85,4 @@ am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/de
 
 # Encendido del Doble Motor
 busybox httpd -p 8081 -h ~/PS4Manager/GHManager
-PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080 index.php
+PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080
