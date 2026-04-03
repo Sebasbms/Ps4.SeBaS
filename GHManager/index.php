@@ -1953,28 +1953,34 @@ if (isset($_GET['ota_update'])) {
             try { await fetch('api/library.php?action=clear_temp'); closeCustomModal(); ps5Notification("LIMPIEZA", "Temporales borrados.", "fa-check"); } catch(e) { mostrarErrorFinal("ERROR", "No se pudo limpiar."); }
         }
 
-                async function buscarActualizacionOTA() {
-            const confirm = await ps5Confirm("ACTUALIZACI&Oacute;N OTA", "&#191;Buscar e instalar la &uacute;ltima versi&oacute;n desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perder&aacute;n.</span>", "fa-cloud-arrow-down");
+                        async function buscarActualizacionOTA() {
+            // Títulos limpios sin tildes, descripción con tildes normales.
+            const confirm = await ps5Confirm("ACTUALIZACION OTA", "¿Buscar e instalar la última versión desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perderán.</span>", "fa-cloud-arrow-down");
             if(!confirm) return;
-            mostrarCarga("ACTUALIZANDO", "Descargando c&oacute;digo...", "fa-cloud-arrow-down fa-bounce");
+            
+            mostrarCarga("ACTUALIZANDO", "Descargando código...", "fa-cloud-arrow-down fa-bounce");
             document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)';
+            
             try {
                 let res = await fetch('index.php?ota_update=1');
                 let data = await res.json();
+                
                 if (data.status === 'updated') {
                     AudioEngine.playSuccess();
-                    ps5Notification("&#161;ACTUALIZADO!", "Reiniciando app...", "fa-check");
+                    ps5Notification("¡ACTUALIZADO!", "Reiniciando app...", "fa-check");
                     setTimeout(() => window.location.reload(), 1500);
                 } else if (data.status === 'uptodate') {
                     closeCustomModal();
-                    ps5Alert("AL D&Iacute;A", "Ya tienes la &uacute;ltima versi&oacute;n instalada.", "fa-check-double");
+                    // Aquí también, título limpio sin tilde.
+                    ps5Alert("AL DIA", "Ya tienes la última versión instalada.", "fa-check-double");
                 } else {
                     mostrarErrorFinal("ERROR OTA", data.message + "<br><br><span class='text-[8px] font-mono text-red-400 mt-2 block break-all'>" + data.log + "</span>");
                 }
             } catch(e) {
-                mostrarErrorFinal("ERROR", "Fall&oacute; la conexi&oacute;n con el servidor interno.");
+                mostrarErrorFinal("ERROR", "Falló la conexión con el servidor interno.");
             }
         }
+
 
 
 
