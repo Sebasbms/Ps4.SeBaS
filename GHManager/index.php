@@ -110,7 +110,7 @@ if (isset($_GET['rpi_proxy']) || (isset($data['ip']) && isset($data['url_pkg']))
     exit;
 }
 
-// 5. OBTENER LISTA DE JUEGOS RPI (SIN EMOJIS PARA NO ROMPER EDITOR)
+// 5. OBTENER LISTA DE JUEGOS RPI
 if (isset($_GET['get_rpi_list'])) {
     header('Content-Type: application/json');
     $rutas_buscar = [
@@ -227,21 +227,39 @@ if (isset($_GET['extract_pkg'])) {
     exit;
 }
 
-// 7. ACTUALIZACIÓN OTA (VÍA GIT)
+// 7. ACTUALIZACIÓN OTA (VÍA GIT) Y REINICIO DE MOTORES AUTOMÁTICO
 if (isset($_GET['ota_update'])) {
     header('Content-Type: application/json');
-    $output = shell_exec('cd ' . __DIR__ . ' && git pull 2>&1');
+    $dir = __DIR__;
+    
+    // 1. Forzamos la descarga de la última versión limpiando errores locales
+    $output = shell_exec("cd $dir && git reset --hard 2>&1 && git pull 2>&1");
     
     if (strpos($output, 'Already up to date') !== false || strpos($output, 'actualizado') !== false || strpos($output, 'uptodate') !== false) {
         echo json_encode(['status' => 'uptodate', 'message' => 'Ya tienes la última versión instalada.', 'log' => $output]);
-    } else if (strpos($output, 'Fast-forward') !== false || strpos($output, 'Updating') !== false || strpos($output, 'changed') !== false || strpos($output, 'cambiados') !== false) {
-        echo json_encode(['status' => 'updated', 'message' => '¡Actualización aplicada con éxito! Reiniciando...', 'log' => $output]);
+    } 
+    else if (strpos($output, 'Fast-forward') !== false || strpos($output, 'Updating') !== false || strpos($output, 'changed') !== false || strpos($output, 'cambiados') !== false) {
+        
+        // 2. Respondemos al navegador de inmediato para que muestre el cartel de "Éxito"
+        echo json_encode(['status' => 'updated', 'message' => '¡Actualización aplicada con éxito! Reiniciando motores...', 'log' => $output]);
+        
+        // 3. Magia Negra de Linux: Programamos el reinicio de Termux para 2 segundos en el futuro (sin interrumpir la respuesta actual)
+        $comando_reinicio = "nohup bash -c 'sleep 2; pkill php; killall busybox; cd $dir; busybox httpd -p 8081 -h $dir; PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080' > /dev/null 2>&1 &";
+        shell_exec($comando_reinicio);
+        
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Ejecuta "git pull" manualmente en Termux.', 'log' => $output]);
+        echo json_encode(['status' => 'error', 'message' => 'Error inesperado al actualizar.', 'log' => $output]);
     }
     exit;
 }
 ?>
+
+
+
+
+
+
+
 
 
 
