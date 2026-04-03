@@ -1953,28 +1953,29 @@ if (isset($_GET['ota_update'])) {
             try { await fetch('api/library.php?action=clear_temp'); closeCustomModal(); ps5Notification("LIMPIEZA", "Temporales borrados.", "fa-check"); } catch(e) { mostrarErrorFinal("ERROR", "No se pudo limpiar."); }
         }
 
-        async function buscarActualizacionOTA() {
-            const confirm = await ps5Confirm("ACTUALIZACI脫N OTA", "驴Buscar e instalar la 煤ltima versi贸n desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perder谩n.</span>", "fa-cloud-arrow-down");
+                async function buscarActualizacionOTA() {
+            const confirm = await ps5Confirm("ACTUALIZACI&Oacute;N OTA", "&#191;Buscar e instalar la &uacute;ltima versi&oacute;n desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perder&aacute;n.</span>", "fa-cloud-arrow-down");
             if(!confirm) return;
-            mostrarCarga("ACTUALIZANDO", "Descargando c贸digo...", "fa-cloud-arrow-down fa-bounce");
+            mostrarCarga("ACTUALIZANDO", "Descargando c&oacute;digo...", "fa-cloud-arrow-down fa-bounce");
             document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)';
             try {
                 let res = await fetch('index.php?ota_update=1');
                 let data = await res.json();
                 if (data.status === 'updated') {
                     AudioEngine.playSuccess();
-                    ps5Notification("隆ACTUALIZADO!", "Reiniciando app...", "fa-check");
+                    ps5Notification("&#161;ACTUALIZADO!", "Reiniciando app...", "fa-check");
                     setTimeout(() => window.location.reload(), 1500);
                 } else if (data.status === 'uptodate') {
                     closeCustomModal();
-                    ps5Alert("AL D脥A", "Ya tienes la 煤ltima versi贸n instalada.", "fa-check-double");
+                    ps5Alert("AL D&Iacute;A", "Ya tienes la &uacute;ltima versi&oacute;n instalada.", "fa-check-double");
                 } else {
                     mostrarErrorFinal("ERROR OTA", data.message + "<br><br><span class='text-[8px] font-mono text-red-400 mt-2 block break-all'>" + data.log + "</span>");
                 }
             } catch(e) {
-                mostrarErrorFinal("ERROR", "Fall贸 la conexi贸n con el servidor interno.");
+                mostrarErrorFinal("ERROR", "Fall&oacute; la conexi&oacute;n con el servidor interno.");
             }
         }
+
 
 
 
