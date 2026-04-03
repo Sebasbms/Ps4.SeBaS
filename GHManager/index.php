@@ -1711,7 +1711,18 @@ if (isset($_GET['ota_update'])) {
         }
 
         function abrirPanelSecundario(id) { document.getElementById('sheet-opciones').classList.remove('open'); setTimeout(() => { document.getElementById(id).classList.add('open'); }, 100); }
-        function volverAOpcionesDesde(id) { document.getElementById(id).classList.remove('open'); setTimeout(() => { document.getElementById('sheet-opciones').classList.add('open'); }, 100); }
+
+                function volverAOpcionesDesde(id) { 
+            document.getElementById(id).classList.remove('open'); 
+            if (esBovedaGlobal) {
+                // Si estamos en la Bóveda Global, simplemente cerramos todo
+                setTimeout(() => { document.getElementById('overlay-global').classList.remove('open'); }, 100);
+            } else {
+                // Si estamos en un juego, volvemos a las opciones de ese juego
+                setTimeout(() => { document.getElementById('sheet-opciones').classList.add('open'); }, 100); 
+            }
+        }
+
         function abrirMenuInstalar() { const navButtons = document.querySelectorAll('.dock-item'); switchTab('tab-ftp', navButtons[1], 1); }
         function simularRedireccionModding() { const navButtons = document.querySelectorAll('.dock-item'); switchTab('tab-icons', navButtons[2], 2); document.getElementById('icon-cusa').value = currentCusa; cerrarTodo(); }
 
@@ -2618,9 +2629,11 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-        // ==========================================
+        //==========================================
         // 20. SISTEMA DE CAPTURAS (BÓVEDA Y GALERÍA)
         // ==========================================
+        let cacheCapturas = {}; // Almacena las fotos en la RAM del navegador
+
         async function abrirGaleriaJuego() {
             esBovedaGlobal = false;
             const tituloEl = document.getElementById('capturas-game-cusa');
@@ -2635,15 +2648,23 @@ if (isset($_GET['ota_update'])) {
             if(tituloEl) tituloEl.innerText = "TODAS LAS CAPTURAS (BÓVEDA)";
             
             cerrarTodo();
-            document.getElementById('overlay-sheet').classList.add('open'); 
+            document.getElementById('overlay-global').classList.add('open'); 
             document.getElementById('sheet-capturas').classList.add('open');
             
             await cargarCapturas('get_all_caps', '');
         }
 
-                async function cargarCapturas(action, cusa) {
+        async function cargarCapturas(action, cusa) {
             const grid = document.getElementById('capturas-grid');
             if(!grid) return;
+
+            // MEMORIA CACHÉ: Si ya cargamos estas fotos, las mostramos en 0 segundos
+            let cacheKey = action === 'get_all_caps' ? 'BOVEDA_GLOBAL' : cusa;
+            if (cacheCapturas[cacheKey]) {
+                grid.innerHTML = cacheCapturas[cacheKey];
+                return;
+            }
+
             grid.innerHTML = `<div class="col-span-2 text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Descargando enlaces...</p></div>`;
             
             const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
@@ -2654,7 +2675,7 @@ if (isset($_GET['ota_update'])) {
             fd.append('host_ip', ip); 
             if(cusa) fd.append('cusa_id', cusa);
 
-            isTransferring = true; // ¡ESTA ES LA MAGIA QUE EVITA QUE SE DESCONECTE EL RADAR!
+            isTransferring = true; 
 
             try {
                 let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd }); 
@@ -2662,14 +2683,15 @@ if (isset($_GET['ota_update'])) {
                 
                 if (data.status === 'success') {
                     if (data.images.length === 0) { 
-                        grid.innerHTML = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-camera-slash text-4xl text-white/10 mb-3 block"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Sin Capturas</p></div>`; 
+                        let htmlVacio = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-camera-slash text-4xl text-white/10 mb-3 block"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Sin Capturas</p></div>`;
+                        grid.innerHTML = htmlVacio;
+                        cacheCapturas[cacheKey] = htmlVacio;
                         isTransferring = false;
                         return; 
                     }
                     
                     let html = '';
                     data.images.forEach(img => {
-                        // Aquí inyectamos el enlace de streaming (img.url) en lugar del código pesado
                         html += `
                         <div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group border border-white/10 hover:border-[var(--theme-prim)] transition-colors shadow-lg bg-black/50" onclick="abrirLightbox('${img.url}', '${img.name.replace(/'/g, "\\'")}')">
                             <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
@@ -2679,14 +2701,14 @@ if (isset($_GET['ota_update'])) {
                         </div>`;
                     });
                     grid.innerHTML = html;
+                    cacheCapturas[cacheKey] = html; // Guardamos en memoria para la próxima vez
                 } else { 
                     grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">${data.message}</div>`; 
                 }
             } catch(e) { 
-                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Error de conexión.</div>`; 
+                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Error de red local.</div>`; 
             }
 
-            // Soltamos el Radar después de unos segundos, cuando las fotos ya cargaron
             setTimeout(() => { isTransferring = false; }, 3000);
         }
 
