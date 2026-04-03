@@ -2641,10 +2641,10 @@ if (isset($_GET['ota_update'])) {
             await cargarCapturas('get_all_caps', '');
         }
 
-        async function cargarCapturas(action, cusa) {
+                async function cargarCapturas(action, cusa) {
             const grid = document.getElementById('capturas-grid');
             if(!grid) return;
-            grid.innerHTML = `<div class="col-span-2 text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Descargando capturas...</p></div>`;
+            grid.innerHTML = `<div class="col-span-2 text-center py-12"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4 block" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Descargando enlaces...</p></div>`;
             
             const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
             if(!ip) { grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Falta conectar la IP de PS4.</div>`; return; }
@@ -2654,6 +2654,8 @@ if (isset($_GET['ota_update'])) {
             fd.append('host_ip', ip); 
             if(cusa) fd.append('cusa_id', cusa);
 
+            isTransferring = true; // ¡ESTA ES LA MAGIA QUE EVITA QUE SE DESCONECTE EL RADAR!
+
             try {
                 let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd }); 
                 let data = await res.json();
@@ -2661,14 +2663,16 @@ if (isset($_GET['ota_update'])) {
                 if (data.status === 'success') {
                     if (data.images.length === 0) { 
                         grid.innerHTML = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-camera-slash text-4xl text-white/10 mb-3 block"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Sin Capturas</p></div>`; 
+                        isTransferring = false;
                         return; 
                     }
                     
                     let html = '';
                     data.images.forEach(img => {
+                        // Aquí inyectamos el enlace de streaming (img.url) en lugar del código pesado
                         html += `
-                        <div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group border border-white/10 hover:border-[var(--theme-prim)] transition-colors shadow-lg bg-black/50" onclick="abrirLightbox('${img.data}', '${img.name.replace(/'/g, "\\'")}')">
-                            <img src="${img.data}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+                        <div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer group border border-white/10 hover:border-[var(--theme-prim)] transition-colors shadow-lg bg-black/50" onclick="abrirLightbox('${img.url}', '${img.name.replace(/'/g, "\\'")}')">
+                            <img src="${img.url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2 pointer-events-none">
                                 <span class="text-[8px] text-white font-mono truncate">${img.name}</span>
                             </div>
@@ -2681,10 +2685,13 @@ if (isset($_GET['ota_update'])) {
             } catch(e) { 
                 grid.innerHTML = `<div class="col-span-2 text-center py-10 text-red-400 text-xs font-bold">Error de conexión.</div>`; 
             }
+
+            // Soltamos el Radar después de unos segundos, cuando las fotos ya cargaron
+            setTimeout(() => { isTransferring = false; }, 3000);
         }
 
         let isZoomed = false;
-        function abrirLightbox(b64, name) {
+        function abrirLightbox(url, name) {
             isZoomed = false;
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
@@ -2693,13 +2700,13 @@ if (isset($_GET['ota_update'])) {
             
             if(!modal || !img) return;
 
-            img.src = b64;
+            img.src = url;
             img.classList.remove('scale-150', 'cursor-zoom-out');
             img.classList.add('scale-100', 'cursor-zoom-in');
             
             if(title) title.innerText = name;
             if(btnDL) {
-                btnDL.href = b64;
+                btnDL.href = url;
                 btnDL.download = name;
             }
             
