@@ -1,7 +1,7 @@
 <?php
 /**
  * ARCHIVO: api/modding.php
- * Sistema de inyección y extracción de portadas (CUSA)
+ * Sistema de inyección y extracción de portadas (CUSA) - Versión Definitiva
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -17,7 +17,7 @@ if (!$host) {
 }
 
 // ==========================================
-// 1. INYECTAR PORTADA (UPLOAD)
+// 1. INYECTAR PORTADA (UPLOAD) - Modo "Caballo de Troya"
 // ==========================================
 if ($action === 'upload_icon') {
     $source = $_POST['source_type'] ?? '';
@@ -39,7 +39,8 @@ if ($action === 'upload_icon') {
         exit;
     }
 
-    $dest_path = "/user/app/meta/$cusa/icon0.png";
+    // Ruta de destino. Usamos doble barra al inicio para asegurar la raíz en GoldHEN
+    $dest_path = "//user/app/meta/$cusa/icon0.png";
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$dest_path");
@@ -54,8 +55,10 @@ if ($action === 'upload_icon') {
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
     
-    // MAGIA: Modo Directo sin navegar (eliminada la orden de crear carpetas)
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
+    // MAGIA: El "Caballo de Troya".
+    // Obligamos a cURL a navegar por las carpetas una por una antes de soltar el archivo.
+    // Esto desarma el escudo de GoldHEN que causa el Error 550.
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_MULTICWD); 
     
     $res = curl_exec($ch);
     $err = curl_error($ch);
@@ -79,7 +82,8 @@ if ($action === 'backup_original') {
         exit;
     }
 
-    $remote = "/user/app/meta/$cusa/icon0.png";
+    // Doble barra de seguridad para la raíz
+    $remote = "//user/app/meta/$cusa/icon0.png";
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
@@ -87,7 +91,7 @@ if ($action === 'backup_original') {
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0); 
     
-    // MAGIA: Modo Directo sin navegar
+    // Para leer, el modo directo sigue siendo el más seguro
     curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD); 
     
     $data = curl_exec($ch);
@@ -101,7 +105,7 @@ if ($action === 'backup_original') {
         file_put_contents("$backup_dir/{$cusa}_original.png", $data);
         echo json_encode(['status' => 'success']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => "La PS4 denegó el acceso o no existe la portada para $cusa. $err"]);
+        echo json_encode(['status' => 'error', 'message' => "La portada no existe. ¿Está el juego instalado? (Error: $err)"]);
     }
     exit;
 }
@@ -116,7 +120,7 @@ if ($action === 'get_all_cusa') {
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "LIST");
     curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     curl_setopt($ch, CURLOPT_FTP_USE_EPSV, 0);
-    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_NOCWD);
+    curl_setopt($ch, CURLOPT_FTP_FILEMETHOD, CURLFTPMETHOD_MULTICWD); // Usamos multi-navegación aquí también por precaución
     $res = curl_exec($ch);
     curl_close($ch);
     
@@ -142,7 +146,7 @@ if ($action === 'get_all_cusa') {
 // 4. OBTENER AVATAR DEL PERFIL PS4
 // ==========================================
 if ($action === 'get_ps4_profile') {
-    $remote = "/user/home/10000000/avatar.png"; 
+    $remote = "//user/home/10000000/avatar.png"; 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$host:$port$remote");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
