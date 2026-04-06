@@ -129,34 +129,17 @@ if ($action === 'upload_icon') {
         echo json_encode(['status' => 'error', 'message' => 'Imagen no recibida.']); exit;
     }
 
-    $img = @imagecreatefrompng($local_file);
-    if (!$img) $img = @imagecreatefromjpeg($local_file);
-    if (!$img) { echo json_encode(['status' => 'error', 'message' => 'Formato no soportado. Usa PNG o JPG.']); exit; }
-    
-    $resized = imagecreatetruecolor(512, 512);
-    imagealphablending($resized, false);
-    imagesavealpha($resized, true);
-    $transparent = imagecolorallocatealpha($resized, 255, 255, 255, 127);
-    imagefilledrectangle($resized, 0, 0, 512, 512, $transparent);
-    imagecopyresampled($resized, $img, 0, 0, 0, 0, 512, 512, imagesx($img), imagesy($img));
-    
-    $temp_png = sys_get_temp_dir() . '/' . uniqid() . '.png';
-    imagepng($resized, $temp_png);
-    imagedestroy($img);
-    imagedestroy($resized);
-
+    // Como el JS ya validó que es 512x512, enviamos el archivo directo por FTP sin usar la librería GD
     $exitos = 0;
     foreach ($rutas_appmeta as $base) {
         $carpeta_juego = $base . $cusa_id;
         if (check_folder_exists($host_ip, $port, $carpeta_juego)) {
-            if (curl_upload($host_ip, $port, $carpeta_juego . "/icon0.png", $temp_png)) {
+            if (curl_upload($host_ip, $port, $carpeta_juego . "/icon0.png", $local_file)) {
                 $exitos++;
             }
         }
     }
     
-    @unlink($temp_png);
-
     if ($exitos > 0) {
         @unlink("../cache_biblioteca/$cusa_id.png"); // Borrar caché del cel para que actualice
         echo json_encode(['status' => 'success', 'message' => 'Portada aplicada en la PS4.']);
