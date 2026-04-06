@@ -1,7 +1,7 @@
 <?php
 /**
  * ====================================================================
- * GOLDHEN MANAGER V2.1 棣冩畬 (PS5/PS4)
+ * GOLDHEN MANAGER V2.1 馃殌 (PS5/PS4)
  * DEVELOPED *By SeBaS* * ====================================================================
  */
 error_reporting(0);
@@ -12,7 +12,7 @@ header('Content-Type: text/html; charset=utf-8');
 $firma = chr(83).chr(101).chr(66).chr(97).chr(83); 
 header('X-Author: ' . $firma);
 
-// 1. AUTO-CREACIÓN PWA E ICONO
+// 1. AUTO-CREACI脫N PWA E ICONO
 $manifest_content = '{
   "name": "GoldHen Manager", "short_name": "GoldHen Manager",
   "start_url": "./index.php", "display": "standalone", "background_color": "#0b0c10",
@@ -38,7 +38,7 @@ foreach ($directorios as $dir) {
     if (!file_exists($dir . '/.nomedia')) { @file_put_contents($dir . '/.nomedia', ''); }
 }
 
-// 2.5 AUTO-DETECTAR MICROSD Y CREAR T鑴種EL
+// 2.5 AUTO-DETECTAR MICROSD Y CREAR T脷NEL
 $storage_dir = '/storage/';
 $microsd_link = __DIR__ . '/microsd';
 if (is_dir($storage_dir)) {
@@ -57,17 +57,8 @@ if (is_dir($storage_dir)) {
     }
     if (!$sd_encontrada) { @unlink($microsd_link); }
 }
-// 2.6 TÚNEL DE ALMACENAMIENTO INTERNO (Para Buscador Manual)
-$internal_dir = '/storage/emulated/0/';
-$internal_link = __DIR__ . '/almacenamiento_interno';
-if (is_dir($internal_dir)) {
-    if (!is_link($internal_link) || readlink($internal_link) !== $internal_dir) {
-        @unlink($internal_link);
-        @symlink($internal_dir, $internal_link);
-    }
-}
 
-// 3. DETECCION DE IP LOCAL
+// 3. DETECCI脫N DE IP LOCAL
 function getLocalIP() {
     if (isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '127.0.0.1' && $_SERVER['SERVER_ADDR'] !== '::1' && $_SERVER['SERVER_ADDR'] !== '0.0.0.0') {
         return $_SERVER['SERVER_ADDR'];
@@ -86,7 +77,7 @@ $ip_servidor = getLocalIP();
 $subred_partes = explode('.', $ip_servidor);
 $subred_actual = isset($subred_partes[0]) ? $subred_partes[0] . '.' . $subred_partes[1] . '.' . $subred_partes[2] . '.' : '192.168.0.';
 
-// 4. PROXY RPI SENDER (VERSIÓN KSWEB CLÁSICA)
+// 4. PROXY RPI SENDER
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
@@ -94,15 +85,10 @@ if (isset($_GET['rpi_proxy']) || (isset($data['ip']) && isset($data['url_pkg']))
     header('Content-Type: application/json');
     $ps4_ip = isset($data['ip']) ? $data['ip'] : '';
     $url_pkg = isset($data['url_pkg']) ? $data['url_pkg'] : '';
-
-    if (empty($ps4_ip) || empty($url_pkg)) { 
-        echo json_encode(['status' => 'fail', 'message' => 'Faltan datos']); exit; 
-    }
-
-    // Le decimos a la PS4 exactamente qué descargar
-    $payload = json_encode(["type" => "direct", "packages" => [$url_pkg]], JSON_UNESCAPED_SLASHES);
     
-    // Conectamos SOLO a la aplicación RPI (Puerto 12800)
+    if (empty($ps4_ip) || empty($url_pkg)) { echo json_encode(['status' => 'fail', 'message' => 'Faltan datos IP o URL']); exit; }
+    
+    $payload = json_encode(["type" => "direct", "packages" => [$url_pkg]]);
     $ch = curl_init('http://' . $ps4_ip . ':12800/api/install');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
@@ -112,18 +98,17 @@ if (isset($_GET['rpi_proxy']) || (isset($data['ip']) && isset($data['url_pkg']))
     
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
     curl_close($ch);
-
-    // Devolvemos la respuesta exacta de la consola
-    if ($httpcode >= 200 && $httpcode < 300) {
-        echo $response; // La consola devuelve su propio JSON de éxito
+    
+    $logs = ["Link: $url_pkg", "P12800 -> HTTP:$httpcode | Err:$error"];
+    if ($httpcode >= 200 && $httpcode < 300 && strpos($response, 'success') !== false) {
+        echo json_encode(['status' => 'success', 'message' => 'Orden enviada a PS4', 'logs' => $logs]);
     } else {
-        echo json_encode(['status' => 'fail', 'message' => 'La App RPI no responde. ¿Está abierta en la PS4?']);
+        echo json_encode(['status' => 'fail', 'message' => 'El RPI rechaz贸 la conexi贸n', 'logs' => $logs]);
     }
     exit;
 }
-
-
 
 // 5. OBTENER LISTA DE JUEGOS RPI
 if (isset($_GET['get_rpi_list'])) {
@@ -161,66 +146,6 @@ if (isset($_GET['get_rpi_list'])) {
     echo json_encode(['status' => 'success', 'data' => $pkgs]);
     exit;
 }
-
-// 5.5 EXPLORADOR LOCAL (BUSCADOR DE PKG MANUAL)
-if (isset($_GET['local_explorer'])) {
-    header('Content-Type: application/json');
-    $ruta = isset($_GET['path']) ? $_GET['path'] : '/storage/';
-    
-    if (strpos($ruta, '/storage/') !== 0) { $ruta = '/storage/'; }
-
-    $items = [];
-    
-    // RAÍZ VIRTUAL: Forzamos la vista de Interna y SD saltando el bloqueo de Android 11+
-    if ($ruta === '/storage/') {
-        $items[] = [ 'name' => 'Memoria Interna', 'path' => '/storage/emulated/0/', 'is_dir' => true, 'size_fmt' => '' ];
-        
-        // TRUCO: Leemos los discos montados directamente del cerebro de Android
-        $mounts = @file_get_contents('/proc/mounts');
-        if ($mounts && preg_match_all('/\/storage\/([A-Z0-9]{4}-[A-Z0-9]{4})/i', $mounts, $matches)) {
-            $sd_cards = array_unique($matches[1]);
-            foreach ($sd_cards as $sd) {
-                $items[] = [ 'name' => 'MicroSD (' . $sd . ')', 'path' => '/storage/' . $sd . '/', 'is_dir' => true, 'size_fmt' => '' ];
-            }
-        }
-        echo json_encode(['status' => 'success', 'data' => $items, 'current_path' => '/storage/']);
-        exit;
-    }
-
-    // NAVEGACIÓN NORMAL DENTRO DE LAS CARPETAS
-    if (is_dir($ruta)) {
-        $files = @scandir($ruta);
-        if ($files) {
-            foreach ($files as $file) {
-                if ($file === '.' || $file === '..') continue; 
-
-                $fullPath = rtrim($ruta, '/') . '/' . $file;
-                $isDir = is_dir($fullPath);
-                
-                if (!$isDir && strtolower(pathinfo($file, PATHINFO_EXTENSION)) !== 'pkg') continue;
-
-                $size = $isDir ? 0 : filesize($fullPath);
-                $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-                $bytes = max($size, 0); 
-                $pow = floor(($bytes ? log($bytes) : 0) / log(1024)); 
-                $pow = min($pow, count($units) - 1); 
-                $size_fmt = $isDir ? '' : round($bytes / pow(1024, $pow), 2) . ' ' . $units[$pow];
-
-                $items[] = [ 'name' => $file, 'path' => $fullPath, 'is_dir' => $isDir, 'size_fmt' => $size_fmt ];
-            }
-        }
-        usort($items, function($a, $b) {
-            if ($a['is_dir'] && !$b['is_dir']) return -1;
-            if (!$a['is_dir'] && $b['is_dir']) return 1;
-            return strcasecmp($a['name'], $b['name']);
-        });
-    }
-    echo json_encode(['status' => 'success', 'data' => $items, 'current_path' => $ruta]);
-    exit;
-}
-
-
-
 
 // 6. EXTRACTOR BINARIO SECUENCIAL PKG
 if (isset($_GET['extract_pkg'])) {
@@ -302,7 +227,7 @@ if (isset($_GET['extract_pkg'])) {
     exit;
 }
 
-// 7. ACTUALIZACIÓN OTA (VÍA GIT) - VERSIÓN SEGURA Y EN ESPA脩OL
+// 7. ACTUALIZACIÓN OTA (VÍA GIT) - VERSIÓN SEGURA Y EN ESPAÑOL
 if (isset($_GET['ota_update'])) {
     header('Content-Type: application/json; charset=utf-8');
     $dir = __DIR__;
@@ -313,7 +238,7 @@ if (isset($_GET['ota_update'])) {
         echo json_encode(['status' => 'uptodate', 'message' => 'Ya tienes la última versión instalada.', 'log' => $output], JSON_UNESCAPED_UNICODE);
     } 
     else if (strpos($output, 'Fast-forward') !== false || strpos($output, 'Updating') !== false || strpos($output, 'changed') !== false || strpos($output, 'cambiados') !== false) {
-        echo json_encode(['status' => 'updated', 'message' => '隆Actualización aplicada con éxito! Recargando...', 'log' => $output], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['status' => 'updated', 'message' => '¡Actualización aplicada con éxito! Recargando...', 'log' => $output], JSON_UNESCAPED_UNICODE);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Error al actualizar. Usa Termux.', 'log' => $output], JSON_UNESCAPED_UNICODE);
     }
@@ -368,7 +293,7 @@ if (isset($_GET['ota_update'])) {
             --neon-cyan: #22d3ee; 
             --neon-purple: #a855f7; 
             --bg-blur: 0px;
-            --bg-opacity: 1;
+            --bg-opacity: 0.8;
             --theme-prim: #22d3ee;
             --theme-sec: #a855f7;
             --theme-bg: #05050a;
@@ -423,10 +348,8 @@ if (isset($_GET['ota_update'])) {
 
         #custom-bg-layer { position: fixed; inset: 0; z-index: -3; background-size: cover; background-position: center; opacity: var(--bg-opacity); filter: blur(var(--bg-blur)); transition: opacity 0.5s, filter 0.3s; pointer-events: none; }
         .app-bg-overlay { position: fixed; inset: 0; z-index: -2; background: var(--theme-bg); opacity: 0.65; pointer-events: none; transition: opacity 0.3s, background 0.5s; }
-        body.has-wallpaper .app-bg-overlay { opacity: 0.25; }
 
         #intro-screen { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0b0c14; transition: opacity 1.5s ease; }
-
         #logo-wrapper { position: relative; z-index: 10; opacity: 0; transform: scale(0.9); filter: blur(10px); transition: all 3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .ps-logo-intro { font-size: 6rem; color: rgba(255,255,255,0.2); }
         
@@ -508,69 +431,6 @@ if (isset($_GET['ota_update'])) {
             #landscape-warning { display: flex !important; }
             #app-ui { display: none !important; }
         }
-      
-           /* =========================================
-           INYECCIÓN DEFINITIVA: EL ESPACIO INQUEBRANTABLE
-           ========================================= */
-        
-        /* 1. Ocultar los títulos gigantes */
-        .tab-content > h1.text-3xl, .tab-content > p.text-xs.font-light { display: none !important; }
-
-        /* 2. Ajustar la pestaña al tamaño exacto */
-        #tab-icons.active { display: flex !important; flex-direction: column !important; height: 100dvh !important; overflow: hidden !important; padding-bottom: 0 !important; }
-        #icon-form { display: flex !important; flex-direction: column !important; flex: 1 !important; min-height: 0 !important; }
-
-        /* 3. Desaparecer la "caja gigante" */
-        #icon-form > .glass-panel { background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; display: flex !important; flex-direction: column !important; flex: 1 !important; min-height: 0 !important; }
-
-        /* 4. BARRA SUPERIOR FIJA Y COMPACTA */
-        #icon-form > .glass-panel > div:nth-child(1) { background: rgba(10, 15, 25, 0.85) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-radius: 1.2rem !important; padding: 0.5rem !important; margin-bottom: 0.5rem !important; align-items: center !important; flex-shrink: 0 !important; }
-        #icon-form > .glass-panel > div:nth-child(1) label { display: none !important; }
-        
-        #icon-cusa { height: 42px !important; padding: 0 1rem !important; font-size: 1rem !important; margin-bottom: 0 !important; }
-        #icon-form .h-\\[58px\\] { height: 42px !important; width: 42px !important; border-radius: 0.8rem !important; }
-        #icon-form .text-xl { font-size: 1rem !important; }
-
-        /* 5. Barra de botones Galería/Backups */
-        #icon-form > .glass-panel > div:nth-child(2) { margin-bottom: 0.5rem !important; flex-shrink: 0 !important; }
-
-        /* 6. SCROLL ÚNICO Y LIMPIO */
-        #box-src-gallery, #box-src-backup { flex: 1 !important; overflow-y: auto !important; min-height: 0 !important; padding-right: 4px !important; }
-
-        /* 7. Textos "X PORTADAS" */
-        #gallery-container > div.flex, #backup-container > div.flex { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 0 0.25rem 0.5rem 0.25rem !important; margin: 0 !important; width: 100% !important; }
-
-        /* 8. 🔥 EL MURO CONTRA CHROME 🔥 */
-        #gallery-container > div.grid, #backup-container > div.grid {
-            display: grid !important; 
-            grid-template-columns: repeat(4, minmax(0, 1fr)) !important; 
-            gap: 0.4rem !important;
-            margin-bottom: 200px !important;
-        }
-
-        #rpi-pkg-list {
-            display: grid !important; 
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important; 
-            gap: 0.6rem !important;
-            margin-bottom: 200px !important;
-        }
-        
-                /* 9. Portadas tipo Biblioteca */
-        .gallery-item, .item-biblio { aspect-ratio: 1 / 1 !important; height: auto !important; width: 100% !important; border-radius: 1rem !important; padding-bottom: 0 !important; }
-        .gallery-item { border: 2px solid transparent !important; background-color: rgba(10,10,20,0.8) !important; transition: all 0.2s !important; position: relative !important; overflow: hidden !important; }
-        .gallery-item.selected { border-color: var(--theme-prim) !important; transform: scale(0.92) !important; box-shadow: 0 0 15px var(--theme-prim) !important; }
-        
-        /* 10. Tachito oculto */
-        .gallery-trash-btn { opacity: 0 !important; pointer-events: none !important; display: flex !important; }
-        .gallery-item.selected .gallery-trash-btn { opacity: 1 !important; pointer-events: auto !important; }
-
-        /* 11. Botón Premium Oscuro */
-        .btn-premium, .btn-ps5-primary { background: linear-gradient(180deg, rgba(30, 35, 45, 0.6) 0%, rgba(15, 18, 25, 0.8) 100%) !important; border: 1px solid rgba(255,255,255,0.05) !important; border-bottom: 1px solid color-mix(in srgb, var(--theme-prim) 60%, transparent) !important; border-radius: 16px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.05) !important; color: white !important; text-shadow: none !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
-        .btn-premium::after, .btn-ps5-primary::after { content: '' !important; position: absolute !important; bottom: -1px !important; left: 50% !important; transform: translateX(-50%) !important; width: 40% !important; height: 2px !important; background: #fff !important; box-shadow: 0 0 15px 4px var(--theme-prim) !important; z-index: 10 !important; }
-        .btn-premium:active, .btn-ps5-primary:active { transform: scale(0.96) !important; box-shadow: 0 5px 15px rgba(0,0,0,0.8) !important; }
-
-
-
     </style>
 </head>
 
@@ -634,7 +494,7 @@ if (isset($_GET['ota_update'])) {
                 <div class="absolute top-0 right-0 w-20 h-20 blur-[30px] rounded-full pointer-events-none" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);"></div>
                 <div class="flex items-center gap-3 relative z-10">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);"><i class="fa-solid fa-mobile-screen-button text-lg" style="color: var(--theme-prim);"></i></div>
-                    <div><span class="text-xs font-bold text-[var(--text-main)] block" data-i18n="install_app">Instalar App</span><span class="text-[9px] text-[var(--text-muted)]" data-i18n="install_desc">A甯絘dir a pantalla de inicio</span></div>
+                    <div><span class="text-xs font-bold text-[var(--text-main)] block" data-i18n="install_app">Instalar App</span><span class="text-[9px] text-[var(--text-muted)]" data-i18n="install_desc">A帽adir a pantalla de inicio</span></div>
                 </div>
                 <div class="flex items-center gap-2 relative z-10">
                     <button onclick="installPWA()" class="text-black font-black text-[9px] tracking-widest px-4 py-2.5 rounded-lg active:scale-95" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent);" data-i18n="btn_install">INSTALAR</button>
@@ -747,36 +607,32 @@ if (isset($_GET['ota_update'])) {
                                 <i class="fa-solid fa-layer-group text-xl"></i>
                             </button>
                         </div>
-                                                <div class="grid grid-cols-4 gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-6 border border-white/5 shrink-0">
-                            <button type="button" id="btn-src-gallery" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('gallery')" data-i18n="gallery">GALER&Iacute;A</button>
-                            <button type="button" id="btn-src-backup" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('backup')" data-i18n="backups">BACKUPS</button>
-                            <button type="button" id="btn-src-import" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('import')" data-i18n="import">IMPORTAR</button>
-                            <button type="button" id="btn-src-local" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('local')" data-i18n="local">LOCAL</button>
+                        <div class="flex gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-6 border border-white/5 overflow-x-auto custom-scrollbar shrink-0">
+                            <button type="button" id="btn-src-gallery" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('gallery')" data-i18n="gallery">GALER&Iacute;A</button>
+                            <button type="button" id="btn-src-backup" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('backup')" data-i18n="backups">BACKUPS</button>
+                            <button type="button" id="btn-src-import" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('import')" data-i18n="import">IMPORTAR</button>
+                            <button type="button" id="btn-src-local" class="flex-1 py-3 px-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] whitespace-nowrap" onclick="switchIconSource('local')" data-i18n="local">LOCAL</button>
                         </div>
                         
                         <div id="box-src-gallery" class="animate-fade-in"><div id="gallery-container"></div></div>
                         <div id="box-src-backup" class="hidden animate-fade-in"><div id="backup-container"></div></div>
-                     
-                                                                                                                        <div id="box-src-import" class="hidden animate-fade-in shrink-0">
-                            <div class="w-full h-[250px] bg-black/40 backdrop-blur-md shadow-inner rounded-[1.5rem] border border-white/10 flex items-center justify-center p-4">
-                                <div class="flex flex-col items-center justify-center gap-3 w-full max-w-[280px]">
-                                    <i class="fa-solid fa-cloud-arrow-down text-4xl" style="color: var(--theme-prim); opacity: 0.9;"></i>
-                                    <p class="text-[11px] text-[var(--text-muted)] font-medium text-center px-2" data-i18n="import_desc">Pega un link directo para descargar a tu galer&iacute;a.</p>
-                                    <input type="url" id="import-url" placeholder="https://..." class="w-full bg-black/80 rounded-xl px-4 py-2.5 border border-white/5 font-mono text-xs text-[var(--text-main)] outline-none shadow-inner focus:border-[var(--theme-prim)] transition-colors">
-                                    <button type="button" id="btn-cargar-url" onclick="importarURL()" class="w-full text-black rounded-xl py-2.5 font-black text-[10px] tracking-widest transition-colors active:scale-95" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent);" data-i18n="btn_import">INICIAR IMPORTACI&Oacute;N</button>
-                                </div>
+                        <div id="box-src-import" class="hidden animate-fade-in shrink-0">
+                            <div class="bg-black/40 border border-white/5 rounded-[1.5rem] p-5 text-center h-[250px] flex flex-col justify-center">
+                                <i class="fa-solid fa-cloud-arrow-down text-4xl mb-3" style="color: color-mix(in srgb, var(--theme-prim) 50%, transparent);"></i>
+                                <p class="text-[10px] text-[var(--text-muted)] mb-4 px-2" data-i18n="import_desc">Pega un link directo para descargar a tu galer&iacute;a.</p>
+                                <input type="url" id="import-url" placeholder="https://..." class="w-full bg-black/60 rounded-xl px-4 py-3 border font-mono text-xs text-[var(--text-main)] outline-none mb-4 shadow-inner" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                                <button type="button" id="btn-cargar-url" onclick="importarURL()" class="w-full text-black rounded-xl py-3 font-black text-[10px] tracking-widest transition-colors" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 30%, transparent);" data-i18n="btn_import">INICIAR IMPORTACI&Oacute;N</button>
                             </div>
                         </div>
                         <div id="box-src-local" class="hidden animate-fade-in shrink-0">
-                            <div onclick="document.getElementById('icon-file').click()" class="w-full h-[250px] bg-black/40 backdrop-blur-md shadow-inner rounded-[1.5rem] border border-white/10 flex items-center justify-center cursor-pointer relative overflow-hidden group hover:bg-white/5 transition-colors p-4">
-                                <div class="flex flex-col items-center justify-center gap-3 pointer-events-none">
-                                    <i id="icon-file-placeholder" class="fa-solid fa-image text-4xl group-hover:scale-110 transition-transform" style="color: var(--theme-prim); opacity: 0.9;"></i>
-                                    <span id="icon-file-name" class="text-[11px] font-black tracking-widest text-[var(--text-muted)] text-center px-4" data-i18n="touch_image">TOCA PARA BUSCAR IMAGEN</span>
-                                </div>
+                            <div onclick="document.getElementById('icon-file').click()" class="w-full h-[250px] bg-black/40 rounded-[1.5rem] border border-dashed flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group hover:bg-black/60 transition-colors" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);">
+                                <i id="icon-file-placeholder" class="fa-solid fa-image text-4xl mb-3 group-hover:scale-110 transition-transform" style="color: color-mix(in srgb, var(--theme-prim) 40%, transparent);"></i>
+                                <span id="icon-file-name" class="text-[10px] font-black tracking-widest text-[var(--text-muted)] text-center px-4 z-10" data-i18n="touch_image">TOCA PARA BUSCAR IMAGEN</span>
                                 <img id="preview-img-local" src="" class="hidden absolute inset-0 w-full h-full object-contain z-20 bg-black/90">
                                 <input type="file" id="icon-file" accept="image/png, image/jpeg" class="hidden" onchange="previewLocal(this)">
                             </div>
-                        </div>                    </div>
+                        </div>
+                    </div>
                     <button type="submit" id="icon-form-submit" class="hidden"></button>
                 </form>
             </div>
@@ -1268,7 +1124,7 @@ if (isset($_GET['ota_update'])) {
 
 <script>
         // ==========================================
-        // PROTECCION ANTI-CURIOSOS Y FIRMA
+        // PROTECCIÓN ANTI-CURIOSOS Y FIRMA
         // ==========================================
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => { 
@@ -1484,14 +1340,14 @@ if (isset($_GET['ota_update'])) {
                 opt_rename: "Renombrar", opt_move: "Mover", opt_delete: "Eliminar",
                 modal_pause: "PAUSAR", modal_close: "CERRAR", modal_cancel: "CANCELAR", modal_accept: "ACEPTAR",
                 j_err_ip: "FALTA IP", j_err_ip_m: "Escribe la IP.", j_err_file: "FALTA ARCHIVO", j_err_file_m: "Elige un archivo.",
-                j_prep: "PREPARANDO", j_prep_m: "Analizando...", j_resume: "REANUDAR", j_resume_m: "驴Reanudar subida?",
-                j_exist: "EXISTE", j_exist_m: "Ya existe. 驴Sobrescribir?", j_cancel: "CANCELADO", j_cancel_m: "Abortado.",
+                j_prep: "PREPARANDO", j_prep_m: "Analizando...", j_resume: "REANUDAR", j_resume_m: "¿Reanudar subida?",
+                j_exist: "EXISTE", j_exist_m: "Ya existe. ¿Sobrescribir?", j_cancel: "CANCELADO", j_cancel_m: "Abortado.",
                 j_comp: "COMPLETADO", j_comp_m: "Éxito.", j_inj: "INYECCION", j_inj_m: "Conectando...", j_succ: "EXITO", j_err: "ERROR",
-                j_del_sel: "ELIMINAR SELECCION", j_del_m1: "驴Eliminar", j_elem: "elementos",
-                j_warn: "鈿狅笍 ADVERTENCIA", j_warn_m: "Esta acción NO se puede deshacer.",
-                j_ren: "RENOMBRAR", j_ren_m: "Nuevo nombre:", j_del1: "驴Eliminar",
+                j_del_sel: "ELIMINAR SELECCION", j_del_m1: "¿Eliminar", j_elem: "elementos",
+                j_warn: "⚠️ ADVERTENCIA", j_warn_m: "Esta acción NO se puede deshacer.",
+                j_ren: "RENOMBRAR", j_ren_m: "Nuevo nombre:", j_del1: "¿Eliminar",
                 j_new_fold: "NUEVA CARPETA", j_new_fold_m: "Nombre:", j_scan_fail: "FALLO", j_scan_fail_m: "PS4 no encontrada.",
-                j_del_route: "ELIMINAR RUTA", j_del_route_m: "驴Quitar ruta?", j_files_sel: "ARCHIVOS", j_empty: "Vacía", j_sel: "seleccionados",
+                j_del_route: "ELIMINAR RUTA", j_del_route_m: "¿Quitar ruta?", j_files_sel: "ARCHIVOS", j_empty: "Vacía", j_sel: "seleccionados",
                 empty_gal_title: "Coloca tus imágenes <b class='text-white/70'>512x512 .png</b> dentro de la carpeta <br><span class='font-mono bg-black/50 px-1.5 py-0.5 rounded' style='color: var(--theme-sec);'>htdocs/{folder}/</span><br>en tu Android.",
                 empty_pay_title: "Coloca tus archivos <b class='text-white/70'>.bin</b> en la carpeta <br><span class='font-mono bg-black/50 px-1.5 py-0.5 rounded' style='color: var(--theme-prim);'>htdocs/payloads/</span>.",
                 del_all: "BORRAR TODAS", tab_biblio: "Biblioteca", titles_installed: "TITULOS INSTALADOS", search_placeholder: "Buscar juego o app...",
@@ -1529,7 +1385,7 @@ if (isset($_GET['ota_update'])) {
                 j_exist: "FILE EXISTS", j_exist_m: "already exists.<br>Overwrite?", j_cancel: "CANCELED", j_cancel_m: "Transfer aborted.",
                 j_comp: "COMPLETED", j_comp_m: "Success.", j_inj: "INJECTING", j_inj_m: "Connecting...", j_succ: "SUCCESS", j_err: "ERROR",
                 j_del_sel: "DELETE SELECTION", j_del_m1: "Delete", j_elem: "items",
-                j_warn: "鈿狅笍 FINAL WARNING", j_warn_m: "This cannot be undone.",
+                j_warn: "⚠️ FINAL WARNING", j_warn_m: "This cannot be undone.",
                 j_ren: "RENAME", j_ren_m: "Enter a new name:", j_del1: "Delete",
                 j_new_fold: "NEW FOLDER", j_new_fold_m: "Name:", j_scan_fail: "SCAN FAILED", j_scan_fail_m: "PS4 not found.",
                 j_del_route: "DELETE PATH", j_del_route_m: "Remove path?", j_files_sel: "FILES", j_empty: "Empty", j_sel: "selected",
@@ -1732,7 +1588,7 @@ if (isset($_GET['ota_update'])) {
         // ==========================================
         let currentTitle = "", currentCusa = "", currentVersion = "1.00";
         let isTransferring = false, uploadAbortController = null, isPaused = false, currentFileName = ""; 
-        const CHUNK_SIZE = 1.5 * 1024 * 1024;  
+        const CHUNK_SIZE = 20 * 1024 * 1024; 
         let currentExplorerPath = '', optionsPath = '', optionsName = '', optionsIsDir = false, clipboardItems = [], isCutMode = false, currentExplorerItems = [], isSelectMode = false, selectedItems = [];
         let PAYLOADS_LOCALES = [], selectedPayloadValue = null, currentPayloadSource = 'gallery';
         let ICONOS_LOCALES = [], BACKUPS_LOCALES = [], selectedIconValue = null, currentIconSource = 'gallery';
@@ -1942,7 +1798,7 @@ if (isset($_GET['ota_update'])) {
         }
 
         async function eliminarCategoria(catId) {
-            const seguro = await ps5Confirm("ELIMINAR CATEGORÍA", "驴Borrar esta categoría? Los juegos volverán a su sección por defecto.", "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
+            const seguro = await ps5Confirm("ELIMINAR CATEGORÍA", "¿Borrar esta categoría? Los juegos volverán a su sección por defecto.", "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
             if(!seguro) return;
             let customCats = JSON.parse(localStorage.getItem('ps4_custom_categories')) || []; customCats = customCats.filter(c => c.id !== catId); localStorage.setItem('ps4_custom_categories', JSON.stringify(customCats));
             let savedCats = JSON.parse(localStorage.getItem('ps4_game_categories')) || {}; for(let cusa in savedCats) { if(savedCats[cusa] === catId) delete savedCats[cusa]; } localStorage.setItem('ps4_game_categories', JSON.stringify(savedCats));
@@ -1956,14 +1812,14 @@ if (isset($_GET['ota_update'])) {
         }
 
         async function borrarJuegoDeBiblioteca() {
-            const seguro = await ps5Confirm("QUITAR JUEGO", `驴Ocultar de la biblioteca local?<br><br><span class="text-[9px] text-[var(--text-muted)] block mt-2">Solo borra la portada del celular, no borra el juego de tu PS4.</span>`, "fa-eye-slash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
+            const seguro = await ps5Confirm("QUITAR JUEGO", `¿Ocultar de la biblioteca local?<br><br><span class="text-[9px] text-[var(--text-muted)] block mt-2">Solo borra la portada del celular, no borra el juego de tu PS4.</span>`, "fa-eye-slash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]");
             if (!seguro) return;
             const fd = new FormData(); fd.append('action', 'delete_game'); fd.append('cusa_id', currentCusa);
             try { await fetch('api/library.php', { method: 'POST', body: fd }); ps5Notification("OCULTO", "Juego removido de la vista.", "fa-eye-slash"); cerrarTodo(); cargarBibliotecaLocal(); } catch(e) {}
         }
 
         async function limpiarBibliotecaEntera() {
-            const seguro = await ps5Confirm("VACIAR CACHÉ", "驴Estás seguro de limpiar por completo la biblioteca local?<br><br><span class='text-[9px] text-[var(--text-muted)] block mt-2'>Tendrás que volver a sincronizar la consola para que aparezcan tus juegos.</span>", "fa-dumpster-fire", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_20px_rgba(220,38,38,0.5)]");
+            const seguro = await ps5Confirm("VACIAR CACHÉ", "¿Estás seguro de limpiar por completo la biblioteca local?<br><br><span class='text-[9px] text-[var(--text-muted)] block mt-2'>Tendrás que volver a sincronizar la consola para que aparezcan tus juegos.</span>", "fa-dumpster-fire", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_20px_rgba(220,38,38,0.5)]");
             if(!seguro) return;
             mostrarCarga("LIMPIANDO", "Borrando portadas...", "fa-trash fa-bounce text-red-500");
             const items = document.querySelectorAll('.item-biblio');
@@ -2014,7 +1870,7 @@ if (isset($_GET['ota_update'])) {
 
         async function eliminarDLCUpdate(path, type, size) {
             let tipoNombre = type === 'update' ? 'la Actualización' : 'este DLC';
-            const seguro = await ps5Confirm("LIBERAR ESPACIO", `驴Estás seguro de eliminar <b>${tipoNombre}</b>?<br><br>Se liberarán <b class="text-green-400">${size}</b>.<br><span class="text-[9px] text-red-400 block mt-2">No se borrará el juego base.</span>`, "fa-dumpster-fire", "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] border border-red-500/50");
+            const seguro = await ps5Confirm("LIBERAR ESPACIO", `¿Estás seguro de eliminar <b>${tipoNombre}</b>?<br><br>Se liberarán <b class="text-green-400">${size}</b>.<br><span class="text-[9px] text-red-400 block mt-2">No se borrará el juego base.</span>`, "fa-dumpster-fire", "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] border border-red-500/50");
             if (!seguro) return;
             mostrarCarga("BORRANDO", `Desinstalando...<br><span class='text-[10px] font-bold text-green-400 block mt-1'>Liberando ${size}</span>`, "fa-trash fa-bounce text-red-500");
             const ip = document.getElementById('host-ip') ? document.getElementById('host-ip').value : '';
@@ -2037,7 +1893,7 @@ if (isset($_GET['ota_update'])) {
                 let res = await fetch('api/saves.php', { method: 'POST', body: fdCheck }); let data = await res.json();
                 closeCustomModal(); await new Promise(r => setTimeout(r, 350));
                 if (data.status === 'success') {
-                    const msg = `Se encontraron <b>${data.files} archivos</b> de guardado.<br>Peso total: <b style="color: var(--theme-prim);">${data.size_mb} MB</b><br>Perfiles: <b>${data.users}</b><br><br>驴Deseas comprimir todo y descargar el ZIP a tu celular?`;
+                    const msg = `Se encontraron <b>${data.files} archivos</b> de guardado.<br>Peso total: <b style="color: var(--theme-prim);">${data.size_mb} MB</b><br>Perfiles: <b>${data.users}</b><br><br>¿Deseas comprimir todo y descargar el ZIP a tu celular?`;
                     const confirmar = await ps5Confirm("PARTIDAS ENCONTRADAS", msg, "fa-floppy-disk");
                     if (confirmar) {
                         mostrarCarga("CREANDO BACKUP", "Comprimiendo y descargando...<br><span class='text-[9px] mt-1 block uppercase tracking-widest text-[var(--text-muted)]'>No cierres la app.</span>", "fa-file-zipper fa-bounce");
@@ -2091,14 +1947,14 @@ if (isset($_GET['ota_update'])) {
         }
 
         async function limpiarTemporales() {
-            const ok = await ps5Confirm("LIMPIAR", "驴Borrar archivos temporales del servidor?", "fa-broom");
+            const ok = await ps5Confirm("LIMPIAR", "¿Borrar archivos temporales del servidor?", "fa-broom");
             if(!ok) return;
             mostrarCarga("LIMPIANDO", "Borrando caché...", "fa-trash fa-bounce text-red-500");
             try { await fetch('api/library.php?action=clear_temp'); closeCustomModal(); ps5Notification("LIMPIEZA", "Temporales borrados.", "fa-check"); } catch(e) { mostrarErrorFinal("ERROR", "No se pudo limpiar."); }
         }
 
         async function buscarActualizacionOTA() {
-            const confirm = await ps5Confirm("ACTUALIZACION OTA", "驴Buscar e instalar la última versión desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perderán.</span>", "fa-cloud-arrow-down");
+            const confirm = await ps5Confirm("ACTUALIZACION OTA", "¿Buscar e instalar la última versión desde la nube?<br><br><span class='text-[9px] text-[var(--text-muted)] mt-1 block'>Tus juegos y portadas no se perderán.</span>", "fa-cloud-arrow-down");
             if(!confirm) return;
             
             mostrarCarga("ACTUALIZANDO", "Descargando código...", "fa-cloud-arrow-down fa-bounce");
@@ -2110,7 +1966,7 @@ if (isset($_GET['ota_update'])) {
                 
                 if (data.status === 'updated') {
                     AudioEngine.playSuccess();
-                    ps5Notification("隆ACTUALIZADO!", "Reiniciando app...", "fa-check");
+                    ps5Notification("¡ACTUALIZADO!", "Reiniciando app...", "fa-check");
                     setTimeout(() => window.location.reload(), 1500);
                 } else if (data.status === 'uptodate') {
                     closeCustomModal();
@@ -2150,12 +2006,11 @@ if (isset($_GET['ota_update'])) {
             let activeBtn = document.getElementById('btn-mode-' + mode);
             if(activeBtn) { activeBtn.className = classActive; activeBtn.style.backgroundColor = 'var(--theme-prim)'; activeBtn.style.color = '#000'; }
             
-                  if(mode === 'rpi') {
+            if(mode === 'rpi') {
                 if(boxRpi) boxRpi.classList.remove('hidden');
                 if(currentTabIndex === 1 && rpiQueue.length > 0 && floatingRpi) floatingRpi.classList.remove('floating-hidden');
-                cargarArchivosRPI();
-            }
-               else {
+                renderRpiList();
+            } else {
                 if(boxFtp) boxFtp.classList.remove('hidden');
                 if(currentTabIndex === 1 && floatingFtp && document.getElementById('file-upload').files.length > 0) floatingFtp.classList.remove('floating-hidden');
             }
@@ -2276,82 +2131,65 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-        async function cargarArchivosRPI() {
+        async function renderRpiList() {
             const container = document.getElementById('rpi-pkg-list');
-            if (!container) return;
-            container.innerHTML = `<div class="col-span-full text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color: var(--theme-prim);"></i><p class="text-[10px] text-[var(--text-muted)] tracking-widest font-black uppercase">CARGANDO LISTA...</p></div>`;
+            if(!container) return;
+            container.innerHTML = `<div class="col-span-full text-center py-6"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color: var(--theme-prim);"></i><p class="text-[10px] text-[var(--text-muted)] tracking-widest font-black uppercase">CARGANDO LISTA...</p></div>`;
+            rpiQueue = [];
+            document.getElementById('floating-btn-rpi').classList.add('floating-hidden');
+            
             try {
                 let res = await fetch('index.php?get_rpi_list=1&_t=' + new Date().getTime());
                 let data = await res.json();
+                
                 if (data.status === 'success') {
-                    let manuales = rpiRawList.filter(p => p.origen === 'Explorador');
                     rpiRawList = data.data;
-                    manuales.forEach(m => { if (!rpiRawList.find(r => r.path === m.path)) rpiRawList.push(m); });
-                    renderRpiList();
-                }
-            } catch(e) { container.innerHTML = `<div class="col-span-full text-center text-red-400 text-xs font-bold py-6">Error al cargar.</div>`; }
-        }
-
-                function renderRpiList() {
-            const container = document.getElementById('rpi-pkg-list');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const topBar = document.createElement('div');
-            topBar.className = "col-span-full grid grid-cols-2 md:flex gap-2 mb-4 bg-gray-900/50 p-2 md:p-3 rounded-2xl border border-white/5 shadow-lg backdrop-blur-md";
-            topBar.innerHTML = `
-                <button onclick="cargarArchivosRPI()" class="col-span-1 bg-gray-800 hover:bg-gray-700 text-[10px] md:text-sm font-bold px-2 py-3 md:py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 border border-white/10 text-[var(--text-main)] shadow-inner">
-                    <i class="fa-solid fa-rotate text-blue-400"></i> REFRESCAR
-                </button>
-                <button onclick="actualizarIpCelular()" class="col-span-1 bg-gray-800 hover:bg-gray-700 text-[10px] md:text-sm font-bold px-2 py-3 md:py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 border border-white/10 text-[var(--text-main)] shadow-inner">
-                    <i class="fa-solid fa-network-wired text-green-400"></i> EDITAR IP
-                </button>
-                <button onclick="abrirBuscadorPKG()" class="col-span-2 md:col-auto md:ml-auto w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-[11px] md:text-sm font-black tracking-widest px-4 py-3 md:py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.4)] text-white">
-                    <i class="fa-solid fa-folder-open"></i> BUSCAR PKG
-                </button>
-            `;
-            container.appendChild(topBar);
-
-            if (rpiRawList.length === 0) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = "col-span-full text-center text-gray-500 py-10 font-bold bg-black/40 rounded-2xl border border-dashed border-white/10 mt-4";
-                emptyDiv.innerHTML = `<i class="fa-solid fa-box-open text-4xl mb-3 block opacity-50"></i>No hay archivos en la carpeta del servidor.`;
-                container.appendChild(emptyDiv);
-                        } else {
-             rpiRawList.forEach((file, idx) => {
-                    let idCard = 'rpi-card-' + idx;
-                    const isSelected = rpiQueue.includes(file.nombre || file.path);
+                    if (rpiRawList.length === 0) {
+                        container.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center min-h-[150px] bg-black/40 rounded-[1.5rem] border border-dashed border-white/20 p-6 text-center"><i class="fa-solid fa-box-open text-4xl mb-4 text-[var(--text-muted)]"></i><p class="text-[10px] text-[var(--text-muted)] leading-relaxed">No hay juegos .pkg en la carpeta<br><span class="font-mono bg-black/60 px-1.5 py-0.5 rounded mt-1 inline-block border border-white/10" style="color: var(--theme-prim);">htdocs/servidor_rpi/</span></p><button onclick="renderRpiList()" class="mt-4 px-4 py-2 rounded-lg text-[9px] font-black tracking-widest active:scale-95 transition-transform border hover:text-black hover:bg-white" style="color: var(--theme-prim); border-color: var(--theme-prim);"><i class="fa-solid fa-rotate mr-1"></i> REFRESCAR</button></div>`;
+                        return;
+                    }
                     
-                    const card = document.createElement('div');
-                    card.id = idCard;
-                    card.className = `rpi-card group relative rounded-lg overflow-hidden bg-black/40 backdrop-blur-md cursor-pointer transition-all duration-300 flex flex-col border border-white/10 aspect-[4/5] ${isSelected ? 'selected' : ''}`;
-                    card.onclick = () => selectRpiPkg(file.nombre || file.path, idCard);
-
-                    card.innerHTML = `
-                        <div class="rpi-card-check opacity-0 group-hover:opacity-100 absolute top-2 right-2 z-40">
-                            <i class="fa-solid fa-check text-[10px]"></i>
-                        </div>
-                        <div class="w-full h-[55%] relative flex items-center justify-center overflow-hidden shrink-0">
-                            <i id="icon-${idCard}" class="fa-solid fa-spinner fa-spin text-3xl z-0" style="color: var(--theme-prim); opacity: 0.5;"></i>
-                            <img id="img-${idCard}" src="" class="absolute inset-0 w-full h-full object-cover hidden z-10 transition-transform duration-500 group-hover:scale-105">
-                        </div>
-                        <div class="w-full flex-1 flex flex-col items-center justify-evenly py-1.5 relative z-30">
-                            <div id="title-container-${idCard}" class="w-full h-[14px] flex items-center justify-center px-1 overflow-hidden">
-                                <h3 class="font-black text-white text-[10px] leading-none truncate uppercase tracking-wide drop-shadow-md">${file.nombre}</h3>
+                    // CONTROLES CENTRADOS
+                    let htmlControls = `<div class="col-span-full flex justify-center gap-3 mb-4">
+                        <button onclick="actualizarIpCelular()" class="bg-yellow-600/20 text-yellow-400 hover:bg-yellow-600 hover:text-white px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-colors active:scale-95 border border-yellow-500/30"><i class="fa-solid fa-pen mr-1"></i> EDITAR IP</button>
+                        <button onclick="renderRpiList()" class="hover:text-black px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-colors active:scale-95 border hover:bg-white" style="color: var(--theme-prim); border-color: var(--theme-prim);"><i class="fa-solid fa-rotate mr-1"></i> REFRESCAR</button>
+                    </div>`;
+                    
+                    let htmlCards = '';
+                    rpiRawList.forEach((pkg, idx) => {
+                        let idCard = 'rpi-card-' + idx;
+                        let iconOrigen = pkg.origen && pkg.origen.includes('MicroSD') ? '<i class="fa-solid fa-sd-card text-[9px]"></i>' : '<i class="fa-solid fa-mobile-screen text-[9px]"></i>';
+                        let origenHtml = pkg.origen ? `<span class="text-[8px] font-mono tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white flex items-center gap-1">${iconOrigen} ${pkg.origen.replace(/💾 |📱 /g, '')}</span>` : '';
+                        
+                        // Diseño Pro a 3 Columnas: aspect-[3/4]
+                        htmlCards += `
+                        <div id="${idCard}" class="rpi-card rounded-2xl overflow-hidden aspect-[3/4] flex flex-col relative group bg-black/40 border border-white/5 cursor-pointer shadow-lg" onclick="selectRpiPkg('${pkg.path || pkg.nombre}', '${idCard}')">
+                            <div class="rpi-card-check"><i class="fa-solid fa-check"></i></div>
+                            <div class="w-full flex-1 relative bg-black/60 flex items-center justify-center overflow-hidden">
+                                <i id="icon-${idCard}" class="fa-solid fa-spinner fa-spin text-3xl z-0" style="color: var(--theme-prim); opacity: 0.5;"></i>
+                                <img id="img-${idCard}" src="" class="absolute inset-0 w-full h-full object-cover hidden z-10 transition-transform duration-500 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-20 pointer-events-none"></div>
+                                <div class="absolute bottom-0 left-0 right-0 p-2.5 z-30 flex flex-col gap-1 pointer-events-none">
+                                    <div id="title-container-${idCard}" class="w-full">
+                                        <h3 class="text-[10px] font-black text-white leading-tight truncate drop-shadow-md">Cargando...</h3>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-1">
+                                        ${origenHtml}
+                                        <span id="cusa-${idCard}" class="text-[8px] font-mono font-bold tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white truncate hidden"></span>
+                                        <span class="text-[8px] font-mono tracking-widest bg-black/80 px-1.5 py-0.5 rounded border border-white/10 text-white">${pkg.size_fmt}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="w-[80%] h-px bg-white/20 shrink-0"></div>
-                            <p class="w-full text-[9px] text-[var(--text-main)] font-mono leading-none text-center drop-shadow-md tracking-widest truncate shrink-0">${file.size_fmt}</p>
-                            <div class="w-[80%] h-px bg-white/20 shrink-0"></div>
-                            <span id="cusa-${idCard}" class="w-full text-[8px] font-mono leading-none tracking-widest text-[var(--text-muted)] text-center truncate shrink-0 min-h-[10px]">...</span>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-                procesarColaMetadatosRPI([...rpiRawList]);
+                        </div>`;
+                    });
+                    
+                    container.innerHTML = htmlControls + htmlCards;
+                    procesarColaMetadatosRPI([...rpiRawList]);
+                }
+            } catch(e) {
+                container.innerHTML = `<div class="col-span-full text-center text-red-400 text-xs font-bold py-6">Error al cargar la lista.</div>`;
             }
         }
-
-
 
         async function procesarColaMetadatosRPI(cola) {
             if (cola.length === 0) return;
@@ -2435,32 +2273,23 @@ if (isset($_GET['ota_update'])) {
             }
         }
 
-              async function iniciarColaInstalacionRPI() {
-            if(rpiQueue.length === 0) { await ps5Alert(t('j_err_file'), "Selecciona un juego.", "fa-hand-pointer"); return; }
+        async function iniciarColaInstalacionRPI() {
+            if(rpiQueue.length === 0) { await ps5Alert(t('j_err_file'), "Selecciona al menos un juego de la lista.", "fa-hand-pointer"); return; }
             const ps4Ip = document.getElementById('host-ip').value;
             if(!ps4Ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), "fa-network-wired"); return; }
-
-            // 1. LÓGICA DE MEMORIA INTELIGENTE PARA LA IP
-            let phoneIp = '<?php echo $ip_servidor; ?>'; // Lo que detecta Termux ahora
-            let savedIp = localStorage.getItem('ps4_phone_ip'); // Lo que guardamos antes
-
-            // Si PHP detectó una IP real de Wi-Fi, la usamos y la grabamos
-            if (phoneIp && phoneIp !== '127.0.0.1' && phoneIp !== 'localhost' && phoneIp !== '::1') {
-                localStorage.setItem('ps4_phone_ip', phoneIp);
-            } 
-            // Si estamos en localhost, intentamos usar la que ya teníamos guardada
-            else if (savedIp) {
-                phoneIp = savedIp;
-            }
-            // Si no hay nada de nada, ahí sí pedimos permiso
-            else {
-                let ingresada = await ps5Prompt('CONFIGURAR IP', 'Ingresa la IP Wi-Fi de tu celular (Ej: 192.168.0.20):', '');
-                if (!ingresada) return;
-                phoneIp = ingresada.trim();
-                localStorage.setItem('ps4_phone_ip', phoneIp);
+            
+            let phoneIp = '<?php echo isset($ip_servidor) ? $ip_servidor : "127.0.0.1"; ?>';
+            let storedIp = localStorage.getItem('ps4_phone_ip');
+            if (storedIp && storedIp.trim() !== '') phoneIp = storedIp.trim();
+            
+            let getSubnet = (ip) => ip.split('.').slice(0, 3).join('.');
+            if (getSubnet(ps4Ip) !== getSubnet(phoneIp) || phoneIp === '127.0.0.1' || phoneIp === 'localhost' || phoneIp === '::1' || phoneIp.startsWith('fe80:')) {
+                let advertencia = await ps5Confirm("ADVERTENCIA DE RED", `Detectamos que tu celular y la PS4 están en redes diferentes o Android bloqueó la IP automática.<br><br>Celular (Wi-Fi): <b class="text-yellow-400">${phoneIp}</b><br>PS4: <b style="color: var(--theme-prim);">${ps4Ip}</b><br><br>Para evitar que el envío falle, toca "CANCELAR", luego ve al botón "EDITAR IP" y coloca tu IP Wi-Fi actual. ¿O quieres forzar el envío de todos modos?`, "fa-network-wired", "bg-yellow-500 text-black border border-yellow-400/50");
+                if (!advertencia) return;
             }
 
-            let baseUrl = 'http://' + phoneIp + ':8081';
+            // MAGIA 1: Forzar el puerto 8081 (Busybox HTTPD) para la descarga pesada
+            let baseUrl = window.location.protocol + '//' + phoneIp + ':8081';
 
             document.getElementById('custom-modal').classList.remove('hidden', 'opacity-0'); 
             document.getElementById('modal-card').classList.remove('scale-95');
@@ -2474,37 +2303,43 @@ if (isset($_GET['ota_update'])) {
             
             for (let i = 0; i < rpiQueue.length; i++) {
                 let selectedPath = rpiQueue[i]; 
-                if (!selectedPath.includes('servidor_rpi/')) { selectedPath = 'servidor_rpi/' + selectedPath; }
+                
+                // MAGIA 2: Asegurarnos de que el link apunta a la carpeta correcta
+                if (!selectedPath.includes('servidor_rpi/')) {
+                    selectedPath = 'servidor_rpi/' + selectedPath;
+                }
 
                 let pathParts = selectedPath.split('/');
-                let encodedPath = pathParts.map(p => encodeURIComponent(decodeURIComponent(p))).join('/');
+                let encodedPath = pathParts.map(p => encodeURIComponent(p)).join('/');
                 let urlToSend = baseUrl + '/' + encodedPath;
-                let displayName = decodeURIComponent(pathParts[pathParts.length - 1]); 
+                let displayName = pathParts[pathParts.length - 1]; 
                 
                 document.getElementById('modal-title').innerText = `ENVIANDO (${i+1}/${rpiQueue.length})`;
-                document.getElementById('modal-text').innerHTML = `Instalando:<br><b class="text-[10px] break-all uppercase" style="color: var(--theme-prim);">${displayName}</b><br><br><span class="text-[8px] text-gray-500 break-all">ORIGEN: ${phoneIp}</span>`;
+                document.getElementById('modal-text').innerHTML = `Instalando:<br><b class="text-[10px] break-all uppercase" style="color: var(--theme-prim);">${displayName}</b>`;
                 
                 let pct = ((i) / rpiQueue.length) * 100;
                 document.getElementById('modal-progress-bar').style.width = pct + '%';
                 document.getElementById('modal-percentage').innerText = pct.toFixed(0) + '%';
                 
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 12000); 
+
                 try {
                     let res = await fetch('index.php?rpi_proxy=1', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ip: ps4Ip, url_pkg: urlToSend })
+                        body: JSON.stringify({ ip: ps4Ip, url_pkg: urlToSend }),
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     let data = await res.json();
                     
-                    if(data.status === 'success') { 
-                        exitos++; 
-                        await new Promise(r => setTimeout(r, 1500)); 
-                    } else { 
-                        // Mostramos el motivo REAL por el cual la consola lo rechazó
-                        errores.push(`${displayName}: ${data.message || 'Error Desconocido'}`); 
-                    }
+                    if(data.status === 'success') { exitos++; await new Promise(r => setTimeout(r, 1500)); } 
+                    else { errores.push(`${displayName}: Rechazado por la consola.`); }
                 } catch(e) {
-                    errores.push(`${displayName}: Error de conexión PHP-PS4.`);
+                    clearTimeout(timeoutId);
+                    if (e.name === 'AbortError') errores.push(`${displayName}: Tiempo agotado (Timeout).`);
+                    else errores.push(`${displayName}: Error de red local.`);
                 }
             }
             
@@ -2514,22 +2349,21 @@ if (isset($_GET['ota_update'])) {
             
             setTimeout(() => {
                 if (errores.length === 0) {
-                    AudioEngine.playSuccess(); ps5Notification("INSTALACIÓN", `Se enviaron ${exitos} juegos correctamente.`, "fa-check-double"); renderRpiList(); 
+                    AudioEngine.playSuccess(); ps5Notification("INSTALACIÓN", `Se enviaron ${exitos} juegos a la consola.`, "fa-check-double"); renderRpiList(); 
                 } else {
                     AudioEngine.playError();
-                    ps5Alert("RESULTADO CON ERRORES", `Se enviaron ${exitos}, pero fallaron ${errores.length}.<br><textarea class="w-full h-24 bg-black/80 text-red-400 font-mono text-[9px] mt-2 p-2 rounded-xl border border-red-500/30 custom-scrollbar shadow-inner" readonly>${errores.join('\\n')}</textarea>`, "fa-triangle-exclamation");
+                    let logErrores = errores.join('\n');
+                    ps5Alert("COMPLETADO CON ERRORES", `Se enviaron ${exitos} juegos, pero fallaron ${errores.length}.<br><textarea class="w-full h-24 bg-black/80 text-red-400 font-mono text-[9px] mt-2 p-2 rounded-xl border border-red-500/30 custom-scrollbar shadow-inner" readonly>${logErrores}</textarea>`, "fa-triangle-exclamation");
                 }
             }, 400);
         }
-
-
 
         // ==========================================
         // 13. EXPLORADOR FTP: VISOR, DESCARGA Y MULTI-MOVER
         // ==========================================
         function renderShortcuts() { let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; const container = document.getElementById('explorer-shortcuts'); if(shortcuts.length === 0) { container.classList.add('hidden'); return; } container.classList.remove('hidden'); let html = '<i class="fa-solid fa-star text-yellow-500 text-[10px] mr-1 shrink-0"></i>'; shortcuts.forEach(path => { let name = path === '/' ? 'RAÍZ' : path.split('/').filter(Boolean).pop(); html += `<div class="flex items-center gap-1 bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--text-main)] cursor-pointer whitespace-nowrap group"><span onclick="loadExplorerPath('${path}')" class="truncate max-w-[80px]">${name}</span><div onclick="removeShortcut('${path}', event)" class="w-4 h-4 rounded-full bg-black/40 hover:bg-red-500/80 flex items-center justify-center ml-1 transition-colors"><i class="fa-solid fa-xmark text-[10px] text-[var(--text-muted)] group-hover:text-white"></i></div></div>`; }); container.innerHTML = html; }
         function addCurrentPathToShortcuts() { if(!currentExplorerPath) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; if(!shortcuts.includes(currentExplorerPath)) { shortcuts.push(currentExplorerPath); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Ruta añadida.", "fa-star"); } }
-        async function removeShortcut(path, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Quitar acceso a <br><b class="mt-1 block" style="color: var(--theme-prim);">${path}</b>?`, 'fa-star-half-stroke', 'bg-red-600 text-white border border-red-500/50'); if(!seguro) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; shortcuts = shortcuts.filter(p => p !== path); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Removido.", "fa-trash"); }
+        async function removeShortcut(path, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `¿Quitar acceso a <br><b class="mt-1 block" style="color: var(--theme-prim);">${path}</b>?`, 'fa-star-half-stroke', 'bg-red-600 text-white border border-red-500/50'); if(!seguro) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; shortcuts = shortcuts.filter(p => p !== path); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Removido.", "fa-trash"); }
         function toggleSelectMode() { isSelectMode = !isSelectMode; selectedItems = []; const btn = document.getElementById('btn-select-mode'), panel = document.getElementById('multi-action-panel'); if (isSelectMode) { btn.style.backgroundColor = 'var(--theme-prim)'; btn.style.color = 'black'; btn.style.borderColor = 'var(--theme-prim)'; btn.classList.remove('bg-white/5', 'border-white/10', 'text-white'); panel.classList.remove('hidden'); } else { btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.borderColor = ''; btn.classList.add('bg-white/5', 'border-white/10', 'text-white'); panel.classList.add('hidden'); } if(currentExplorerItems) renderExplorer(currentExplorerItems, currentExplorerPath); }
         function toggleSelectItem(path, isDir, name) { let idx = selectedItems.findIndex(i => i.path === path); if(idx > -1) { selectedItems.splice(idx, 1); } else { selectedItems.push({path, isDir, name}); } document.getElementById('multi-select-count').innerText = `${selectedItems.length} ${t('j_sel')}`; renderExplorer(currentExplorerItems, currentExplorerPath); }
         async function deleteSelectedItems() { if (selectedItems.length === 0) return; const seguro1 = await ps5Confirm(t('j_del_sel'), `${t('j_del_m1')} <b class="text-[var(--text-main)]">${selectedItems.length} ${t('j_elem')}</b>?`, 'fa-trash', 'bg-red-600 text-white border border-red-500/50'); if(!seguro1) return; const seguro2 = await ps5Confirm(t('j_warn'), t('j_warn_m'), 'fa-triangle-exclamation', 'bg-red-600 text-white border border-red-500/50'); if(!seguro2) return; mostrarCarga(t('j_del_sel'), `Borrando...`, "fa-trash fa-bounce text-red-500"); let successCount = 0; const ip = document.getElementById('host-ip').value; isTransferring = true; for (let i = 0; i < selectedItems.length; i++) { let item = selectedItems[i]; const fd = new FormData(); fd.append('action', 'delete_item'); fd.append('host_ip', ip); fd.append('path', item.path); fd.append('is_dir', item.isDir); try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') successCount++; } catch(e) {} } isTransferring = false; closeCustomModal(); toggleSelectMode(); loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), `${successCount} borrados.`, "fa-trash"); }
@@ -2551,20 +2385,9 @@ if (isset($_GET['ota_update'])) {
         // ==========================================
         // 14. GALERÍAS Y MODDING (ICONOS)
         // ==========================================
-                                                                        function cargarGaleria(lista, containerId, folder) {
+        function cargarGaleria(lista, containerId, folder) {
             const container = document.getElementById(containerId); container.innerHTML = '';
-            if (!lista || lista.length === 0) { 
-                container.innerHTML = `<div class="w-full h-[250px] flex items-center justify-center bg-black/40 backdrop-blur-md shadow-inner rounded-[1.5rem] border border-white/10 p-4">
-                    <div class="flex flex-col items-center justify-center gap-3 w-full max-w-[280px] mx-auto text-center">
-                        <i class="fa-solid fa-folder text-4xl" style="color: var(--theme-prim); opacity: 0.9;"></i>
-                        <p class="text-[11px] text-[var(--text-muted)] font-medium text-center leading-relaxed px-2">Coloca tus imágenes <b class='text-[var(--text-main)] font-black'>512x512 .png</b> en la<br>memoria interna, dentro de la carpeta</p>
-                        <div class="bg-black/80 px-4 py-2.5 rounded-xl border border-white/5 shadow-inner mt-1 w-full">
-                            <span class="font-mono text-[11px] font-bold tracking-wide" style="color: var(--theme-prim);">GoldHenManager/${folder}/</span>
-                        </div>
-                    </div>
-                </div>`; 
-                return; 
-            }
+            if (!lista || lista.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[220px] bg-black/40 rounded-[1.5rem] border border-dashed border-white/10 p-6 text-center shadow-inner"><i class="fa-solid fa-folder text-6xl mb-4" style="color: var(--theme-prim); opacity: 0.3;"></i><p class="text-[11px] text-[var(--text-muted)] leading-relaxed max-w-[250px] mx-auto">${t('empty_gal_title').replace('{folder}', folder)}</p></div>`; return; }
             const topBar = document.createElement('div'); topBar.className = 'flex justify-between items-center mb-3 px-1'; topBar.innerHTML = `<span class="text-[10px] font-black tracking-widest uppercase" style="color: var(--theme-prim); opacity: 0.6;">${lista.length} PORTADAS</span><button onclick="eliminarTodasLasImagenes('${folder}')" class="text-red-500 hover:text-red-400 text-[10px] font-black tracking-widest transition-colors active:scale-95"><i class="fa-solid fa-trash-can mr-1"></i> ${t('del_all')}</button>`; container.appendChild(topBar);
             const grid = document.createElement('div'); grid.className = 'grid grid-cols-3 gap-2 overflow-y-auto custom-scrollbar pr-1 gallery-grid-fix'; 
             const deseleccionarEnScroll = () => { const items = grid.querySelectorAll('.gallery-item.selected'); if(items.length > 0) { items.forEach(el => el.classList.remove('selected')); selectedIconValue = null; const btnAplicar = document.getElementById('floating-btn-aplicar'); if(btnAplicar) btnAplicar.classList.add('floating-hidden'); } }; grid.addEventListener('scroll', deseleccionarEnScroll, { passive: true }); grid.addEventListener('touchmove', deseleccionarEnScroll, { passive: true });
@@ -2585,28 +2408,17 @@ if (isset($_GET['ota_update'])) {
         async function enviarIcono(e) { e.preventDefault(); const ip = document.getElementById('host-ip').value, cusa = document.getElementById('icon-cusa').value.trim().toUpperCase(); if (!ip || !cusa) return; const formData = new FormData(); formData.append('action', 'upload_icon'); formData.append('host_ip', ip); formData.append('cusa_id', cusa); if (currentIconSource === 'gallery' || currentIconSource === 'backup') { if (!selectedIconValue) { await ps5Alert(t('j_err_file'), "Selecciona una imagen.", 'fa-image'); return; } formData.append('source_type', 'local_gallery'); formData.append('icon_path', selectedIconValue); } else { const fileInput = document.getElementById('icon-file'); if (!fileInput || !fileInput.files || fileInput.files.length === 0) { await ps5Alert(t('j_err_file'), "Busca una imagen.", 'fa-folder-open'); return; } formData.append('source_type', 'local'); formData.append('local_icon', fileInput.files[0]); } mostrarCarga("MODDING", "Inyectando portada...", "fa-wand-magic-sparkles fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; try { let res = await fetch('api/modding.php', { method: 'POST', body: formData }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); document.getElementById('modal-title').innerText = t('j_succ'); document.getElementById('modal-text').innerHTML = "Portada inyectada."; document.getElementById('modal-close-btn').classList.remove('hidden'); document.getElementById('modal-icon').innerHTML = `<div class="absolute inset-0 rounded-full border animate-ping" style="border-color: var(--theme-prim); opacity: 0.4;"></div><i class="fa-solid fa-palette text-4xl relative z-10" style="color: var(--theme-prim);"></i>`; ps5Notification("MODDING", "Arte aplicado.", "fa-palette"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (error) { mostrarErrorFinal(t('j_err'), "Error de conexión."); } finally { isTransferring = false; } }
 
         // ==========================================
-        // 15. PAYLOADS (RESTAURADOS Y CORREGIDOS)
+        // 15. PAYLOADS (RESTAURADOS)
         // ==========================================
         function cargarPayloads(lista, containerId) { 
             const container = document.getElementById(containerId); container.innerHTML = ''; 
-            if (!lista || lista.length === 0) {
-                container.innerHTML = `<div class="w-full h-[250px] flex items-center justify-center bg-black/40 backdrop-blur-md rounded-[1.5rem] border border-white/10 shadow-inner p-4">
-                    <div class="flex flex-col items-center justify-center gap-3 w-full max-w-[280px]">
-                        <i class="fa-solid fa-file-code text-4xl" style="color: var(--theme-prim); opacity: 0.9;"></i>
-                        <p class="text-[11px] text-[var(--text-muted)] leading-snug text-center px-2">Coloca tus archivos <b class='text-[var(--text-main)] font-black'>.bin</b> en la<br>memoria interna, dentro de la carpeta</p>
-                        <div class="bg-black/80 px-4 py-2.5 rounded-xl border border-white/5 shadow-inner mt-1">
-                            <span class="font-mono text-[11px] font-bold tracking-wide" style="color: var(--theme-prim);">GoldHenManager/payloads/</span>
-                        </div>
-                    </div>
-                </div>`; 
-                return;
-            }
+            if (!lista || lista.length === 0) { container.innerHTML = `<div class="flex flex-col items-center justify-center min-h-[220px] bg-black/40 rounded-[1.5rem] border border-dashed border-white/10 p-6 text-center shadow-inner"><i class="fa-solid fa-folder text-6xl mb-4" style="color: var(--theme-prim); opacity: 0.3;"></i><p class="text-[11px] text-[var(--text-muted)] leading-relaxed max-w-[250px] mx-auto">${t('empty_pay_title')}</p></div>`; return; } 
             const topBar = document.createElement('div'); topBar.className = 'flex justify-between items-center mb-4 pr-1 bg-black/60 rounded-xl p-2 border border-white/5 shadow-inner'; topBar.innerHTML = `<span class="text-[10px] font-black tracking-widest pl-2 uppercase" style="color: var(--theme-prim); opacity: 0.6;">${lista.length} PAYLOADS</span><button class="bg-transparent px-4 py-2"></button>`; container.appendChild(topBar);
             const grid = document.createElement('div'); grid.className = 'flex flex-col gap-2 overflow-y-auto custom-scrollbar pr-1 gallery-grid-fix'; 
             lista.forEach(bin => { const item = document.createElement('div'); item.className = 'payload-item flex items-center justify-between p-3 rounded-xl cursor-pointer bg-black/40 hover:bg-white/5 border border-white/5 transition-colors group shadow-[0_0_10px_rgba(0,0,0,0.5)]'; item.onclick = function() { document.querySelectorAll(`#${containerId} .payload-item`).forEach(el => { el.classList.remove('selected'); el.style.borderColor = 'transparent'; }); this.classList.add('selected'); this.style.borderColor = 'var(--theme-prim)'; selectedPayloadValue = 'payloads/' + bin.nombre; }; item.innerHTML = `<div class="flex items-center gap-3"><i class="fa-solid fa-file-code text-lg" style="color: var(--theme-prim); opacity: 0.8;"></i><span class="text-xs font-mono text-[var(--text-main)] tracking-wide">${bin.nombre}</span></div><button type="button" onclick="eliminarPayloadServidor('${bin.nombre}', event)" class="w-8 h-8 rounded-full bg-red-900/20 border border-red-500/30 text-red-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors z-10 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.2)]"><i class="fa-solid fa-trash text-xs"></i></button>`; grid.appendChild(item); }); container.appendChild(grid); 
         }
- 
-        async function eliminarPayloadServidor(nombre, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Borrar <b>${nombre}</b>?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_payload'); fd.append('file_name', nombre); try { let res = await fetch('api/payload.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { actualizarPayloads(); ps5Notification(t('j_comp'), "Payload borrado.", "fa-trash"); } else ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } catch(err) {} }
+        
+        async function eliminarPayloadServidor(nombre, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `¿Borrar <b>${nombre}</b>?`, "fa-trash", "bg-red-600 text-white border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.4)]"); if(!seguro) return; const fd = new FormData(); fd.append('action', 'delete_payload'); fd.append('file_name', nombre); try { let res = await fetch('api/payload.php', { method:'POST', body: fd }); let data = await res.json(); if(data.status === 'success') { actualizarPayloads(); ps5Notification(t('j_comp'), "Payload borrado.", "fa-trash"); } else ps5Alert(t('j_err'), data.message, "fa-triangle-exclamation"); } catch(err) {} }
         async function actualizarPayloads() { try { let res = await fetch('api/payload.php?action=get_payloads&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { PAYLOADS_LOCALES = data.data; } } catch(e) {} cargarPayloads(PAYLOADS_LOCALES, 'payload-gallery-container'); }
         
         function switchPayloadSource(type) { currentPayloadSource = type; ['btn-pay-gallery', 'btn-pay-local'].forEach(id => { let btn = document.getElementById(id); btn.className = "flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"; btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.boxShadow = ''; }); ['box-pay-gallery', 'box-pay-local'].forEach(id => document.getElementById(id).classList.add('hidden')); let activeBtn = document.getElementById(`btn-pay-${type}`); activeBtn.className = "flex-1 py-3 text-[9px] font-black tracking-widest rounded-xl"; activeBtn.style.backgroundColor = 'var(--theme-prim)'; activeBtn.style.color = '#000'; activeBtn.style.boxShadow = '0 0 10px color-mix(in srgb, var(--theme-prim) 40%, transparent)'; document.getElementById(`box-pay-${type}`).classList.remove('hidden'); if(type === 'gallery') actualizarPayloads(); }
@@ -2879,195 +2691,6 @@ if (isset($_GET['ota_update'])) {
             setTimeout(updateDynamicColors, 200);
             document.querySelectorAll('.theme-btn').forEach(btn => btn.addEventListener('click', () => setTimeout(updateDynamicColors, 50)));
         });
-
-        // ==========================================
-        // 22. SISTEMA DE CAPTURAS Y LIGHTBOX
-        // ==========================================
-        async function abrirGaleriaJuego() {
-            const ip = document.getElementById('host-ip').value;
-            if (!ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), 'fa-network-wired'); return; }
-            
-            document.getElementById('capturas-game-cusa').innerText = `${currentCusa} - ${currentTitle}`;
-            abrirPanelSecundario('sheet-capturas');
-            const container = document.getElementById('capturas-grid');
-            container.innerHTML = `<div class="col-span-2 text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color: var(--theme-prim);"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Cargando capturas...</p></div>`;
-            
-            const fd = new FormData();
-            fd.append('action', 'get_caps');
-            fd.append('host_ip', ip);
-            fd.append('cusa_id', currentCusa);
-            
-            try {
-                let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd });
-                let data = await res.json();
-                if (data.status === 'success') {
-                    if (data.images.length === 0) {
-                        container.innerHTML = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-images text-4xl text-white/10 mb-3"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">No hay capturas</p></div>`;
-                        return;
-                    }
-                    let html = '';
-                    data.images.forEach(img => {
-                        html += `<div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer border border-white/10 hover:border-[var(--theme-prim)] transition-colors group" onclick="abrirLightbox('${img.url}', '${img.name}')">
-                            <img src="${img.thumb || img.url}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i></div>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                } else { container.innerHTML = `<div class="col-span-2 text-center text-red-400 py-10 text-xs font-bold">${data.message}</div>`; }
-            } catch(e) { container.innerHTML = `<div class="col-span-2 text-center text-red-400 py-10 text-xs font-bold">Error de red local.</div>`; }
-        }
-
-        async function abrirBovedaGlobal() {
-            const ip = document.getElementById('host-ip').value;
-            if (!ip) { await ps5Alert(t('j_err_ip'), t('j_err_ip_m'), 'fa-network-wired'); return; }
-            
-            esBovedaGlobal = true;
-            document.getElementById('capturas-game-cusa').innerText = `TODOS LOS JUEGOS`;
-            cerrarTodo();
-            setTimeout(() => { document.getElementById('overlay-global').classList.add('open'); document.getElementById('sheet-capturas').classList.add('open'); }, 100);
-            
-            const container = document.getElementById('capturas-grid');
-            container.innerHTML = `<div class="col-span-2 text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color: var(--theme-prim);"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">Cargando TODAS las capturas...</p></div>`;
-            
-            const fd = new FormData(); fd.append('action', 'get_all_caps'); fd.append('host_ip', ip);
-            
-            try {
-                let res = await fetch('api/ps4_screenshots.php', { method: 'POST', body: fd });
-                let data = await res.json();
-                if (data.status === 'success') {
-                    if (data.images.length === 0) {
-                        container.innerHTML = `<div class="col-span-2 text-center py-10 bg-black/40 rounded-2xl border border-white/5"><i class="fa-solid fa-images text-4xl text-white/10 mb-3"></i><p class="text-[10px] text-[var(--text-muted)] font-black tracking-widest uppercase">No hay capturas en la consola</p></div>`;
-                        return;
-                    }
-                    let html = '';
-                    data.images.forEach(img => {
-                        html += `<div class="relative aspect-video rounded-xl overflow-hidden cursor-pointer border border-white/10 hover:border-[var(--theme-prim)] transition-colors group" onclick="abrirLightbox('${img.url}', '${img.name}')">
-                            <img src="${img.thumb || img.url}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i></div>
-                        </div>`;
-                    });
-                    container.innerHTML = html;
-                } else { container.innerHTML = `<div class="col-span-2 text-center text-red-400 py-10 text-xs font-bold">${data.message}</div>`; }
-            } catch(e) { container.innerHTML = `<div class="col-span-2 text-center text-red-400 py-10 text-xs font-bold">Error de red.</div>`; }
-        }
-
-        function abrirLightbox(url, name) {
-            const modal = document.getElementById('lightbox-modal'), img = document.getElementById('lightbox-img'), title = document.getElementById('lightbox-title'), dl = document.getElementById('lightbox-download');
-            img.src = url; img.className = "max-w-full max-h-full object-contain zoom-anim transform scale-100 cursor-zoom-in"; 
-            title.innerText = name; dl.href = url;
-            modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-                function cerrarLightbox() {
-            const modal = document.getElementById('lightbox-modal'); modal.classList.add('opacity-0');
-            setTimeout(() => { modal.classList.add('hidden'); document.getElementById('lightbox-img').src = ''; }, 300);
-        }
-
-        function cerrarLightboxSiFondo(e) { if (e.target.id === 'lightbox-modal' || e.target.tagName.toLowerCase() === 'div') { cerrarLightbox(); } }
-        function toggleZoom(img) { if (img.classList.contains('scale-100')) { img.classList.replace('scale-100', 'scale-[2]'); img.classList.replace('cursor-zoom-out', 'cursor-zoom-in'); } else { img.classList.replace('scale-[2]', 'scale-100'); img.classList.replace('cursor-zoom-out', 'cursor-zoom-in'); } }
-
-         /* =========================================*/
-        /* PASO 4: JAVASCRIPT DEL BUSCADOR MANUAL    */
-        /* ========================================= */
-        function abrirBuscadorPKG() {
-            const modal = document.getElementById('virtual-explorer');
-            const content = document.getElementById('virtual-explorer-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-            cargarDirectorioLocal('/storage/');
-        }
-
-        function cerrarBuscadorPKG() {
-            const modal = document.getElementById('virtual-explorer');
-            const content = document.getElementById('virtual-explorer-content');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-
-                async function cargarDirectorioLocal(ruta) {
-            const container = document.getElementById('ve-list');
-            container.innerHTML = `<div class="text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-4" style="color: var(--theme-prim);"></i><p class="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">Explorando...</p></div>`;
-            document.getElementById('ve-path').innerText = ruta;
-
-            try {
-                let res = await fetch(`index.php?local_explorer=1&path=${encodeURIComponent(ruta)}`);
-                let data = await res.json();
-                
-                if (data.status === 'success') {
-                    container.innerHTML = '';
-                    
-                    // 1. BOTÓN DE RETROCESO (Siempre visible a menos que estemos en la raíz)
-                    if (ruta !== '/storage/' && ruta !== '/storage') {
-                        let parentPath = ruta.substring(0, ruta.lastIndexOf('/', ruta.length - 2)) + '/';
-                        if (parentPath === '' || parentPath === '/storage') parentPath = '/storage/';
-                        container.innerHTML += `<div onclick="cargarDirectorioLocal('${parentPath}')" class="flex items-center gap-4 p-3 bg-white/5 hover:bg-white/10 rounded-xl cursor-pointer transition-colors border border-white/10 mb-2 shadow-sm"><i class="fa-solid fa-level-up-alt text-xl" style="color: var(--theme-prim);"></i><span class="text-xs font-black text-[var(--text-main)] tracking-widest uppercase">VOLVER ATRÁS</span></div>`;
-                    }
-
-                    // 2. LISTADO DE CARPETAS Y ARCHIVOS
-                    if (data.data.length === 0) {
-                        container.innerHTML += `<div class="text-center py-10 opacity-50"><i class="fa-solid fa-folder-open text-4xl mb-3"></i><p class="text-[10px] font-black tracking-widest uppercase">Carpeta vacía o sin PKGs</p></div>`;
-                    } else {
-                        data.data.forEach(item => {
-                            if (item.is_dir) {
-                                let folderName = item.name === 'emulated' ? 'Almacenamiento Interno' : item.name;
-                                container.innerHTML += `<div onclick="cargarDirectorioLocal('${item.path}/')" class="flex items-center gap-4 p-3 hover:bg-white/5 rounded-xl cursor-pointer transition-colors border border-transparent"><div class="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center text-yellow-500 border border-yellow-500/20 shadow-inner"><i class="fa-solid fa-folder text-xl"></i></div><div class="flex-1"><span class="font-bold text-[var(--text-main)] text-xs block">${folderName}</span></div><i class="fa-solid fa-chevron-right text-white/20"></i></div>`;
-                            } else {
-                                let safeName = item.name.replace(/'/g, "\\'");
-                                let btnHTML = '';
-                                let isAdded = rpiRawList.some(p => p.nombre === item.name);
-                                if (isAdded) {
-                                    btnHTML = `<button class="bg-green-600 text-white text-[9px] font-black tracking-widest px-4 py-2.5 rounded-xl uppercase shrink-0 opacity-50 cursor-default shadow-inner">AÑADIDO</button>`;
-                                } else {
-                                    btnHTML = `<button onclick="seleccionarPkgLocal(this, '${item.path}', '${safeName}')" class="bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-black tracking-widest px-4 py-2.5 rounded-xl shadow-[0_0_10px_rgba(37,99,235,0.3)] active:scale-95 transition-all uppercase shrink-0">AÑADIR</button>`;
-                                }
-                                container.innerHTML += `<div class="flex items-center gap-4 p-3 bg-black/40 hover:bg-white/5 rounded-xl transition-colors border border-white/5 mt-1"><div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 border border-blue-500/20"><i class="fa-solid fa-box-archive text-xl"></i></div><div class="flex-1 overflow-hidden"><span class="font-bold text-white text-xs block truncate">${item.name}</span><span class="text-[10px] text-[var(--text-muted)] font-mono">${item.size_fmt}</span></div>${btnHTML}</div>`;
-                            }
-                        });
-                    }
-                }
-            } catch(e) { container.innerHTML = `<div class="text-center text-red-400 py-10 text-xs font-bold">Error de lectura.</div>`; }
-        }
-
-
-        function seleccionarPkgLocal(btnElement, fullPath, name) {
-            let webPath = "";
-            if (fullPath.includes('/emulated/0/')) {
-                webPath = fullPath.replace('/storage/emulated/0/', 'almacenamiento_interno/');
-            } else {
-                let parts = fullPath.split('/'); 
-                parts.splice(0, 3); 
-                webPath = 'microsd/' + parts.join('/');
-            }
-            
-            let existe = rpiRawList.find(p => p.path === webPath);
-            if (!existe) {
-                rpiRawList.push({ nombre: name, path: webPath, size_fmt: "Manual", origen: "Explorador" });
-            }
-            if (!rpiQueue.includes(webPath)) rpiQueue.push(webPath);
-            
-            if (btnElement) {
-                btnElement.innerText = "AÑADIDO";
-                btnElement.className = "bg-green-600 text-white text-[9px] font-black tracking-widest px-4 py-2.5 rounded-xl uppercase shrink-0 opacity-50 cursor-default shadow-inner";
-                btnElement.onclick = null; 
-            }
-            renderRpiList(); 
-        }
     </script>
-
-    <div id="virtual-explorer" class="fixed inset-0 bg-[#05050a]/90 backdrop-blur-md z-[150] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-        <div class="bg-black/80 border border-white/10 rounded-3xl w-full max-w-2xl overflow-hidden flex flex-col shadow-[0_0_40px_rgba(37,99,235,0.2)] transform scale-95 transition-transform duration-300 glass-panel" id="virtual-explorer-content">
-            <div class="bg-gray-900/80 p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-md">
-                <div>
-                    <h2 class="text-white font-black text-sm tracking-widest flex items-center gap-2 uppercase"><i class="fa-solid fa-server text-blue-500"></i> Memoria del Teléfono</h2>
-                    <p class="text-[9px] text-gray-400 mt-0.5 tracking-wider">Navegando localmente</p>
-                </div>
-                <button onclick="cerrarBuscadorPKG()" class="w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-red-500 transition-colors flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div id="ve-path" class="bg-black/60 p-3 px-5 text-[10px] font-mono text-blue-400 flex items-center gap-2 border-b border-white/5 overflow-x-auto whitespace-nowrap shadow-inner tracking-widest">/storage/emulated/0/</div>
-            <div id="ve-list" class="p-2 h-[50vh] md:h-[60vh] overflow-y-auto custom-scrollbar flex flex-col gap-1"></div>
-        </div>
-    </div>
-
 </body>
 </html>
