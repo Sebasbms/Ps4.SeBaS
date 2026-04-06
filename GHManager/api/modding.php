@@ -129,9 +129,17 @@ if ($action === 'upload_icon') {
         echo json_encode(['status' => 'error', 'message' => 'Imagen no recibida.']); exit;
     }
 
+    // Comprobar si la librería de imágenes existe en el servidor del celular
+    if (!function_exists('imagecreatefrompng')) {
+        echo json_encode(['status' => 'error', 'message' => 'Falta la librería GD en el PHP de tu celular.']); exit;
+    }
+
+    // Darle memoria extra para que no se congele al procesar
+    ini_set('memory_limit', '512M'); 
+
     $img = @imagecreatefrompng($local_file);
     if (!$img) $img = @imagecreatefromjpeg($local_file);
-    if (!$img) { echo json_encode(['status' => 'error', 'message' => 'Formato no soportado. Usa PNG o JPG.']); exit; }
+    if (!$img) { echo json_encode(['status' => 'error', 'message' => 'Formato de imagen inválido o corrupto.']); exit; }
     
     $resized = imagecreatetruecolor(512, 512);
     imagealphablending($resized, false);
@@ -140,10 +148,16 @@ if ($action === 'upload_icon') {
     imagefilledrectangle($resized, 0, 0, 512, 512, $transparent);
     imagecopyresampled($resized, $img, 0, 0, 0, 0, 512, 512, imagesx($img), imagesy($img));
     
-    $temp_png = sys_get_temp_dir() . '/' . uniqid() . '.png';
+    // GUARDAR EN LA MISMA CARPETA DE LA APP, NO EN EL SISTEMA ANDROID
+    $temp_png = __DIR__ . '/temp_' . time() . '.png';
     imagepng($resized, $temp_png);
     imagedestroy($img);
     imagedestroy($resized);
+
+    // Verificar si Android nos permitió crear el archivo
+    if (!file_exists($temp_png)) {
+        echo json_encode(['status' => 'error', 'message' => 'Fallo al procesar imagen temporal. Error de permisos en Android.']); exit;
+    }
 
     $exitos = 0;
     foreach ($rutas_appmeta as $base) {
