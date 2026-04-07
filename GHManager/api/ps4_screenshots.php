@@ -1,7 +1,7 @@
 <?php
 /**
  * ARCHIVO: api/ps4_screenshots.php
- * Extractor de Capturas Definitivo (Ruta Original + Motor cURL + Streaming con Thumbnails)
+ * Extractor de Capturas - Enlaces corregidos
  */
 error_reporting(0);
 header('Content-Type: application/json; charset=utf-8');
@@ -16,7 +16,6 @@ if (!$host_ip) {
     exit;
 }
 
-// Función súper estable para listar carpetas en Termux
 function get_ftp_list($ip, $port, $dir) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "ftp://$ip:$port" . rtrim($dir, '/') . '/');
@@ -25,7 +24,6 @@ function get_ftp_list($ip, $port, $dir) {
     curl_setopt($ch, CURLOPT_TIMEOUT, 8);
     $res = curl_exec($ch);
     curl_close($ch);
-    
     $files = [];
     if ($res) {
         $lines = explode("\n", trim($res));
@@ -48,80 +46,48 @@ function excavar_fotos($ip, $port, $ruta_cusa, &$capturas) {
     foreach ($items as $item) {
         if (!$item['is_dir']) {
             $ext = strtolower(pathinfo($item['name'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['png', 'jpg', 'jpeg'])) {
-                $capturas[] = "$ruta_cusa/{$item['name']}";
-            }
+            if (in_array($ext, ['png', 'jpg', 'jpeg'])) { $capturas[] = "$ruta_cusa/{$item['name']}"; }
         }
     }
 }
 
 $base_photo = "/user/home/10000000/photo";
 $items_base = get_ftp_list($host_ip, $port, $base_photo);
-
-if (empty($items_base)) {
-    echo json_encode(['status' => 'error', 'message' => 'No se pudo leer la carpeta de capturas de la PS4. Verifica la conexión.']);
-    exit;
-}
-
 $rutas_cusa = [];
-
-if (empty($cusa)) {
-    echo json_encode(['status' => 'error', 'message' => 'CUSA no válido.']);
-    exit;
-}
 
 if ($cusa === 'TODOS LOS JUEGOS') {
     foreach ($items_base as $item1) {
         if ($item1['is_dir']) {
             $items_nivel2 = get_ftp_list($host_ip, $port, "$base_photo/{$item1['name']}");
-            foreach ($items_nivel2 as $item2) {
-                if ($item2['is_dir']) {
-                    $rutas_cusa[] = "$base_photo/{$item1['name']}/{$item2['name']}";
-                }
-            }
+            foreach ($items_nivel2 as $item2) { if ($item2['is_dir']) $rutas_cusa[] = "$base_photo/{$item1['name']}/{$item2['name']}"; }
         }
     }
 } else {
     foreach ($items_base as $item1) {
         if (!$item1['is_dir']) continue;
-        
         $ruta1 = "$base_photo/{$item1['name']}";
-        if (stripos($item1['name'], $cusa) !== false) {
-            $rutas_cusa[] = $ruta1;
-        } else {
+        if (stripos($item1['name'], $cusa) !== false) { $rutas_cusa[] = $ruta1; }
+        else {
             $items_nivel2 = get_ftp_list($host_ip, $port, $ruta1);
-            foreach ($items_nivel2 as $item2) {
-                if ($item2['is_dir'] && stripos($item2['name'], $cusa) !== false) {
-                    $rutas_cusa[] = "$ruta1/{$item2['name']}";
-                }
-            }
+            foreach ($items_nivel2 as $item2) { if ($item2['is_dir'] && stripos($item2['name'], $cusa) !== false) $rutas_cusa[] = "$ruta1/{$item2['name']}"; }
         }
     }
 }
 
 $capturas = [];
-foreach ($rutas_cusa as $ruta) {
-    excavar_fotos($host_ip, $port, $ruta, $capturas);
-}
+foreach ($rutas_cusa as $ruta) { excavar_fotos($host_ip, $port, $ruta, $capturas); }
 
-if ($action === 'count_only') {
-    echo json_encode(['status' => 'success', 'count' => count($capturas)]);
-    exit;
-}
+if ($action === 'count_only') { echo json_encode(['status' => 'success', 'count' => count($capturas)]); exit; }
 
 if (empty($capturas)) {
-    echo json_encode(['status' => 'error', 'message' => "No se encontraron fotos del juego.<br><br><span class='text-[10px]'>Intenta abrir el juego y sacar una captura nueva.</span>"]);
+    echo json_encode(['status' => 'error', 'message' => "No se encontraron fotos."]);
 } else {
-    sort($capturas);
-    $capturas = array_reverse($capturas);
-    
+    sort($capturas); $capturas = array_reverse($capturas);
     $images_format = [];
     foreach ($capturas as $cap) {
         $images_format[] = [
             'name' => basename($cap),
-            // URL original: Tamaño gigante para el Lightbox y Descarga
             'url' => "api/stream_image.php?ip={$host_ip}&path=" . rawurlencode($cap),
-            // THUMB: Miniatura súper liviana para que la cuadrícula cargue al instante
             'thumb' => "api/stream_image.php?ip={$host_ip}&path=" . rawurlencode($cap) . "&thumb=1"
         ];
     }
