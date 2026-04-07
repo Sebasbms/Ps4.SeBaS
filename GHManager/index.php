@@ -504,10 +504,7 @@ if (isset($_GET['ota_update'])) {
             .bottom-sheet { max-width: 40rem; }
             .floating-btn-global { max-width: 40rem; }
         }
-        @media (max-width: 767px) and (orientation: landscape) {
-            #landscape-warning { display: flex !important; }
-            #app-ui { display: none !important; }
-        }
+        /* Bloqueo horizontal eliminado para permitir uso en tablets y PC */
       
            /* =========================================
            INYECCIÓN DEFINITIVA: EL ESPACIO INQUEBRANTABLE
@@ -540,17 +537,17 @@ if (isset($_GET['ota_update'])) {
         /* 7. Textos "X PORTADAS" */
         #gallery-container > div.flex, #backup-container > div.flex { display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 0 0.25rem 0.5rem 0.25rem !important; margin: 0 !important; width: 100% !important; }
 
-        /* 8. 🔥 EL MURO CONTRA CHROME 🔥 */
+        /* 8. 🔥 EL MURO CONTRA CHROME (Ahora Responsivo) 🔥 */
         #gallery-container > div.grid, #backup-container > div.grid {
             display: grid !important; 
-            grid-template-columns: repeat(4, minmax(0, 1fr)) !important; 
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)) !important; 
             gap: 0.4rem !important;
             margin-bottom: 200px !important;
         }
 
         #rpi-pkg-list {
             display: grid !important; 
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important; 
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; 
             gap: 0.6rem !important;
             margin-bottom: 200px !important;
         }
@@ -569,8 +566,68 @@ if (isset($_GET['ota_update'])) {
         .btn-premium::after, .btn-ps5-primary::after { content: '' !important; position: absolute !important; bottom: -1px !important; left: 50% !important; transform: translateX(-50%) !important; width: 40% !important; height: 2px !important; background: #fff !important; box-shadow: 0 0 15px 4px var(--theme-prim) !important; z-index: 10 !important; }
         .btn-premium:active, .btn-ps5-primary:active { transform: scale(0.96) !important; box-shadow: 0 5px 15px rgba(0,0,0,0.8) !important; }
 
+        /* =========================================
+           COVERFLOW 3D BIBLIOTECA
+           ========================================= */
+        .scene { perspective: 1000px; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .carousel { position: relative; width: 130px; height: 180px; transform-style: preserve-3d; display: flex; align-items: center; justify-content: center; }
+        .ps4-case { position: absolute; width: 130px; height: 180px; border-radius: 4px 8px 8px 4px; background: #111; box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 2px 0 5px rgba(255,255,255,0.2); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease, opacity 0.4s ease; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.1); }
+        .ps4-case::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(0,0,0,0.5) 100%); pointer-events: none; z-index: 10; }
+        .ps4-header { height: 12%; background: linear-gradient(to right, #003791, #0050cb); display: flex; align-items: center; padding-left: 8px; border-bottom: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 5; }
+        .ps4-header-text { font-family: sans-serif; font-weight: 900; font-size: 8px; letter-spacing: 1px; color: white; }
+        .ps4-cover { height: 88%; width: 100%; object-fit: cover; }
 
+        /* =========================================
+           SAMSUNG DEX / PC / TABLET HORIZONTAL
+           ========================================= */
+        @media (min-width: 1024px) {
+            main, header, .max-w-md, .md\:max-w-4xl { max-width: 1300px !important; }
+            /* Dejamos que flexbox controle la altura naturalmente */
+            #view-3d { flex: 1 !important; min-height: 300px !important; }
+            .scene { flex: 1 !important; min-height: 200px !important; }
+            
+            /* Tamaño de cajas moderado (evita que se salgan de la pantalla) */
+            .carousel { width: 170px; height: 240px; }
+            .ps4-case { width: 170px; height: 240px; border-radius: 5px 10px 10px 5px; }
+            .ps4-header { padding-left: 10px; height: 12%; }
+            .ps4-header-text { font-size: 10px; }
+            
+            /* Dock Inferior flotante */
+            .dock-nav { max-width: 600px !important; padding: 12px 30px !important; bottom: 20px !important; border-radius: 35px !important; }
+            .dock-item { width: 50px !important; height: 50px !important; font-size: 1.4rem !important; }
+            
+            #tab-biblioteca.active { padding-bottom: 90px !important; }
+        }
 
+        /* Ajuste intermedio para Tablets acostadas */
+        @media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+            #view-3d { flex: 1 !important; min-height: 250px !important; }
+            .scene { flex: 1 !important; min-height: 180px !important; }
+            .carousel { width: 140px; height: 195px; }
+            .ps4-case { width: 140px; height: 195px; }
+            #tab-biblioteca.active { padding-bottom: 80px !important; }
+        }
+
+        /* =========================================
+           NUEVO EXPLORADOR COMPACTO PREMIUM
+           ========================================= */
+        .btn-compact { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .btn-compact:active { transform: scale(0.9); }
+        .btn-compact.active { color: black; background: var(--theme-prim); border-color: var(--theme-prim); }
+        
+        .btn-fav-add { color: #eab308; border-color: rgba(234, 179, 8, 0.3); background: rgba(234, 179, 8, 0.05); }
+        .btn-fav-add:hover { background: rgba(234, 179, 8, 0.15); box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        .btn-fav-remove { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+        .btn-fav-remove:hover { background: rgba(239, 68, 68, 0.15); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        
+        .path-btn { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 8px; transition: all 0.2s; white-space: nowrap; cursor: pointer; }
+        .path-btn:active { background: rgba(255,255,255,0.1); color: white; }
+        
+        .fav-slim { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; border-radius: 10px; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); white-space: nowrap; transition: all 0.2s; cursor: pointer; }
+        .fav-slim.active { background: rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.2); color: #fbbf24; }
+        
+        .search-input { width: 0; opacity: 0; padding: 0; transition: all 0.3s; background: rgba(0,0,0,0.5); border: 1px solid transparent; border-radius: 8px; font-size: 10px; font-weight: bold; color: white; outline: none; }
+        .search-input.open { width: 110px; opacity: 1; padding: 0 10px; border-color: rgba(255,255,255,0.1); margin-right: 4px; }
     </style>
 </head>
 
@@ -580,12 +637,6 @@ if (isset($_GET['ota_update'])) {
     <div class="app-bg-overlay"></div>
 
     <div id="notification-area"></div>
-
-    <div id="landscape-warning" class="hidden fixed inset-0 z-[999] bg-[#05050a] flex-col items-center justify-center text-center p-8">
-        <i class="fa-solid fa-mobile-screen text-6xl mb-6 animate-pulse" style="color: var(--theme-prim); transform: rotate(-90deg); filter: drop-shadow(0 0 15px color-mix(in srgb, var(--theme-prim) 50%, transparent));"></i>
-        <h2 class="text-2xl font-black text-[var(--text-main)] mb-2 tracking-widest uppercase">Gira tu celular</h2>
-        <p class="text-[var(--text-muted)] text-sm">Por favor, usa el dispositivo en modo vertical para una mejor experiencia.</p>
-    </div>
 
     <div class="ambient-bg" id="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
     <canvas id="stardust"></canvas>
@@ -651,6 +702,9 @@ if (isset($_GET['ota_update'])) {
                         <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[var(--text-muted)] text-[11px]"></i>
                         <input type="text" id="buscador-biblio" onkeyup="buscarEnBiblioteca(this.value)" placeholder="Buscar juego o app..." data-i18n-placeholder="search_placeholder" class="w-full h-full bg-black/60 backdrop-blur-md border border-white/5 rounded-[1.2rem] pl-10 pr-4 text-xs font-bold tracking-wider text-[var(--text-main)] outline-none focus:border-[var(--theme-prim)] transition-colors placeholder-[var(--text-muted)] shadow-inner" autocomplete="off">
                     </div>
+                    <button onclick="toggleViewMode()" class="w-[42px] h-[42px] rounded-[1.2rem] border border-white/5 bg-black/60 backdrop-blur-md flex items-center justify-center text-[var(--text-main)] active:scale-95 shrink-0 transition-colors hover:bg-white/5 group shadow-inner">
+                        <i id="icono-vista" class="fa-solid fa-cube text-sm group-hover:text-[var(--text-main)] transition-colors" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 30%, transparent));"></i>
+                    </button>
                     <button onclick="cambiarOrden()" class="w-[42px] h-[42px] rounded-[1.2rem] border border-white/5 bg-black/60 backdrop-blur-md flex items-center justify-center text-[var(--text-main)] active:scale-95 shrink-0 transition-colors hover:bg-white/5 group shadow-inner">
                         <i id="icono-orden" class="fa-solid fa-arrow-down-short-wide text-sm group-hover:text-[var(--text-main)] transition-colors" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 30%, transparent));"></i>
                     </button>
@@ -658,8 +712,55 @@ if (isset($_GET['ota_update'])) {
 
                 <div id="categoria-nav" class="flex gap-2 overflow-x-auto pb-1 mb-2 custom-scrollbar items-center shrink-0"></div>
 
-                <div class="flex-1 w-full overflow-y-auto custom-scrollbar pr-1 relative mb-2">
-                    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5" id="grid-biblioteca"></div>
+                <div id="view-grid" class="flex-1 w-full overflow-y-auto custom-scrollbar pr-1 relative mb-2">
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-10 gap-2.5" id="grid-biblioteca"></div>
+                </div>
+
+                <div id="view-3d" class="flex-1 w-full relative mb-2 hidden rounded-[1.5rem] bg-black/20 border border-white/5 shadow-inner overflow-hidden flex flex-col">
+                    
+                    <div class="scene flex-1 relative min-h-[200px]">
+                        <div class="carousel" id="carousel-biblioteca"></div>
+                        <div class="absolute inset-y-0 left-0 w-1/3 z-10 cursor-pointer" onclick="moveCarousel(-1)"></div>
+                        <div class="absolute inset-y-0 right-0 w-1/3 z-10 cursor-pointer" onclick="moveCarousel(1)"></div>
+                    </div>
+
+                    <div class="w-full bg-gradient-to-t from-[#08080c] via-black/95 to-transparent pt-8 pb-4 px-4 z-20 flex flex-col border-t border-white/5">
+                        
+                        <div class="text-center mb-5 border-b border-white/10 pb-4">
+                            <h2 id="title-3d" class="text-sm font-black uppercase tracking-wider drop-shadow-[0_0_8px_rgba(0,0,0,1)] text-white px-4 truncate">...</h2>
+                            <div class="mt-2 flex justify-center items-center gap-2">
+                                <span id="cusa-3d" class="text-[9px] font-mono font-bold tracking-widest bg-black/80 px-2 py-0.5 rounded border border-white/10 shadow-inner inline-block" style="color: var(--theme-prim);">...</span>
+                                <span id="version-3d" class="text-[9px] text-[var(--text-muted)] font-mono bg-black/40 px-1.5 py-0.5 rounded border border-white/10">...</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2.5 overflow-x-auto custom-scrollbar pb-2 px-1 w-full snap-x">
+                            <button onclick="iniciarBackupSaves()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-black/40 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all snap-center group">
+                                <i class="fa-solid fa-floppy-disk text-[22px] group-hover:scale-110 transition-transform" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
+                                <span class="text-[8px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)] text-center leading-tight">Saves</span>
+                            </button>
+                            
+                            <button onclick="abrirGaleriaJuego()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-black/40 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all snap-center group">
+                                <i class="fa-solid fa-images text-[22px] group-hover:scale-110 transition-transform" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
+                                <span class="text-[8px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)] text-center leading-tight">Galer&iacute;a</span>
+                            </button>
+                            
+                            <button onclick="simularRedireccionModding()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-black/40 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all snap-center group">
+                                <i class="fa-solid fa-wand-magic-sparkles text-[22px] group-hover:scale-110 transition-transform" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
+                                <span class="text-[8px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)] text-center leading-tight">Portada</span>
+                            </button>
+                            
+                            <button onclick="abrirMenuDLCs()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-black/40 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all snap-center group">
+                                <i class="fa-solid fa-puzzle-piece text-[22px] group-hover:scale-110 transition-transform" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
+                                <span class="text-[8px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)] text-center leading-tight">DLCs</span>
+                            </button>
+                            
+                            <button onclick="borrarJuegoDeBiblioteca()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-red-900/20 hover:bg-red-900/40 border border-red-500/30 transition-all snap-center group">
+                                <i class="fa-solid fa-eye-slash text-[22px] text-red-500 group-hover:scale-110 transition-transform drop-shadow-[0_0_5px_rgba(239,68,68,0.4)]"></i>
+                                <span class="text-[8px] uppercase font-black tracking-widest text-red-400 group-hover:text-red-300 text-center leading-tight">Quitar</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="shrink-0 w-full pt-1">
@@ -747,26 +848,14 @@ if (isset($_GET['ota_update'])) {
                                 <i class="fa-solid fa-layer-group text-xl"></i>
                             </button>
                         </div>
-                                                <div class="grid grid-cols-4 gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-6 border border-white/5 shrink-0">
+                                                                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-black/40 rounded-[1.2rem] mb-6 border border-white/5 shrink-0">
                             <button type="button" id="btn-src-gallery" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('gallery')" data-i18n="gallery">GALER&Iacute;A</button>
                             <button type="button" id="btn-src-backup" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('backup')" data-i18n="backups">BACKUPS</button>
-                            <button type="button" id="btn-src-import" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('import')" data-i18n="import">IMPORTAR</button>
                             <button type="button" id="btn-src-local" class="w-full py-3 text-[9px] font-black rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors truncate px-1" onclick="switchIconSource('local')" data-i18n="local">LOCAL</button>
                         </div>
                         
                         <div id="box-src-gallery" class="animate-fade-in"><div id="gallery-container"></div></div>
                         <div id="box-src-backup" class="hidden animate-fade-in"><div id="backup-container"></div></div>
-                     
-                                                                                                                        <div id="box-src-import" class="hidden animate-fade-in shrink-0">
-                            <div class="w-full h-[250px] bg-black/40 backdrop-blur-md shadow-inner rounded-[1.5rem] border border-white/10 flex items-center justify-center p-4">
-                                <div class="flex flex-col items-center justify-center gap-3 w-full max-w-[280px]">
-                                    <i class="fa-solid fa-cloud-arrow-down text-4xl" style="color: var(--theme-prim); opacity: 0.9;"></i>
-                                    <p class="text-[11px] text-[var(--text-muted)] font-medium text-center px-2" data-i18n="import_desc">Pega un link directo para descargar a tu galer&iacute;a.</p>
-                                    <input type="url" id="import-url" placeholder="https://..." class="w-full bg-black/80 rounded-xl px-4 py-2.5 border border-white/5 font-mono text-xs text-[var(--text-main)] outline-none shadow-inner focus:border-[var(--theme-prim)] transition-colors">
-                                    <button type="button" id="btn-cargar-url" onclick="importarURL()" class="w-full text-black rounded-xl py-2.5 font-black text-[10px] tracking-widest transition-colors active:scale-95" style="background-color: var(--theme-prim); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent);" data-i18n="btn_import">INICIAR IMPORTACI&Oacute;N</button>
-                                </div>
-                            </div>
-                        </div>
                         <div id="box-src-local" class="hidden animate-fade-in shrink-0">
                             <div onclick="document.getElementById('icon-file').click()" class="w-full h-[250px] bg-black/40 backdrop-blur-md shadow-inner rounded-[1.5rem] border border-white/10 flex items-center justify-center cursor-pointer relative overflow-hidden group hover:bg-white/5 transition-colors p-4">
                                 <div class="flex flex-col items-center justify-center gap-3 pointer-events-none">
@@ -781,21 +870,7 @@ if (isset($_GET['ota_update'])) {
                 </form>
             </div>
             <div id="tab-explorer" class="tab-content">
-                <div class="flex justify-between items-end mb-6 shrink-0">
-                    <div>
-                        <h1 class="text-3xl font-black mb-1 text-[var(--text-main)] tracking-wide drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]" data-i18n="tab_exp">Explorador</h1>
-                        <p class="text-xs text-[var(--text-muted)] font-light tracking-wide drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="desc_exp">Gestor de archivos interno.</p>
-                    </div>
-                    <div class="flex gap-1.5 flex-wrap justify-end">
-                        <button onclick="addCurrentPathToShortcuts()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] hover:bg-yellow-500/20 hover:text-yellow-400 transition-colors hover:border-yellow-500/50 backdrop-blur-md"><i class="fa-solid fa-star text-[11px]"></i></button>
-                        <button onclick="promptCreateFolder()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-folder-plus text-[11px]"></i></button>
-                        <button id="btn-select-mode" onclick="toggleSelectMode()" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors backdrop-blur-md"><i class="fa-solid fa-list-check text-[11px]"></i></button>
-                        <button onclick="if(currentExplorerPath) loadExplorerPath(currentExplorerPath)" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-main)] transition-colors hover:bg-white/20 backdrop-blur-md"><i class="fa-solid fa-rotate-right text-[11px]"></i></button>
-                        <button onclick="loadExplorerPath('/')" class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors hover:opacity-80 backdrop-blur-md" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent); color: var(--theme-prim);"><i class="fa-solid fa-home text-[11px]"></i></button>
-                    </div>
-                </div>
-
-                <div id="clipboard-panel" class="hidden mb-4 glass-panel rounded-xl p-3 flex justify-between items-center border shrink-0" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 10%, transparent);">
+                <div id="clipboard-panel" class="hidden mb-2 glass-panel rounded-xl p-3 flex justify-between items-center border shrink-0" style="border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent); box-shadow: 0 0 15px color-mix(in srgb, var(--theme-prim) 10%, transparent);">
                     <div class="flex items-center gap-3 overflow-hidden pr-2">
                         <i class="fa-solid fa-scissors text-sm" style="color: var(--theme-prim);"></i><span id="clipboard-text" class="text-[11px] text-[var(--text-main)] font-mono truncate">...</span>
                     </div>
@@ -805,7 +880,7 @@ if (isset($_GET['ota_update'])) {
                     </div>
                 </div>
 
-                <div id="multi-action-panel" class="hidden mb-4 glass-panel rounded-xl p-3 flex justify-between items-center border-white/20 animate-fade-in shrink-0">
+                <div id="multi-action-panel" class="hidden mb-2 glass-panel rounded-xl p-3 flex justify-between items-center border-white/20 animate-fade-in shrink-0">
                     <div class="flex items-center gap-2">
                         <div class="w-6 h-6 rounded-lg flex items-center justify-center border" style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); border-color: color-mix(in srgb, var(--theme-prim) 30%, transparent);"><i class="fa-solid fa-check-double text-[10px]" style="color: var(--theme-prim);"></i></div>
                         <span id="multi-select-count" class="text-[10px] text-[var(--text-main)] font-black tracking-widest uppercase">0 seleccionados</span>
@@ -816,10 +891,41 @@ if (isset($_GET['ota_update'])) {
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[55vh] shrink-0 border border-white/10">
-                    <div class="bg-black/60 backdrop-blur-md px-5 py-4 border-b flex items-center gap-3 shrink-0" style="border-color: color-mix(in srgb, var(--theme-prim) 20%, transparent);"><i class="fa-solid fa-hard-drive" style="color: color-mix(in srgb, var(--theme-prim) 50%, transparent);"></i><span id="explorer-path-text" class="text-xs font-mono text-[var(--text-main)] drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]">/</span></div>
-                    <div id="explorer-shortcuts" class="hidden bg-black/40 px-4 py-2 border-b border-white/5 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0"></div>
-                    <div id="explorer-list" class="flex-1 p-2 flex flex-col gap-1 overflow-y-auto custom-scrollbar bg-black/20"><div class="text-center text-[var(--text-muted)] text-[10px] font-black tracking-widest uppercase py-20 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="config_ip">Configura tu IP.</div></div>
+                <div class="glass-panel rounded-[2rem] overflow-hidden flex flex-col h-[65vh] shrink-0 border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+                    
+                                                            <div class="bg-black/50 p-2 flex justify-between items-center border-b border-white/5 shrink-0">
+                        <div class="flex items-center gap-2 flex-1">
+                            <i class="fa-solid fa-folder-tree text-[var(--theme-prim)] text-lg ml-2 opacity-80"></i>
+                            <span class="text-[10px] font-black tracking-widest text-[var(--text-main)] uppercase">Archivos</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 shrink-0">
+
+                            <input type="text" id="searchInput" placeholder="Buscar..." class="search-input" onkeyup="if(typeof filtrarArchivosExplorer === 'function') filtrarArchivosExplorer(this.value)">
+                            <button class="btn-compact hover:text-white" onclick="document.getElementById('searchInput').classList.toggle('open')"><i class="fa-solid fa-magnifying-glass text-xs"></i></button>
+                            
+                            <button id="btnFav" class="btn-compact btn-fav-add" onclick="toggleFavorite()" title="Añadir a favoritos">
+                                <i id="iconFav" class="fa-solid fa-star text-xs"></i>
+                            </button>
+                            
+                            <button id="btn-select-mode" class="btn-compact" onclick="toggleSelectMode()"><i class="fa-solid fa-list-check text-xs"></i></button>
+                            <button class="btn-compact active" onclick="promptCreateFolder()"><i class="fa-solid fa-folder-plus text-xs"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="favRibbon" class="bg-black/30 px-2 py-2 flex gap-2 overflow-x-auto no-scrollbar border-b border-white/5 shrink-0 hidden">
+                    </div>         
+                    
+                                        <div id="explorer-list" class="flex-1 p-2 flex flex-col gap-1 overflow-y-auto custom-scrollbar bg-black/20">
+                        <div class="text-center text-[var(--text-muted)] text-[10px] font-black tracking-widest uppercase py-20 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]" data-i18n="config_ip">Configura tu IP.</div>
+                    </div>
+                    
+                                        <div class="bg-black/80 p-2 border-t border-white/5 flex justify-between items-center shrink-0 h-[40px]">
+                        <div class="flex items-center gap-0.5 overflow-x-auto no-scrollbar flex-1 mr-2" style="mask-image: linear-gradient(to right, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);" id="breadcrumb-container">
+                            <button class="path-btn !text-pink-500" onclick="if(typeof loadExplorerPath === 'function') loadExplorerPath('/')"><i class="fa-solid fa-server mr-1"></i>Root</button>
+                        </div>
+                        <span id="explorer-item-count" class="text-[8px] font-black tracking-[0.3em] text-gray-600 uppercase shrink-0">0 ITEMS</span>
+                    </div>
                 </div>
             </div>
 
@@ -1675,31 +1781,8 @@ if (isset($_GET['ota_update'])) {
             switchTransferMode('ftp');
         });
 
-        const tabsOrder = ['tab-biblioteca', 'tab-ftp', 'tab-icons', 'tab-explorer', 'tab-payloads', 'tab-settings']; let currentTabIndex = 0;
-        
-        let touchstartX = 0, touchendX = 0, touchstartY = 0, touchendY = 0; 
-        let isSwipeIgnored = false;
-        
-        document.addEventListener('touchstart', e => { 
-            if(e.target.closest('.custom-scrollbar') || e.target.closest('input[type="range"]')) { isSwipeIgnored = true; return; }
-            isSwipeIgnored = false;
-            touchstartX = e.changedTouches[0].screenX; touchstartY = e.changedTouches[0].screenY; 
-        }, {passive: true});
-        
-        document.addEventListener('touchend', e => { 
-            if(isSwipeIgnored) return;
-            touchendX = e.changedTouches[0].screenX; touchendY = e.changedTouches[0].screenY; handleSwipe(); 
-        }, {passive: true});
-        
-        function handleSwipe() {
-            if((document.getElementById('custom-modal') && !document.getElementById('custom-modal').classList.contains('hidden')) || (document.getElementById('ps5-dialog') && !document.getElementById('ps5-dialog').classList.contains('hidden')) || (document.getElementById('bottom-sheet') && document.getElementById('bottom-sheet').classList.contains('open')) || (document.getElementById('sheet-opciones') && document.getElementById('sheet-opciones').classList.contains('open')) || (document.getElementById('sheet-capturas') && document.getElementById('sheet-capturas').classList.contains('open')) || (document.getElementById('lightbox-modal') && !document.getElementById('lightbox-modal').classList.contains('hidden'))) return;
-            const deltaX = touchendX - touchstartX; const deltaY = touchendY - touchstartY;
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 60) {
-                const navButtons = document.querySelectorAll('.dock-item');
-                if (deltaX < 0) { if (currentTabIndex < tabsOrder.length - 1) { currentTabIndex++; switchTab(tabsOrder[currentTabIndex], navButtons[currentTabIndex], currentTabIndex); } } 
-                else { if (currentTabIndex > 0) { currentTabIndex--; switchTab(tabsOrder[currentTabIndex], navButtons[currentTabIndex], currentTabIndex); } }
-            }
-        }
+                const tabsOrder = ['tab-biblioteca', 'tab-ftp', 'tab-icons', 'tab-explorer', 'tab-payloads', 'tab-settings']; let currentTabIndex = 0;
+        // SWIPE DESACTIVADO A PETICIÓN PARA EVITAR CONFLICTOS CON SCROLLS HORIZONTALES
 
         function switchTab(tabId, btnElement, targetIndex = null) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('active'));
@@ -1870,11 +1953,15 @@ if (isset($_GET['ota_update'])) {
             </div>`;
         }
 
-        function abrirPanelSecundario(id) { document.getElementById('sheet-opciones').classList.remove('open'); setTimeout(() => { document.getElementById(id).classList.add('open'); }, 100); }
+        function abrirPanelSecundario(id) { 
+            document.getElementById('sheet-opciones').classList.remove('open'); 
+            document.getElementById('overlay-global').classList.add('open'); 
+            setTimeout(() => { document.getElementById(id).classList.add('open'); }, 100); 
+        }
 
         function volverAOpcionesDesde(id) { 
             document.getElementById(id).classList.remove('open'); 
-            if (esBovedaGlobal) {
+            if (esBovedaGlobal || (typeof viewMode !== 'undefined' && viewMode === '3d')) {
                 setTimeout(() => { document.getElementById('overlay-global').classList.remove('open'); }, 100);
             } else {
                 setTimeout(() => { document.getElementById('sheet-opciones').classList.add('open'); }, 100); 
@@ -2527,13 +2614,136 @@ if (isset($_GET['ota_update'])) {
         // ==========================================
         // 13. EXPLORADOR FTP: VISOR, DESCARGA Y MULTI-MOVER
         // ==========================================
-        function renderShortcuts() { let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; const container = document.getElementById('explorer-shortcuts'); if(shortcuts.length === 0) { container.classList.add('hidden'); return; } container.classList.remove('hidden'); let html = '<i class="fa-solid fa-star text-yellow-500 text-[10px] mr-1 shrink-0"></i>'; shortcuts.forEach(path => { let name = path === '/' ? 'RAÍZ' : path.split('/').filter(Boolean).pop(); html += `<div class="flex items-center gap-1 bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--text-main)] cursor-pointer whitespace-nowrap group"><span onclick="loadExplorerPath('${path}')" class="truncate max-w-[80px]">${name}</span><div onclick="removeShortcut('${path}', event)" class="w-4 h-4 rounded-full bg-black/40 hover:bg-red-500/80 flex items-center justify-center ml-1 transition-colors"><i class="fa-solid fa-xmark text-[10px] text-[var(--text-muted)] group-hover:text-white"></i></div></div>`; }); container.innerHTML = html; }
+                function renderShortcuts() { let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; const container = document.getElementById('explorer-shortcuts'); if(!container) { if(typeof renderFavRibbon === 'function') renderFavRibbon(); return; } if(shortcuts.length === 0) { container.classList.add('hidden'); return; } container.classList.remove('hidden'); let html = '<i class="fa-solid fa-star text-yellow-500 text-[10px] mr-1 shrink-0"></i>'; shortcuts.forEach(path => { let name = path === '/' ? 'RAÍZ' : path.split('/').filter(Boolean).pop(); html += `<div class="flex items-center gap-1 bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--text-main)] cursor-pointer whitespace-nowrap group"><span onclick="loadExplorerPath('${path}')" class="truncate max-w-[80px]">${name}</span><div onclick="removeShortcut('${path}', event)" class="w-4 h-4 rounded-full bg-black/40 hover:bg-red-500/80 flex items-center justify-center ml-1 transition-colors"><i class="fa-solid fa-xmark text-[10px] text-[var(--text-muted)] group-hover:text-white"></i></div></div>`; }); container.innerHTML = html; }
         function addCurrentPathToShortcuts() { if(!currentExplorerPath) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; if(!shortcuts.includes(currentExplorerPath)) { shortcuts.push(currentExplorerPath); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Ruta añadida.", "fa-star"); } }
         async function removeShortcut(path, e) { e.stopPropagation(); const seguro = await ps5Confirm(t('opt_delete'), `驴Quitar acceso a <br><b class="mt-1 block" style="color: var(--theme-prim);">${path}</b>?`, 'fa-star-half-stroke', 'bg-red-600 text-white border border-red-500/50'); if(!seguro) return; let shortcuts = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || []; shortcuts = shortcuts.filter(p => p !== path); localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(shortcuts)); renderShortcuts(); ps5Notification(t('j_comp'), "Removido.", "fa-trash"); }
         function toggleSelectMode() { isSelectMode = !isSelectMode; selectedItems = []; const btn = document.getElementById('btn-select-mode'), panel = document.getElementById('multi-action-panel'); if (isSelectMode) { btn.style.backgroundColor = 'var(--theme-prim)'; btn.style.color = 'black'; btn.style.borderColor = 'var(--theme-prim)'; btn.classList.remove('bg-white/5', 'border-white/10', 'text-white'); panel.classList.remove('hidden'); } else { btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.borderColor = ''; btn.classList.add('bg-white/5', 'border-white/10', 'text-white'); panel.classList.add('hidden'); } if(currentExplorerItems) renderExplorer(currentExplorerItems, currentExplorerPath); }
         function toggleSelectItem(path, isDir, name) { let idx = selectedItems.findIndex(i => i.path === path); if(idx > -1) { selectedItems.splice(idx, 1); } else { selectedItems.push({path, isDir, name}); } document.getElementById('multi-select-count').innerText = `${selectedItems.length} ${t('j_sel')}`; renderExplorer(currentExplorerItems, currentExplorerPath); }
         async function deleteSelectedItems() { if (selectedItems.length === 0) return; const seguro1 = await ps5Confirm(t('j_del_sel'), `${t('j_del_m1')} <b class="text-[var(--text-main)]">${selectedItems.length} ${t('j_elem')}</b>?`, 'fa-trash', 'bg-red-600 text-white border border-red-500/50'); if(!seguro1) return; const seguro2 = await ps5Confirm(t('j_warn'), t('j_warn_m'), 'fa-triangle-exclamation', 'bg-red-600 text-white border border-red-500/50'); if(!seguro2) return; mostrarCarga(t('j_del_sel'), `Borrando...`, "fa-trash fa-bounce text-red-500"); let successCount = 0; const ip = document.getElementById('host-ip').value; isTransferring = true; for (let i = 0; i < selectedItems.length; i++) { let item = selectedItems[i]; const fd = new FormData(); fd.append('action', 'delete_item'); fd.append('host_ip', ip); fd.append('path', item.path); fd.append('is_dir', item.isDir); try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if(data.status === 'success') successCount++; } catch(e) {} } isTransferring = false; closeCustomModal(); toggleSelectMode(); loadExplorerPath(currentExplorerPath); ps5Notification(t('j_comp'), `${successCount} borrados.`, "fa-trash"); }
-        async function loadExplorerPath(path) { const ip = document.getElementById('host-ip').value; if(!ip) return; if(isSelectMode && path !== currentExplorerPath) toggleSelectMode(); document.getElementById('explorer-path-text').innerText = path; currentExplorerPath = path; document.getElementById('explorer-list').innerHTML = `<div class="text-center text-[10px] tracking-widest font-black uppercase py-10" style="color: var(--theme-prim); opacity: 0.5;"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 block"></i>${t('searching')}</div>`; const fd = new FormData(); fd.append('action', 'list_dir'); fd.append('host_ip', ip); fd.append('path', path); isTransferring = true; try { let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') renderExplorer(data.data, path); else document.getElementById('explorer-list').innerHTML = `<div class="text-center text-red-400 text-xs py-10 font-bold">${data.message}</div>`; } catch(e) { } finally { isTransferring = false; } }
+        async function loadExplorerPath(path) { 
+            const ip = document.getElementById('host-ip').value; 
+            if(!ip) return; 
+            if(isSelectMode && path !== currentExplorerPath) toggleSelectMode(); 
+            
+            currentExplorerPath = path; 
+            
+            // 🟢 NUEVAS FUNCIONES VISUALES
+            actualizarBreadcrumbs(path);
+            actualizarBotonFavorito(path);
+            renderFavRibbon();
+            
+            document.getElementById('explorer-list').innerHTML = `<div class="text-center text-[10px] tracking-widest font-black uppercase py-10" style="color: var(--theme-prim); opacity: 0.5;"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 block"></i>${t('searching')}</div>`; 
+            const fd = new FormData(); fd.append('action', 'list_dir'); fd.append('host_ip', ip); fd.append('path', path); 
+            isTransferring = true; 
+            try { 
+                let res = await fetch('api/explorer.php', { method: 'POST', body: fd }); 
+                let data = await res.json(); 
+                if (data.status === 'success') {
+                    renderExplorer(data.data, path);
+                    // Actualizar el contador de la barra inferior (si lo agregamos)
+                    const countBadge = document.getElementById('explorer-item-count');
+                    if(countBadge) countBadge.innerText = `${data.data.length} ELEMENTOS`;
+                }
+                else document.getElementById('explorer-list').innerHTML = `<div class="text-center text-red-400 text-xs py-10 font-bold">${data.message}</div>`; 
+            } catch(e) { } finally { isTransferring = false; } 
+        }
+
+        /* =========================================
+           NUEVAS FUNCIONES EXPLORADOR COMPACTO
+           ========================================= */
+        function actualizarBreadcrumbs(path) {
+            const container = document.getElementById('breadcrumb-container');
+            if(!container) return;
+            let parts = path.split('/').filter(Boolean);
+            let html = `<button class="path-btn !text-pink-500" onclick="loadExplorerPath('/')"><i class="fa-solid fa-server mr-1"></i>Root</button>`;
+            let currentBuild = '';
+            parts.forEach((p, index) => {
+                currentBuild += '/' + p;
+                let isLast = index === parts.length - 1;
+                let extraClass = isLast ? '!text-white' : '';
+                html += `<i class="fa-solid fa-chevron-right text-[7px] text-white/20"></i>`;
+                html += `<button class="path-btn ${extraClass}" onclick="loadExplorerPath('${currentBuild}/')">${p}</button>`;
+            });
+            container.innerHTML = html;
+            // Scroll automático a la derecha si la ruta es muy larga
+            setTimeout(() => { container.scrollLeft = container.scrollWidth; }, 50);
+        }
+
+                function actualizarBotonFavorito(path) {
+            let favs = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || [];
+            const btn = document.getElementById('btnFav');
+            const icon = document.getElementById('iconFav');
+            if(!btn || !icon) return;
+            
+            if (favs.includes(path)) {
+                btn.className = "btn-compact btn-fav-remove";
+                icon.className = "fa-solid fa-star text-xs"; // Usamos estrella normal, el CSS ya la pinta roja
+                btn.title = "Eliminar de favoritos";
+            } else {
+                btn.className = "btn-compact btn-fav-add";
+                icon.className = "fa-regular fa-star text-xs"; // Estrella vacía para invitar a añadir
+                btn.title = "Añadir a favoritos";
+            }
+        }
+
+        function toggleFavorite() {
+            if(!currentExplorerPath) return;
+            let favs = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || [];
+            
+            if(favs.includes(currentExplorerPath)) {
+                // Eliminar
+                favs = favs.filter(p => p !== currentExplorerPath);
+                ps5Notification("REMOVIDO", "Carpeta quitada de favoritos.", "fa-trash");
+            } else {
+                // Añadir
+                favs.push(currentExplorerPath);
+                ps5Notification("AÑADIDO", "Carpeta guardada en favoritos.", "fa-star");
+            }
+            localStorage.setItem('ps4_explorer_shortcuts', JSON.stringify(favs));
+            actualizarBotonFavorito(currentExplorerPath);
+            renderFavRibbon();
+        }
+
+        function renderFavRibbon() {
+            let favs = JSON.parse(localStorage.getItem('ps4_explorer_shortcuts')) || [];
+            const ribbon = document.getElementById('favRibbon');
+            if(!ribbon) return;
+            
+            if(favs.length === 0) {
+                ribbon.classList.add('hidden');
+                return;
+            }
+            
+            ribbon.classList.remove('hidden');
+            let html = '';
+            favs.forEach(path => {
+                let name = path === '/' ? 'ROOT' : path.split('/').filter(Boolean).pop();
+                let isActive = path === currentExplorerPath;
+                let activeClass = isActive ? 'active shadow-md' : '!bg-white/5 !border-white/10 hover:bg-white/10';
+                let iconColor = isActive ? '' : 'text-white/20';
+                
+                html += `<div class="fav-slim ${activeClass} transition-colors" onclick="loadExplorerPath('${path}')">
+                    <i class="fa-solid fa-star ${iconColor}"></i> ${name}
+                </div>`;
+            });
+            ribbon.innerHTML = html;
+        }
+
+        function filtrarArchivosExplorer(q) {
+            q = q.toLowerCase();
+            const list = document.getElementById('explorer-list');
+            if(!list) return;
+            const items = list.querySelectorAll('.flex.items-center.justify-between.p-3');
+            items.forEach(item => {
+                const nameEl = item.querySelector('span.truncate');
+                if(nameEl) {
+                    const name = nameEl.innerText.toLowerCase();
+                    // Siempre mostramos el botón de "Volver"
+                    if(name.includes(q) || name === 'volver') item.style.display = '';
+                    else item.style.display = 'none';
+                }
+            });
+        }
         function renderExplorer(items, currentPath) { currentExplorerItems = items; const listContainer = document.getElementById('explorer-list'); listContainer.innerHTML = ''; if (currentPath !== '/') { let parentPath = currentPath.substring(0, currentPath.lastIndexOf('/', currentPath.length - 2)) + '/'; if(parentPath === '') parentPath = '/'; listContainer.innerHTML += `<div onclick="loadExplorerPath('${parentPath}')" class="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-colors border border-transparent"><i class="fa-solid fa-level-up-alt text-xl" style="color: var(--theme-prim); opacity: 0.5;"></i><span class="text-sm font-medium text-[var(--text-muted)]">Volver</span></div>`; } items.forEach(item => { let isDir = item.is_dir; let icon = isDir ? 'fa-folder text-yellow-500/80' : 'fa-file-lines text-white/40'; let nextPath = currentPath.endsWith('/') ? currentPath + item.name : currentPath + '/' + item.name; let isChecked = selectedItems.some(i => i.path === nextPath); let cleanName = item.name.replace(/'/g, "\\'"); let clickAction = isSelectMode ? `onclick="toggleSelectItem('${nextPath}', ${isDir}, '${cleanName}')"` : (isDir ? `onclick="loadExplorerPath('${nextPath}')"` : ''); let checkboxStyle = isChecked ? 'background-color: var(--theme-prim); border-color: var(--theme-prim);' : ''; let checkboxHTML = isSelectMode ? `<div class="w-5 h-5 rounded border border-white/30 flex items-center justify-center shrink-0 mr-1" style="${checkboxStyle}"><i class="fa-solid fa-check text-[10px] text-black ${isChecked ? 'opacity-100' : 'opacity-0'}"></i></div>` : ''; let activeBorderStyle = isChecked ? 'border-color: var(--theme-prim);' : 'border-color: transparent;'; listContainer.innerHTML += `<div class="flex items-center justify-between p-3 rounded-xl transition-colors border ${isChecked ? 'bg-black/40' : 'hover:bg-white/5'}" style="${activeBorderStyle}"><div class="flex items-center gap-3 flex-1 cursor-pointer overflow-hidden" ${clickAction}>${checkboxHTML}<i class="fa-solid ${icon} text-2xl w-6 text-center shrink-0"></i><div class="flex flex-col overflow-hidden"><span class="text-sm font-medium text-[var(--text-main)] tracking-wide truncate pr-2">${item.name}</span></div></div>${!isSelectMode ? `<button onclick="openItemOptions('${nextPath}', '${cleanName}', ${isDir})" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-2 px-3 shrink-0 transition-colors"><i class="fa-solid fa-ellipsis-vertical"></i></button>` : ''}</div>`; }); }
         function openItemOptions(path, name, isDir) { optionsPath = path; optionsName = name; optionsIsDir = isDir; document.getElementById('sheet-title').innerText = name; if(isDir) { document.getElementById('btn-view-file').classList.add('hidden'); document.getElementById('btn-download-file').classList.add('hidden'); } else { document.getElementById('btn-view-file').classList.remove('hidden'); document.getElementById('btn-download-file').classList.remove('hidden'); } document.getElementById('overlay-sheet').classList.add('open'); document.getElementById('bottom-sheet').classList.add('open'); }
         function closeItemOptions() { document.getElementById('overlay-sheet').classList.remove('open'); document.getElementById('bottom-sheet').classList.remove('open'); }
@@ -2576,8 +2786,28 @@ if (isset($_GET['ota_update'])) {
         async function eliminarTodasLasImagenes(folder) { const seguro = await ps5Confirm(t('del_all'), `¿Estás seguro de eliminar <b class="text-[var(--text-main)]">TODAS</b> las imágenes?`, "fa-skull-crossbones", "bg-red-600 text-white border border-red-500/50"); if(!seguro) return; mostrarCarga(t('j_del_sel'), "Eliminando imágenes...", "fa-trash fa-bounce text-red-500"); let list = folder === 'iconos' ? ICONOS_LOCALES : BACKUPS_LOCALES; for(let img of list) { const fd = new FormData(); fd.append('action', 'delete_image'); fd.append('folder', folder); fd.append('file_name', img.nombre); try { await fetch('api/gallery.php', { method:'POST', body: fd }); } catch(e){} } closeCustomModal(); if(folder === 'iconos') actualizarGaleria(); else actualizarBackups(); ps5Notification(t('j_comp'), "Carpeta vaciada completamente.", "fa-trash-can"); document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); }
         function previewLocal(input) { if (input.files && input.files[0]) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('preview-img-local').src = e.target.result; document.getElementById('preview-img-local').classList.remove('hidden'); document.getElementById('icon-file-placeholder').classList.add('hidden'); document.getElementById('icon-file-name').innerText = input.files[0].name; document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); }; reader.readAsDataURL(input.files[0]); } }
         function ejecutarFormIconos() { const form = document.getElementById('icon-form'); if (form.reportValidity()) document.getElementById('icon-form-submit').click(); }
-        function switchIconSource(type) { currentIconSource = type; ['btn-src-gallery', 'btn-src-backup', 'btn-src-import', 'btn-src-local'].forEach(id => { let btn = document.getElementById(id); btn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"; btn.style.backgroundColor = ''; btn.style.color = ''; btn.style.boxShadow = ''; }); ['box-src-gallery', 'box-src-backup', 'box-src-import', 'box-src-local'].forEach(id => document.getElementById(id).classList.add('hidden')); let activeBtn = document.getElementById(`btn-src-${type}`); activeBtn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl whitespace-nowrap"; activeBtn.style.backgroundColor = 'var(--theme-prim)'; activeBtn.style.color = '#000'; document.getElementById(`box-src-${type}`).classList.remove('hidden'); if(type === 'import') document.getElementById('floating-btn-aplicar').classList.add('floating-hidden'); else document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); if(type === 'gallery') actualizarGaleria(); if(type === 'backup') actualizarBackups(); }
-        async function importarURL() { const urlInput = document.getElementById('import-url').value.trim(); if (!urlInput) return; mostrarCarga("IMPORTANDO", "Descargando imágenes...", "fa-cloud-arrow-down fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; const fd = new FormData(); fd.append('action', 'import_url'); fd.append('url', urlInput); try { let res = await fetch('api/gallery.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); closeCustomModal(); document.getElementById('import-url').value = ''; await actualizarGaleria(); switchIconSource('gallery'); ps5Notification(t('j_comp'), "Imágenes guardadas.", "fa-download"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (e) { mostrarErrorFinal(t('j_err'), "Error de red."); } finally { isTransferring = false; } }
+                function switchIconSource(type) { 
+            currentIconSource = type; 
+            ['btn-src-gallery', 'btn-src-backup', 'btn-src-local'].forEach(id => { 
+                let btn = document.getElementById(id); 
+                btn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors whitespace-nowrap"; 
+                btn.style.backgroundColor = ''; 
+                btn.style.color = ''; 
+                btn.style.boxShadow = ''; 
+            }); 
+            ['box-src-gallery', 'box-src-backup', 'box-src-local'].forEach(id => document.getElementById(id).classList.add('hidden')); 
+            
+            let activeBtn = document.getElementById(`btn-src-${type}`); 
+            activeBtn.className = "flex-1 py-3 px-3 text-[9px] font-black tracking-widest rounded-xl whitespace-nowrap"; 
+            activeBtn.style.backgroundColor = 'var(--theme-prim)'; 
+            activeBtn.style.color = '#000'; 
+            document.getElementById(`box-src-${type}`).classList.remove('hidden'); 
+            
+            document.getElementById('floating-btn-aplicar').classList.remove('floating-hidden'); 
+            
+            if(type === 'gallery') actualizarGaleria(); 
+            if(type === 'backup') actualizarBackups(); 
+        }
         async function actualizarGaleria() { try { let res = await fetch('api/gallery.php?action=get_gallery&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { ICONOS_LOCALES = data.data; cargarGaleria(ICONOS_LOCALES, 'gallery-container', 'iconos'); } } catch(e) {} }
         async function actualizarBackups() { try { let res = await fetch('api/gallery.php?action=get_backups&_t=' + new Date().getTime()); let data = await res.json(); if (data.status === 'success') { BACKUPS_LOCALES = data.data; cargarGaleria(BACKUPS_LOCALES, 'backup-container', 'backup_icons'); } } catch(e) {} }
         async function respaldarOriginal() { const ip = document.getElementById('host-ip').value, cusa = document.getElementById('icon-cusa').value.trim().toUpperCase(); if (!ip || !cusa) return; mostrarCarga("EXTRAYENDO", "Descargando portada...", "fa-download fa-bounce"); document.querySelector('#modal-icon i').style.color = 'var(--theme-prim)'; isTransferring = true; const fd = new FormData(); fd.append('action', 'backup_original'); fd.append('host_ip', ip); fd.append('cusa_id', cusa); try { let res = await fetch('api/modding.php', { method: 'POST', body: fd }); let data = await res.json(); if (data.status === 'success') { AudioEngine.playSuccess(); closeCustomModal(); switchIconSource('backup'); ps5Notification(t('j_comp'), `Portada guardada.`, "fa-download"); } else { mostrarErrorFinal(t('j_err'), data.message); } } catch (e) { mostrarErrorFinal(t('j_err'), "Error de red."); } finally { isTransferring = false; } }
@@ -2966,7 +3196,161 @@ if (isset($_GET['ota_update'])) {
         function cerrarLightboxSiFondo(e) { if (e.target.id === 'lightbox-modal' || e.target.tagName.toLowerCase() === 'div') { cerrarLightbox(); } }
         function toggleZoom(img) { if (img.classList.contains('scale-100')) { img.classList.replace('scale-100', 'scale-[2]'); img.classList.replace('cursor-zoom-out', 'cursor-zoom-in'); } else { img.classList.replace('scale-[2]', 'scale-100'); img.classList.replace('cursor-zoom-out', 'cursor-zoom-in'); } }
 
-         /* =========================================*/
+        // ==========================================
+        // COVERFLOW 3D - LÓGICA INTEGRADORA
+        // ==========================================
+        let viewMode = 'grid';
+        let carouselGames = [];
+        let currentIndex3D = 0;
+        
+        function toggleViewMode() {
+            const gridView = document.getElementById('view-grid');
+            const view3d = document.getElementById('view-3d');
+            const icon = document.getElementById('icono-vista');
+
+            if (viewMode === 'grid') {
+                viewMode = '3d';
+                gridView.classList.add('hidden');
+                view3d.classList.remove('hidden');
+                view3d.classList.add('flex');
+                icon.className = 'fa-solid fa-border-all text-sm transition-colors';
+                sync3DCarousel();
+            } else {
+                viewMode = 'grid';
+                view3d.classList.add('hidden');
+                view3d.classList.remove('flex');
+                gridView.classList.remove('hidden');
+                icon.className = 'fa-solid fa-cube text-sm transition-colors';
+            }
+        }
+
+        function sync3DCarousel() {
+            if(viewMode !== '3d') return; 
+            
+            const gridItems = Array.from(document.querySelectorAll('#grid-biblioteca .item-biblio')).filter(item => item.style.display !== 'none');
+            const carousel = document.getElementById('carousel-biblioteca');
+            carousel.innerHTML = '';
+            carouselGames = [];
+
+            if (gridItems.length === 0) {
+                document.getElementById('title-3d').innerText = 'SIN JUEGOS';
+                document.getElementById('cusa-3d').innerText = '---';
+                document.getElementById('version-3d').innerText = '---';
+                return;
+            }
+
+            gridItems.forEach((item, index) => {
+                const title = item.getAttribute('data-name');
+                const cusa = item.querySelector('span.font-mono').innerText;
+                const img = item.querySelector('img').src;
+                
+                // Extraemos la acción de click original para poder abrir opciones
+                const onclickRaw = item.getAttribute('onclick');
+                let versionMatch = onclickRaw.match(/', '([^']+)'\)$/);
+                const version = versionMatch ? versionMatch[1] : "1.00";
+
+                carouselGames.push({ title, cusa, img, onclick: onclickRaw, version });
+
+                const box = document.createElement('div');
+                box.className = 'ps4-case';
+                box.onclick = (e) => {
+                    e.stopPropagation();
+                    if(index === currentIndex3D) {
+                        // En modo 3D no abrimos el menú clásico
+                        box.style.transform += ' scale(0.95)';
+                        setTimeout(() => updateCarousel(), 150);
+                    } else {
+                        currentIndex3D = index;
+                        updateCarousel();
+                    }
+                };
+
+                box.innerHTML = `
+                    <div class="ps4-header"><span class="ps4-header-text">PS4</span></div>
+                    <img src="${img}" class="ps4-cover" onerror="this.src='icon-512.png'">
+                `;
+                carousel.appendChild(box);
+            });
+
+            if(currentIndex3D >= carouselGames.length) currentIndex3D = Math.max(0, carouselGames.length - 1);
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const boxes = document.querySelectorAll('.ps4-case');
+            if(boxes.length === 0) return;
+            
+            boxes.forEach((box, i) => {
+                const diff = i - currentIndex3D; 
+                
+                // Matemáticas inteligentes para DeX/PC vs Celular adaptadas
+                let isDesktop = window.innerWidth >= 1024;
+                let isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+                
+                let gapX = isDesktop ? 120 : (isTablet ? 100 : 90);      // Separación a los lados adaptada
+                let depthZ = isDesktop ? -90 : (isTablet ? -75 : -60);  // Profundidad hacia el fondo
+                
+                let translateX = diff * gapX; 
+                let translateZ = Math.abs(diff) * depthZ; 
+                let rotateY = diff > 0 ? -45 : (diff < 0 ? 45 : 0);
+                let scale = diff === 0 ? 1.05 : 0.85;
+
+                box.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+                box.style.zIndex = 100 - Math.abs(diff);
+                
+                if (diff === 0) {
+                    box.style.filter = 'brightness(1.1) drop-shadow(0 0 15px color-mix(in srgb, var(--theme-prim) 40%, transparent))';
+                    box.style.opacity = 1;
+                } else {
+                    box.style.filter = 'brightness(0.3)';
+                    box.style.opacity = Math.abs(diff) > 3 ? 0 : 1; 
+                }
+            });
+
+            const game = carouselGames[currentIndex3D];
+            if(game) {
+                document.getElementById('title-3d').innerText = game.title;
+                document.getElementById('cusa-3d').innerText = game.cusa;
+                document.getElementById('version-3d').innerText = 'v' + game.version;
+                
+                // Actualizamos las variables globales para que los botones de abajo funcionen
+                currentTitle = game.title;
+                currentCusa = game.cusa;
+                currentVersion = game.version;
+            }
+        }
+
+        function moveCarousel(direction) {
+            currentIndex3D += direction;
+            if (currentIndex3D < 0) currentIndex3D = 0;
+            if (currentIndex3D >= carouselGames.length) currentIndex3D = carouselGames.length - 1;
+            updateCarousel();
+        }
+
+        // Interceptar funciones nativas para actualizar el 3D automáticamente
+        const originalBuscar = buscarEnBiblioteca;
+        buscarEnBiblioteca = function(q) { originalBuscar(q); setTimeout(sync3DCarousel, 50); };
+
+        const originalFiltrar = filtrarCategoria;
+        filtrarCategoria = function(cat, btn) { originalFiltrar(cat, btn); setTimeout(sync3DCarousel, 50); };
+
+        const originalOrden = cambiarOrden;
+        cambiarOrden = function() { originalOrden(); setTimeout(sync3DCarousel, 250); };
+        
+        // Controles táctiles (Swipe) sobre el escenario 3D
+        let touchStart3D = 0;
+        document.addEventListener('touchstart', e => { 
+            if(viewMode === '3d' && e.target.closest('.scene')) touchStart3D = e.changedTouches[0].screenX; 
+        }, {passive: true});
+        document.addEventListener('touchend', e => {
+            if(viewMode === '3d' && e.target.closest('.scene')) {
+                let touchEnd3D = e.changedTouches[0].screenX;
+                if (touchEnd3D < touchStart3D - 40) moveCarousel(1); 
+                if (touchEnd3D > touchStart3D + 40) moveCarousel(-1); 
+            }
+        }, {passive: true});
+
+        /* =========================================*/
         /* PASO 4: JAVASCRIPT DEL BUSCADOR MANUAL    */
         /* ========================================= */
         function abrirBuscadorPKG() {
