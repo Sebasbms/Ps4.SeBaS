@@ -68,7 +68,7 @@
 
     /* MATRIX RAIN */
     #matrix-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-    .matrix-overlay { position: relative; z-index: 10; text-align: center; background: rgba(0,0,0,0.7); padding: 40px 80px; border: 1px solid #0f0; box-shadow: 0 0 30px #0f0, inset 0 0 20px #0f0; animation: matrixFadeIn 5.5s forwards; }
+    .matrix-overlay { position: relative; z-index: 10; text-align: center; background: rgba(0,0,0,0.7); padding: 30px 20px; width: 85%; max-width: 400px; margin: 0 auto; border: 1px solid #0f0; box-shadow: 0 0 30px #0f0, inset 0 0 20px #0f0; animation: matrixFadeIn 5.5s forwards; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     @keyframes matrixFadeIn { 0% { opacity: 0; transform: scale(0.8); } 15% { opacity: 1; transform: scale(1); filter: blur(0); } 90% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(1.5); filter: blur(10px); } }
 
     /* CRT */
@@ -96,7 +96,15 @@
 <div id="intro-neon" class="intro-container"><div class="neon-grid"></div><div class="neon-wrapper"><i class="fa-brands fa-playstation text-7xl text-[#00ffff] drop-shadow-[0_0_15px_#00ffff] mb-3 block"></i><div class="text-3xl font-black text-white uppercase tracking-[4px] drop-shadow-[0_0_15px_#ff00ff]">GOLDHEN MANAGER</div><div class="text-sm text-[#00ffff] tracking-[6px] mt-2 font-bold">V 2 . 1</div></div></div>
 <div id="intro-decrypt" class="intro-container"><div class="flex flex-col items-center justify-center w-full px-4 text-center"><i class="fa-brands fa-playstation text-7xl text-[#0f0] mb-4 drop-shadow-[0_0_15px_#0f0] decrypt-logo-anim"></i><div id="decrypt-target" class="font-mono text-[#0f0] uppercase" style="font-size: 1.5rem; text-shadow: 0 0 10px #0f0; letter-spacing: 2px;"></div></div></div>
 <div id="intro-arcade" class="intro-container"><div class="arcade-content"><i class="fa-brands fa-playstation text-7xl text-[#ff0000] drop-shadow-[6px_6px_0_#ffcc00] mb-5 inline-block" style="animation: pixelBounce 0.5s infinite alternate steps(2);"></i><div style="font-family: 'Press Start 2P', cursive; font-size: 1.2rem; color: #ffcc00; text-shadow: 4px 4px 0px #ff0000; line-height: 2;">GOLDHEN MANAGER<br><span style="font-size: 0.8rem; color: #fff; text-shadow: none;">v2.1</span></div><div style="font-family: 'Press Start 2P', cursive; font-size: 0.8rem; color: #fff; margin-top: 40px; animation: blinkCoin 1s infinite steps(2);">INSERT COIN</div></div></div>
-<div id="intro-matrix-rain" class="intro-container"><canvas id="matrix-canvas-intro"></canvas><div class="matrix-overlay"><i class="fa-brands fa-playstation text-7xl text-[#0f0] drop-shadow-[0_0_15px_#0f0] mb-3 block"></i><div style="font-size: 2rem; color: #0f0; text-shadow: 0 0 15px #0f0; letter-spacing: 5px; font-weight: bold;">GOLDHEN MANAGER v2.1</div></div></div>
+<div id="intro-matrix-rain" class="intro-container">
+    <canvas id="matrix-canvas-intro"></canvas>
+    <div class="matrix-overlay">
+        <i class="fa-brands fa-playstation text-6xl md:text-7xl text-[#0f0] drop-shadow-[0_0_15px_#0f0] mb-3 block"></i>
+        <div style="font-size: 1.4rem; color: #0f0; text-shadow: 0 0 15px #0f0; letter-spacing: 2px; font-weight: bold; text-align: center; line-height: 1.2;">
+            GOLDHEN MANAGER<br><span style="font-size: 1rem;">v2.1</span>
+        </div>
+    </div>
+</div>
 <div id="intro-crt" class="intro-container"><div class="scanlines"></div><div id="crt-terminal-text" style="z-index: 10; position: relative;"></div><div class="crt-logo-box"><i class="fa-brands fa-playstation text-8xl mb-5 text-[#ffb000]"></i><div style="font-size: 2.5rem; font-weight: bold; letter-spacing: 8px; text-align: center; color: #ffb000;">GOLDHEN MANAGER v2.1</div></div></div>
 <div id="intro-gb" class="intro-container"><div class="gb-logo-container"><i class="fa-brands fa-playstation text-7xl mb-5 block text-[#0f380f]"></i><div style="font-size: 1.2rem; letter-spacing: 2px;">GoldHen Manager<br><span style="font-size: 0.8rem; margin-top: 10px; display: block;">v2.1</span></div></div></div>
 <div id="intro-breach" class="intro-container"><div class="scanlines"></div><div class="breach-box" id="breach-box-anim"><i id="breach-icon" class="fa-solid fa-lock text-7xl mb-5 block text-red-600"></i><div id="breach-text" style="font-size: 2rem; font-weight: bold; letter-spacing: 4px;">SYSTEM LOCKED</div></div></div>
