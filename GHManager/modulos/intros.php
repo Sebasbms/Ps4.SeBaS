@@ -67,7 +67,7 @@
     @keyframes arcadeZoom { 0% { transform: scale(0.1); opacity: 0; } 15% { transform: scale(1); opacity: 1; filter: blur(0); } 94% { transform: scale(1); opacity: 1; filter: blur(0); } 100% { transform: scale(3); opacity: 0; filter: blur(10px); } }
 
     /* MATRIX RAIN */
-    #matrix-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    #matrix-canvas-intro { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
     .matrix-overlay { position: relative; z-index: 10; text-align: center; background: rgba(0,0,0,0.7); padding: 30px 20px; width: 85%; max-width: 400px; margin: 0 auto; border: 1px solid #0f0; box-shadow: 0 0 30px #0f0, inset 0 0 20px #0f0; animation: matrixFadeIn 5.5s forwards; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     @keyframes matrixFadeIn { 0% { opacity: 0; transform: scale(0.8); } 15% { opacity: 1; transform: scale(1); filter: blur(0); } 90% { opacity: 1; transform: scale(1); filter: blur(0); } 100% { opacity: 0; transform: scale(1.5); filter: blur(10px); } }
 
