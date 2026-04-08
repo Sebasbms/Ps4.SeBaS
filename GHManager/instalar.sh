@@ -1,33 +1,33 @@
 #!/bin/bash
 
-# 1. Esperar a que el usuario conceda los permisos de almacenamiento
+# 1. Esperar a que el usuario conceda los permisos
 termux-setup-storage
 while ! ls ~/storage/shared >/dev/null 2>&1; do sleep 2; done
 
-# 2. Actualizar sistema e instalar paquetes en modo SILENCIOSO
+# 2. Instalar dependencias en modo silencioso
 pkg update -y
 pkg upgrade -y -o Dpkg::Options::="--force-confold"
 pkg install php git busybox curl -y -o Dpkg::Options::="--force-confold"
 
-# 3. Limpiar rastros viejos y descargar el proyecto fresco
+# 3. Limpiar rastros viejos y clonar tu repositorio
 rm -rf ~/PS4Manager
 git clone https://github.com/Sebasbms/Ps4.SeBaS.git ~/PS4Manager
 
-# 4. Crear las carpetas públicas en la memoria interna del celular
+# 4. Crear las carpetas públicas en tu celular
 mkdir -p ~/storage/shared/GoldHenManager/{iconos,payloads,servidor_rpi,backup_icons,cache_biblioteca}
 
-# 5. Borrar carpetas de caché de GitHub y conectarlas con tu memoria interna
-rm -rf ~/PS4Manager/{iconos,payloads,servidor_rpi,backup_icons,cache_biblioteca}
-ln -s ~/storage/shared/GoldHenManager/iconos ~/PS4Manager/iconos
-ln -s ~/storage/shared/GoldHenManager/payloads ~/PS4Manager/payloads
-ln -s ~/storage/shared/GoldHenManager/servidor_rpi ~/PS4Manager/servidor_rpi
-ln -s ~/storage/shared/GoldHenManager/backup_icons ~/PS4Manager/backup_icons
-ln -s ~/storage/shared/GoldHenManager/cache_biblioteca ~/PS4Manager/cache_biblioteca
+# 5. Enlazar las carpetas (Apuntando a GHManager)
+DIR_PROYECTO="$HOME/PS4Manager/GHManager"
+rm -rf $DIR_PROYECTO/{iconos,payloads,servidor_rpi,backup_icons,cache_biblioteca}
+ln -s ~/storage/shared/GoldHenManager/iconos $DIR_PROYECTO/iconos
+ln -s ~/storage/shared/GoldHenManager/payloads $DIR_PROYECTO/payloads
+ln -s ~/storage/shared/GoldHenManager/servidor_rpi $DIR_PROYECTO/servidor_rpi
+ln -s ~/storage/shared/GoldHenManager/backup_icons $DIR_PROYECTO/backup_icons
+ln -s ~/storage/shared/GoldHenManager/cache_biblioteca $DIR_PROYECTO/cache_biblioteca
 
-# 6. CONFIGURAR EL AUTO-ARRANQUE
+# 6. Configurar el Arranque Hacker Definitivo
 cat << 'EOF' > ~/.bashrc
 clear
-# Logo gigante Hacker
 echo -e "\e[1;36m"
 echo " ██████╗  ██████  ██╗     ██████╗ ██╗  ██╗███████╗███╗   ██╗"
 echo "██╔════╝ ██╔═══██╗██║     ██╔══██╗██║  ██║██╔════╝████╗  ██║"
@@ -46,8 +46,8 @@ killall php >/dev/null 2>&1
 killall busybox >/dev/null 2>&1
 sleep 0.4
 
-# ENTRAMOS DIRECTAMENTE A LA RAÍZ DEL PROYECTO
-cd ~/PS4Manager
+# Entramos directo a la carpeta GHManager
+cd ~/PS4Manager/GHManager
 
 echo -e "\e[1;32m[+] Levantando motor RPI Sender (Puerto 8081)...\e[0m"
 busybox httpd -p 8081 -h .
@@ -62,10 +62,8 @@ echo -e "\e[0;32m==========================================================\e[0m
 echo -e "\e[0;32m[!] Servidor activo. No cierres esta ventana de Termux.\e[0m"
 echo -e "\e[0;32m==========================================================\e[0m"
 
-# Orden oculta para abrir el navegador 2 SEGUNDOS DESPUÉS de encender PHP
 (sleep 2 && am start -a android.intent.action.VIEW -d "http://localhost:8080/index.php" >/dev/null 2>&1) &
 
-# Lanzamos PHP de fondo bloqueando la terminal
 PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:8080
 EOF
 
