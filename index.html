@@ -59,8 +59,6 @@
             <h2 class="text-lg font-black tracking-widest mb-1 text-cyan-400">2. COMANDO MÁGICO</h2>
             <p class="text-xs text-white/50 mb-4 px-4 leading-relaxed">Toca aquí para copiar el script de instalación automática. Luego pégalo en Termux.</p>
             <span id="btn-copy-text" class="bg-cyan-400 text-black text-[10px] font-black px-6 py-2.5 rounded-full tracking-widest uppercase shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all"><i class="fa-regular fa-copy mr-1"></i> Copiar Comando</span>
-            
-            <input type="text" id="comando-oculto" value="termux-setup-storage && curl -sL https://raw.githubusercontent.com/Sebasbms/Ps4.SeBaS/main/GHManager/instalar.sh | bash" class="absolute opacity-0 -z-10">
         </div>
 
     </main>
@@ -106,6 +104,18 @@
         </h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div class="glass-panel rounded-2xl p-6 flex gap-4 hover:bg-white/5 transition-colors md:col-span-2 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-400/30 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center text-blue-400 shrink-0 bg-blue-500/20 border border-blue-400/50 shadow-inner"><i class="fa-solid fa-laptop-house text-2xl"></i></div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h4 class="font-black text-sm tracking-widest text-white uppercase drop-shadow-md">Control Multipantallas (PC/Tablet)</h4>
+                        <span class="bg-blue-500 text-black text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest animate-pulse">Nuevo</span>
+                    </div>
+                    <p class="text-xs text-white/70 leading-relaxed">Tu celular funciona como un servidor real en tu bolsillo. Solo tienes que escribir la <b>IP de tu teléfono</b> en el navegador de tu computadora o tablet para abrir la interfaz y controlar toda tu PS4 desde una pantalla grande. ¡Usando los juegos y fotos que tienes en el celular!</p>
+                </div>
+            </div>
+
             <div class="glass-panel rounded-2xl p-5 flex gap-4 hover:bg-white/5 transition-colors">
                 <div class="w-10 h-10 rounded-full feature-icon flex items-center justify-center text-cyan-400 shrink-0"><i class="fa-solid fa-rocket"></i></div>
                 <div>
@@ -158,23 +168,54 @@
 
     <script>
         function copiarComando() {
-            var comando = document.getElementById("comando-oculto");
-            comando.select();
-            comando.setSelectionRange(0, 99999); // Para dispositivos móviles
-            navigator.clipboard.writeText(comando.value).then(() => {
+            const comando = "termux-setup-storage && curl -sL https://raw.githubusercontent.com/Sebasbms/Ps4.SeBaS/main/GHManager/instalar.sh | bash";
+            
+            // Función para la animación verde de éxito
+            const animacionExito = () => {
                 var btn = document.getElementById("btn-copy-text");
-                var originalHTML = btn.innerHTML;
-                
-                // Efecto visual de copiado
-                btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> ¡Copiado!';
-                btn.classList.replace('bg-cyan-400', 'bg-green-400');
-                btn.classList.replace('text-black', 'text-black');
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.classList.replace('bg-green-400', 'bg-cyan-400');
-                }, 2000);
-            });
+                if(btn) {
+                    var originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> ¡Copiado!';
+                    btn.classList.replace('bg-cyan-400', 'bg-green-400');
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.classList.replace('bg-green-400', 'bg-cyan-400');
+                    }, 2000);
+                }
+            };
+
+            // Intentar método moderno primero (Para webs en HTTPS)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(comando).then(animacionExito).catch(() => fallbackCopiar(comando, animacionExito));
+            } else {
+                // Método a prueba de balas (Para archivos locales en Android o Chrome bloqueado)
+                fallbackCopiar(comando, animacionExito);
+            }
+        }
+
+        function fallbackCopiar(texto, callback) {
+            // Crea un input invisible de forma temporal
+            var textArea = document.createElement("textarea");
+            textArea.value = texto;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            
+            // Selecciona y copia
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                var exitoso = document.execCommand('copy');
+                if (exitoso) callback();
+            } catch (err) {
+                alert("Tu navegador bloqueó el portapapeles automáticamente. Por favor, copia el comando manualmente:\n\n" + texto);
+            }
+            
+            // Limpia la basura
+            document.body.removeChild(textArea);
         }
     </script>
 </body>
