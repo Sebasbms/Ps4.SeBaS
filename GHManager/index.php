@@ -626,15 +626,30 @@ if (isset($_GET['ota_update'])) {
             .ps4-case { width: 140px; height: 195px; }
             #tab-biblioteca.active { padding-bottom: 80px !important; }
         }
-    /* =========================================
-       FIX: NAVEGACIÓN Y TEMAS (MULTI-PLATAFORMA)
-       ========================================= */
-    #categoria-nav { min-height: 35px !important; max-height: 35px !important; background: transparent !important; flex-shrink: 0 !important; }
-            /* Ocultar las rayas feas (scrollbars) pero permitir deslizar con el dedo */
+        /* =========================================
+           FIX DEFINITIVO: NAVEGACIÓN, BOTONES 3D Y CATEGORÍAS
+           ========================================= */
+        #categoria-nav, #selector-categorias { height: 45px !important; min-height: 45px !important; max-height: 45px !important; display: flex !important; align-items: center !important; flex-shrink: 0 !important; flex-grow: 0 !important; background: transparent !important; }
+        #theme-scroll-container, #intro-scroll-container, #dynbg-scroll-container { height: 45px !important; min-height: 45px !important; max-height: 45px !important; display: flex !important; align-items: center !important; flex-shrink: 0 !important; flex-grow: 0 !important; background: transparent !important; }
+        
+        /* Ocultar las rayas feas (scrollbars) */
         .hide-scrollbar::-webkit-scrollbar { display: none !important; }
         .hide-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-        .theme-btn, .intro-btn, .dynbg-btn { height: 32px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; border-radius: 8px !important; }
-    .filter-pill { height: 28px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; }
+        
+        /* Bloqueo estricto para botones de temas e intros */
+        .theme-btn, .intro-btn, .dynbg-btn { height: 32px !important; min-height: 32px !important; max-height: 32px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; border-radius: 8px !important; }
+        
+        /* 🔥 Candado estricto para TODOS los botones de categoría 🔥 */
+        /* Devolvemos el borde original (8px) y forzamos fondo transparente en los inactivos */
+        .filter-pill, #selector-categorias button { height: 32px !important; min-height: 32px !important; max-height: 32px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; border-radius: 8px !important; }
+        
+        .filter-pill:not(.active), #selector-categorias button:not(.bg-black\/60) { background-color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+
+        #categoria-nav > div { height: 32px !important; display: flex !important; align-items: center !important; background: transparent !important; }
+
+        /* CANDADO DE TITANIO SEGURO (SOLO PARA LA BOTONERA 3D) */
+        #botones-accion-3d { height: 95px !important; min-height: 95px !important; max-height: 95px !important; display: flex !important; align-items: center !important; flex-shrink: 0 !important; overflow-y: hidden !important; }
+        #botones-accion-3d button { height: 85px !important; min-height: 85px !important; max-height: 85px !important; flex-shrink: 0 !important; }
 
         /* =========================================
            NUEVO EXPLORADOR COMPACTO PREMIUM
@@ -760,7 +775,7 @@ if (isset($_GET['ota_update'])) {
                             </div>
                         </div>
 
-                        <div class="flex gap-2.5 overflow-x-auto hide-scrollbar w-full px-1 snap-x">
+                        <div id="botones-accion-3d" class="flex gap-2.5 overflow-x-auto hide-scrollbar w-full px-1 snap-x">
                             <button onclick="iniciarBackupSaves()" class="shrink-0 flex flex-col items-center justify-center gap-2 w-[85px] h-[85px] rounded-2xl bg-black/40 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all snap-center group">
                                 <i class="fa-solid fa-floppy-disk text-[22px] group-hover:scale-110 transition-transform" style="color: var(--theme-prim); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--theme-prim) 40%, transparent));"></i>
                                 <span class="text-[8px] uppercase font-black tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-main)] text-center leading-tight">Saves</span>
@@ -1312,7 +1327,7 @@ if (isset($_GET['ota_update'])) {
 
             <div class="bg-black/60 p-3 rounded-xl border border-white/5 mb-5 shadow-inner backdrop-blur-md">
                 <span class="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-widest block mb-2" data-i18n="move_category">Mover a categor&iacute;a:</span>
-                <div id="selector-categorias" class="flex gap-2 overflow-x-auto custom-scrollbar pb-1"></div>
+                <div id="selector-categorias" class="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1 h-10"></div>
             </div>
 
             <div class="flex flex-col gap-1">
@@ -2057,11 +2072,19 @@ if (isset($_GET['ota_update'])) {
             let savedCats = JSON.parse(localStorage.getItem('ps4_game_categories')) || {};
             let categoriaActual = savedCats[cusa] || 'juegos'; 
             let html = '';
+            
+            let flexClass = categorias.length <= 3 ? 'flex-1' : 'px-4 shrink-0';
+
             categorias.forEach(cat => {
                 let esActivo = (cat.id === categoriaActual);
-                let clasesColor = esActivo ? 'style="background-color: color-mix(in srgb, var(--theme-prim) 20%, transparent); color: var(--theme-prim); border-color: color-mix(in srgb, var(--theme-prim) 50%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--theme-prim) 30%, transparent);"' : 'class="bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text-main)] hover:bg-white/5"';
-                let classesExtra = esActivo ? '' : 'bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text-main)] hover:bg-white/5';
-                html += `<button onclick="moverAGrupo('${cat.id}')" class="h-7 px-3 rounded-lg border text-[9px] font-black tracking-widest uppercase transition-all shrink-0 ${classesExtra}" ${clasesColor}>${cat.name}</button>`;
+                
+                let baseClasses = `flex items-center justify-center text-[10px] uppercase tracking-widest font-black rounded-lg border transition-all focus:outline-none ${flexClass}`;
+                
+                if (esActivo) {
+                    html += `<button onclick="moverAGrupo('${cat.id}')" class="${baseClasses} bg-black/60" style="height: 32px; min-height: 32px; max-height: 32px; border-color: var(--theme-prim); color: var(--theme-prim); box-shadow: 0 0 10px color-mix(in srgb, var(--theme-prim) 30%, transparent);">${cat.name}</button>`;
+                } else {
+                    html += `<button onclick="moverAGrupo('${cat.id}')" class="${baseClasses} bg-transparent border-transparent text-[var(--text-muted)] hover:text-white hover:bg-white/5" style="height: 32px; min-height: 32px; max-height: 32px;">${cat.name}</button>`;
+                }
             });
             container.innerHTML = html;
         }
