@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldHen Manager V2.1</title>
+    <title>Academia GoldHen V2.1 By SeBaS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -63,10 +63,10 @@
         
         <div class="text-center mb-10 relative z-10">
             <div class="w-16 h-16 mx-auto bg-blue-500/10 border border-blue-400/20 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                <i class="fa-solid fa-gamepad text-3xl text-blue-400"></i>
+                <i class="fa-solid fa-graduation-cap text-3xl text-blue-400"></i>
             </div>
             <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-0 text-white">GoldHen Manager <span class="text-cyan-400">v2.1</span></h1>
-            <p class="text-sm text-cyan-500/80 font-medium tracking-widest mb-4">BY SEBAS</p>
+            <p class="text-sm text-cyan-500/80 font-medium tracking-widest mb-4 uppercase">Academia By Sebas</p>
             
             <p class="text-white/60 text-xs md:text-sm max-w-md mx-auto font-light leading-relaxed">
                 Selecciona una lección interactiva para aprender a dominar tu consola sin usar cables.
@@ -76,19 +76,19 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl z-10">
             <div onclick="showScreen('screen-connect')" class="glass-panel rounded-2xl p-5 flex flex-col items-center text-center cursor-pointer hover:bg-white/5 transition-all border border-white/5 hover:border-cyan-400/40 group">
                 <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-network-wired text-xl"></i></div>
-                <h2 class="text-sm font-bold tracking-wide text-cyan-400 mb-1">Configurar Red</h2>
+                <h2 class="text-sm font-bold tracking-wide text-cyan-400 mb-1">1. Configurar Red</h2>
                 <p class="text-[10px] text-white/50 leading-relaxed font-light">Enlaza la PS4 y carga tu biblioteca inicial.</p>
             </div>
 
             <div onclick="showScreen('screen-rpi')" class="glass-panel rounded-2xl p-5 flex flex-col items-center text-center cursor-pointer hover:bg-white/5 transition-all border border-white/5 hover:border-blue-400/40 group">
                 <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-rocket text-xl"></i></div>
-                <h2 class="text-sm font-bold tracking-wide text-blue-400 mb-1">Instalar Juegos</h2>
+                <h2 class="text-sm font-bold tracking-wide text-blue-400 mb-1">2. Instalar Juegos</h2>
                 <p class="text-[10px] text-white/50 leading-relaxed font-light">Envía juegos PKG directo al menú de tu TV.</p>
             </div>
 
             <div onclick="showScreen('screen-ftp')" class="glass-panel rounded-2xl p-5 flex flex-col items-center text-center cursor-pointer hover:bg-white/5 transition-all border border-white/5 hover:border-purple-400/40 group">
                 <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i class="fa-solid fa-folder-tree text-xl"></i></div>
-                <h2 class="text-sm font-bold tracking-wide text-purple-400 mb-1">FTP Clásico</h2>
+                <h2 class="text-sm font-bold tracking-wide text-purple-400 mb-1">3. FTP Clásico</h2>
                 <p class="text-[10px] text-white/50 leading-relaxed font-light">Sube archivos y explora el disco duro de la PS4.</p>
             </div>
         </div>
@@ -106,7 +106,7 @@
 
         <section class="w-full max-w-[360px] mx-auto bg-[#0b0c14] border border-white/10 rounded-[2.5rem] p-4 mb-6 shadow-[0_0_30px_rgba(34,211,238,0.1)] relative z-10 flex flex-col h-[480px]">
             <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-2 bg-[#2d1b1e] border border-[#5c2a32] px-3 py-1.5 rounded-xl"><div class="w-2 h-2 rounded-full bg-red-500"></div><span class="text-[9px] font-bold tracking-widest text-red-100">DISCONNECTED</span></div>
+                <div class="flex items-center gap-2 bg-[#2d1b1e] border border-[#5c2a32] px-3 py-1.5 rounded-xl"><div class="w-2 h-2 rounded-full bg-red-500"></div><span class="text-[9px] font-bold tracking-widest text-red-100">DESCONECTADO</span></div>
                 <div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-500 flex items-center justify-center text-blue-400 text-xs font-bold">S</div>
             </div>
 
@@ -114,32 +114,28 @@
                 <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 h-[42px] relative">
                     <div class="hotspot-pulse" onclick="toggleBubble('ip-1', event)"></div>
                     <i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i><span class="text-[var(--text-muted)] font-mono text-xs">192.168.x.x</span>
-                    <div id="ip-1" class="feature-bubble bubble-bottom"><strong class="text-cyan-400"><i class="fa-solid fa-location-crosshairs mr-1"></i> IP DE LA PS4</strong><p>Escribe aquí la dirección IP de tu consola (Búscala en GoldHen > Servers Settings).</p><div class="close-bubble" onclick="toggleBubble('ip-1', event)">×</div></div>
+                    <div id="ip-1" class="feature-bubble bubble-bottom"><strong class="text-cyan-400"><i class="fa-solid fa-location-crosshairs mr-1"></i> IP DE LA PS4</strong><p>Escribe aquí la dirección IP de tu consola.</p><div class="close-bubble" onclick="toggleBubble('ip-1', event)">×</div></div>
                 </div>
                 <div class="w-[42px] h-[42px] rounded-[1.2rem] bg-black/60 border border-white/5 flex items-center justify-center relative shrink-0">
                     <div class="hotspot-pulse purple" onclick="toggleBubble('conn-1', event)"></div><i class="fa-solid fa-plug text-sm text-[var(--theme-sec)]"></i>
-                    <div id="conn-1" class="feature-bubble bubble-bottom !left-auto !right-0 !transform-none"><strong class="text-purple-400"><i class="fa-solid fa-plug mr-1"></i> CONECTAR</strong><p>Toca este botón después de escribir la IP para forzar la conexión a la consola.</p><div class="close-bubble" onclick="toggleBubble('conn-1', event)">×</div></div>
+                    <div id="conn-1" class="feature-bubble bubble-bottom !left-auto !right-0 !transform-none"><strong class="text-purple-400"><i class="fa-solid fa-plug mr-1"></i> CONECTAR</strong><p>Toca para enlazar el celular con la consola.</p><div class="close-bubble" onclick="toggleBubble('conn-1', event)">×</div></div>
+                </div>
+                <div class="w-[42px] h-[42px] rounded-[1.2rem] flex items-center justify-center relative shrink-0" style="background-color: var(--theme-prim);">
+                    <div class="hotspot-pulse green" onclick="toggleBubble('search-1', event)"></div><i class="fa-solid fa-satellite-dish text-sm text-black"></i>
+                    <div id="search-1" class="feature-bubble bubble-bottom !left-auto !right-0 !transform-none"><strong class="text-green-400"><i class="fa-solid fa-satellite-dish mr-1"></i> BUSCAR MI IP</strong><p>Encuentra la IP de tu celular para crear el servidor de descargas.</p><div class="close-bubble" onclick="toggleBubble('search-1', event)">×</div></div>
                 </div>
             </div>
 
-            <div class="flex-1 grid grid-cols-3 gap-2 mt-4 opacity-30 pointer-events-none" style="mask-image: linear-gradient(to bottom, black 20%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);">
+            <div class="flex-1 grid grid-cols-3 gap-2 mt-4 opacity-30 pointer-events-none" style="mask-image: linear-gradient(to bottom, black 20%, transparent 100%);">
                 <div class="bg-blue-900/50 rounded-xl h-24"></div><div class="bg-purple-900/50 rounded-xl h-24"></div><div class="bg-gray-800/50 rounded-xl h-24"></div>
             </div>
 
             <div class="shrink-0 w-full pt-1 mt-auto relative z-20 bg-[#0b0c14] pb-4">
                 <div class="flex justify-between items-end">
-                    <div class="flex flex-col">
-                        <h1 class="text-3xl font-black text-white tracking-wide leading-none mb-1.5">Library</h1>
-                        <div class="flex items-center gap-2 text-[10px]">
-                            <div class="flex items-center gap-1 font-bold bg-blue-500/20 px-2.5 py-0.5 rounded-full text-blue-400"><i class="fa-solid fa-gamepad"></i> <span>80</span></div>
-                            <span class="text-white/50 font-mono tracking-widest uppercase">TITLES INSTALLED</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <div class="w-10 h-10 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-center relative">
-                            <div class="hotspot-pulse blue" onclick="toggleBubble('sync-1', event)"></div><i class="fa-solid fa-rotate text-sm text-[var(--theme-prim)]"></i>
-                            <div id="sync-1" class="feature-bubble bubble-top"><strong class="text-blue-400"><i class="fa-solid fa-rotate mr-1"></i> SINCRONIZAR</strong><p>Lee tu PS4 para cargar las portadas de los juegos que ya tienes instalados.</p><div class="close-bubble" onclick="toggleBubble('sync-1', event)">×</div></div>
-                        </div>
+                    <div class="flex flex-col"><h1 class="text-3xl font-black text-white leading-none mb-1.5">BIBLIOTECA</h1><div class="flex items-center gap-2 text-[10px]"><div class="bg-blue-500/20 px-2 rounded-full text-blue-400 font-bold">80 TÍTULOS</div></div></div>
+                    <div class="w-10 h-10 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-center relative">
+                        <div class="hotspot-pulse blue" onclick="toggleBubble('sync-1', event)"></div><i class="fa-solid fa-rotate text-sm text-blue-400"></i>
+                        <div id="sync-1" class="feature-bubble bubble-top"><strong class="text-blue-400">SINCRONIZAR</strong><p>Carga las portadas de los juegos instalados.</p><div class="close-bubble" onclick="toggleBubble('sync-1', event)">×</div></div>
                     </div>
                 </div>
             </div>
@@ -147,20 +143,19 @@
 
         <div class="bg-black/40 rounded-2xl p-6 border border-white/5 relative overflow-hidden glass-panel">
             <div class="absolute -right-5 -bottom-5 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none"></div>
-            <div class="flex items-center gap-4 z-10 mb-5">
+            <div class="flex items-center gap-4 mb-5">
                 <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 border border-blue-400/50 bg-blue-500/20 text-blue-400"><i class="fa-solid fa-tv text-lg"></i></div>
-                <div class="z-10">
-                    <h4 class="text-sm font-bold text-white mb-0.5 uppercase tracking-widest">Encontrar la IP</h4>
-                    <p class="text-[10px] text-white/50 tracking-wider">Activar servidor GoldHen</p>
-                </div>
+                <div class="z-10"><h4 class="text-sm font-bold text-white mb-0.5 uppercase tracking-widest">Encontrar la IP</h4><p class="text-[10px] text-white/50 tracking-wider">Activar servidor GoldHen</p></div>
             </div>
             <div class="space-y-4 z-10 text-xs text-white/70 leading-relaxed font-light">
                 <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">1.</span> <span><b>Misma Red:</b> Asegúrate de que el celular y la PS4 estén conectados al <b>mismo Router Wi-Fi</b>.</span></p>
                 <div class="h-px w-full bg-white/5 my-2"></div>
                 <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">2.</span> <span><b>Obtén la IP:</b> Ve al menú principal de tu PS4 y entra a las opciones de <b>GoldHen</b>. <br><br>Ve a <b class="text-cyan-400">Servers Settings</b> y activa <b>"Enable FTP Server"</b>. <br><br>Ahí saldrá una notificación arriba a la izquierda con la IP de la consola (ej: 192.168.1.50).</span></p>
                 <div class="h-px w-full bg-white/5 my-2"></div>
-                <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">3.</span> <span><b>Ponla en la App:</b> Escribe esa IP exacta en la barra superior de la aplicación.</span></p>
-                <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">4.</span> <span><b>Conecta:</b> Toca el <b>ícono del enchufe</b>. La barra dirá "Conectado".</span></p>
+                <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">3.</span> <span><b>Ponla en la App:</b> Escribe esa IP exacta en la barra superior de la aplicación y toca el enchufe.</span></p>
+                <div class="h-px w-full bg-white/5 my-2"></div>
+                <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">4.</span> <span><b>Botón Radar (Celeste):</b> Toca el icono celeste del radar para que la App encuentre automáticamente la <b>IP de tu celular</b>. Esto es obligatorio para que el servidor de juegos funcione correctamente.</span></p>
+                <p class="flex items-start gap-2"><span class="font-bold text-white mt-0.5">5.</span> <span><b>Sincronizar:</b> Toca el icono de refrescar (abajo a la derecha) para cargar tu biblioteca de juegos.</span></p>
             </div>
         </div>
     </div>
@@ -175,29 +170,21 @@
             <p class="text-white/60 text-xs font-light">Toca los recuadros iluminados en el RPI Sender.</p>
         </header>
 
-        <section class="w-full max-w-[360px] mx-auto bg-[#0b0c14] border border-white/10 rounded-[2.5rem] p-4 mb-6 shadow-[0_0_30px_rgba(59,130,246,0.1)] relative z-10 flex flex-col h-[550px]">
-            <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-2 bg-[#2d1b1e] border border-[#5c2a32] px-3 py-1.5 rounded-xl"><div class="w-2 h-2 rounded-full bg-red-500"></div><span class="text-[9px] font-bold tracking-widest text-red-100">DISCONNECTED</span></div>
-                <div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-500 flex items-center justify-center text-blue-400 text-xs font-bold">S</div>
-            </div>
-
+        <section class="w-full max-w-[360px] mx-auto bg-[#0b0c14] border border-white/10 rounded-[2.5rem] p-4 mb-6 shadow-[0_0_30px_rgba(59,130,246,0.1)] relative z-10 flex flex-col h-[560px]">
+            <div class="flex justify-between items-center mb-2"><div class="flex items-center gap-2 bg-[#2d1b1e] border border-[#5c2a32] px-3 py-1.5 rounded-xl"><div class="w-2 h-2 rounded-full bg-red-500"></div><span class="text-[9px] font-bold text-red-100 uppercase">DESCONECTADO</span></div><div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-500 flex items-center justify-center text-blue-400 text-xs font-bold">S</div></div>
+            
             <div class="flex gap-2 relative mb-4">
-                <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 h-[42px]">
-                    <i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i><span class="text-[var(--text-muted)] font-mono text-xs">192.168.1.50</span>
-                </div>
+                <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 h-[42px]"><i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i><span class="text-[var(--text-muted)] font-mono text-xs">192.168.1.50</span></div>
                 <div class="w-[42px] h-[42px] rounded-[1.2rem] bg-black/60 border border-white/5 flex items-center justify-center"><i class="fa-solid fa-plug text-sm text-purple-500"></i></div>
                 <div class="w-[42px] h-[42px] rounded-[1.2rem] flex items-center justify-center bg-blue-500"><i class="fa-solid fa-satellite-dish text-sm text-black"></i></div>
             </div>
 
-            <div class="bg-black/40 border border-white/5 p-1 rounded-2xl mb-4 flex shrink-0">
-                <div class="flex-1 py-3 text-[9px] font-bold tracking-widest rounded-xl bg-blue-500 text-black text-center shadow-lg">RPI SENDER</div>
-                <div class="flex-1 py-3 text-[9px] font-bold tracking-widest rounded-xl text-white/50 text-center">CLASSIC FTP</div>
-            </div>
-
-            <div class="flex-1 bg-black/40 border border-white/5 rounded-3xl p-4 flex flex-col relative overflow-hidden">
+            <div class="bg-black/40 border border-white/5 p-1 rounded-2xl mb-4 flex shrink-0"><div class="flex-1 py-3 text-[9px] font-bold rounded-xl bg-blue-500 text-black text-center shadow-lg">RPI SENDER</div><div class="flex-1 py-3 text-[9px] font-bold rounded-xl text-white/50 text-center">FTP CLÁSICO</div></div>
+            
+            <div class="flex-1 bg-black/40 border border-white/5 rounded-3xl p-4 flex flex-col relative">
                 <div class="flex items-center gap-2 mb-3">
                     <div class="w-6 h-6 rounded flex items-center justify-center bg-blue-500/20 text-blue-400 border border-blue-500/30"><i class="fa-solid fa-mobile-screen text-[10px]"></i></div>
-                    <span class="text-[10px] font-bold tracking-widest text-blue-400">GAMES ON PHONE</span>
+                    <span class="text-[10px] font-bold tracking-widest text-blue-400">JUEGOS EN EL CELULAR</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 mb-2 relative">
@@ -232,16 +219,10 @@
                     <div id="rpi-inst" class="feature-bubble bubble-top !bottom-full !mb-3"><strong class="text-yellow-400"><i class="fa-solid fa-download mr-1"></i> INSTALAR EN PS4</strong><p>Manda la orden y la PS4 empezará a descargarlo solo.</p><div class="close-bubble" onclick="toggleBubble('rpi-inst', event)">×</div></div>
                 </div>
             </div>
-            
-            <div class="mt-4 bg-black/80 rounded-[1.5rem] border border-white/10 p-2 flex justify-around shrink-0 relative z-20">
-                <div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-gamepad"></i></div>
-                <div class="w-10 h-10 rounded-xl bg-white/10 border border-[var(--theme-prim)] text-[var(--theme-prim)] flex items-center justify-center shadow-inner"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                <div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-palette"></i></div>
-                <div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-folder-tree"></i></div>
-            </div>
+            <div class="mt-4 bg-black/80 rounded-[1.5rem] border border-white/10 p-2 flex justify-around"><div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-gamepad"></i></div><div class="w-10 h-10 rounded-xl bg-white/10 border border-blue-400 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-cloud-arrow-up"></i></div><div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-palette"></i></div><div class="w-10 h-10 text-white/30 flex items-center justify-center"><i class="fa-solid fa-folder-tree"></i></div></div>
         </section>
 
-        <div class="bg-black/40 rounded-2xl p-6 border border-white/5 relative overflow-hidden glass-panel">
+        <div class="bg-black/40 rounded-2xl p-6 border border-white/5 relative glass-panel">
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center border border-blue-400/50 bg-blue-500/20 text-blue-400"><i class="fa-solid fa-rocket"></i></div>
                 <div><h4 class="text-xs font-bold text-white uppercase tracking-widest">Cómo Instalar Juegos</h4></div>
@@ -270,34 +251,22 @@
         <section class="w-full max-w-[360px] mx-auto bg-[#0b0c14] border border-white/10 rounded-[2.5rem] p-4 mb-6 shadow-[0_0_30px_rgba(168,85,247,0.1)] relative z-10 flex flex-col h-[600px]">
             
             <div class="flex justify-between items-center mb-4">
-                <div class="flex items-center gap-2 bg-[#1b2d22] border border-[#2a5c32] px-3 py-1.5 rounded-xl">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span class="text-[9px] font-bold tracking-widest text-green-400">DETECTED</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-500 flex items-center justify-center text-blue-400 text-xs font-bold">S</div>
-                    <span class="text-xs font-bold text-blue-400 tracking-widest uppercase">SEBAS</span>
-                </div>
+                <div class="flex items-center gap-2 bg-[#1b2d22] border border-[#2a5c32] px-3 py-1.5 rounded-xl"><div class="w-2 h-2 rounded-full bg-green-500"></div><span class="text-[9px] font-bold tracking-widest text-green-400">DETECTADO</span></div>
+                <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-blue-900/40 border border-blue-500 flex items-center justify-center text-blue-400 text-xs font-bold">S</div><span class="text-xs font-bold text-blue-400 tracking-widest uppercase">SEBAS</span></div>
             </div>
 
             <div class="flex gap-2 relative mb-4">
-                <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 h-[42px]">
-                    <i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i><span class="text-[var(--text-muted)] font-mono text-xs">192.168.0.18</span>
-                </div>
-                <div class="w-[42px] h-[42px] rounded-[1.2rem] bg-black/60 border border-white/5 flex items-center justify-center">
-                    <i class="fa-solid fa-plug text-sm text-[var(--theme-sec)]"></i>
-                </div>
-                <div class="w-[42px] h-[42px] rounded-[1.2rem] flex items-center justify-center" style="background-color: var(--theme-prim);">
-                    <i class="fa-solid fa-satellite-dish text-sm text-black"></i>
-                </div>
+                <div class="flex-1 flex items-center px-4 bg-black/60 rounded-[1.2rem] border border-white/5 h-[42px]"><i class="fa-solid fa-network-wired text-white/30 text-[10px] mr-3"></i><span class="text-[var(--text-muted)] font-mono text-xs">192.168.0.18</span></div>
+                <div class="w-[42px] h-[42px] rounded-[1.2rem] bg-black/60 border border-white/5 flex items-center justify-center"><i class="fa-solid fa-plug text-sm text-[var(--theme-sec)]"></i></div>
+                <div class="w-[42px] h-[42px] rounded-[1.2rem] flex items-center justify-center" style="background-color: var(--theme-prim);"><i class="fa-solid fa-satellite-dish text-sm text-black"></i></div>
             </div>
 
             <div class="bg-black/40 border border-white/5 p-1 rounded-2xl mb-6 flex shrink-0">
                 <div class="flex-1 py-3 text-[9px] font-bold tracking-widest rounded-xl text-white/50 text-center">RPI SENDER</div>
-                <div class="flex-1 py-3 text-[9px] font-bold tracking-widest rounded-xl bg-blue-500 text-black text-center shadow-lg">CLASSIC FTP</div>
+                <div class="flex-1 py-3 text-[9px] font-bold tracking-widest rounded-xl bg-blue-500 text-black text-center shadow-lg">FTP CLÁSICO</div>
             </div>
 
-            <div class="flex-1 bg-black/40 border border-white/5 rounded-3xl p-4 flex flex-col relative overflow-hidden">
+            <div class="flex-1 bg-black/40 border border-white/5 rounded-3xl p-4 flex flex-col relative">
                 
                 <div class="flex items-center gap-2 mb-3 w-full">
                     <i class="fa-solid fa-folder-open text-blue-400 text-[10px]"></i>
@@ -306,41 +275,30 @@
 
                 <div class="grid grid-cols-2 gap-2 mb-6 relative">
                     <div class="bg-blue-900/20 border border-blue-500 rounded-xl h-[45px] flex items-center justify-center relative">
-                        <div class="hotspot-pulse blue" onclick="toggleBubble('ftp-path-1', event)"></div>
-                        <span class="text-[11px] font-bold text-blue-400">/data/</span>
+                        <div class="hotspot-pulse blue" onclick="toggleBubble('ftp-path-1', event)"></div><span class="text-[11px] font-bold text-blue-400">/data/</span>
                         <div id="ftp-path-1" class="feature-bubble bubble-bottom"><strong class="text-blue-400"><i class="fa-solid fa-folder mr-1"></i> RUTA DESTINO</strong><p>Toca para elegir la carpeta interna de la consola donde enviarás el archivo.</p><div class="close-bubble" onclick="toggleBubble('ftp-path-1', event)">×</div></div>
                     </div>
-                    <div class="bg-transparent border border-white/10 rounded-xl h-[45px] flex items-center justify-center opacity-70">
-                        <span class="text-[11px] font-bold text-white/50">/data/pkg/</span>
-                    </div>
-                    <div class="bg-transparent border border-white/10 rounded-xl h-[45px] flex items-center justify-center opacity-70">
-                        <span class="text-[11px] font-bold text-white/50">/mnt/usb0/</span>
-                    </div>
-                    <div class="bg-transparent border border-dashed border-white/20 rounded-xl h-[45px] flex items-center justify-center opacity-70 relative">
+                    <div class="bg-transparent border border-white/10 rounded-xl h-[45px] flex items-center justify-center opacity-70"><span class="text-[11px] font-bold text-white/50">/data/pkg/</span></div>
+                    <div class="bg-transparent border border-white/10 rounded-xl h-[45px] flex items-center justify-center opacity-70"><span class="text-[11px] font-bold text-white/50">/mnt/usb0/</span></div>
+                    
+                    <div class="bg-transparent border border-dashed border-white/20 rounded-xl h-[45px] flex items-center justify-center relative z-50">
                         <div class="hotspot-pulse green" onclick="toggleBubble('ftp-add-1', event)"></div>
-                        <span class="text-sm font-bold text-white/50">+</span>
-                        <div id="ftp-add-1" class="feature-bubble bubble-bottom !left-auto !right-0 !transform-none"><strong class="text-green-400"><i class="fa-solid fa-plus mr-1"></i> NUEVA RUTA</strong><p>Escribe y guarda una nueva ruta personalizada si no está en la lista.</p><div class="close-bubble" onclick="toggleBubble('ftp-add-1', event)">×</div></div>
+                        <span class="text-sm font-bold text-white/30">+</span>
+                        <div id="ftp-add-1" class="feature-bubble bubble-top"><strong class="text-green-400"><i class="fa-solid fa-plus mr-1"></i> NUEVA RUTA</strong><p>Escribe y guarda una nueva ruta personalizada si no está en la lista.</p><div class="close-bubble" onclick="toggleBubble('ftp-add-1', event)">×</div></div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 mb-3 w-full">
-                    <i class="fa-solid fa-file-invoice text-blue-400 text-[10px]"></i>
-                    <span class="text-[10px] font-bold tracking-widest text-blue-400 uppercase">ARCHIVOS (PKG/BIN)</span>
-                </div>
+                <div class="flex items-center gap-2 mb-3 w-full"><i class="fa-solid fa-file-invoice text-blue-400 text-[10px]"></i><span class="text-[10px] font-bold tracking-widest text-blue-400 uppercase">ARCHIVOS (PKG/BIN)</span></div>
 
                 <div class="flex-1 w-full border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center bg-black/20 mb-16 relative cursor-pointer">
                     <div class="hotspot-pulse purple" onclick="toggleBubble('ftp-up-1', event)"></div>
-                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-2">
-                        <i class="fa-solid fa-cloud-arrow-up text-lg text-blue-400"></i>
-                    </div>
-                    <span class="text-[9px] font-bold tracking-widest text-white/50 uppercase">TAP TO SELECT</span>
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-2"><i class="fa-solid fa-cloud-arrow-up text-lg text-blue-400"></i></div>
+                    <span class="text-[9px] font-bold tracking-widest text-white/50 uppercase">TOCA PARA SELECCIONAR</span>
                     <div id="ftp-up-1" class="feature-bubble bubble-top"><strong class="text-purple-400"><i class="fa-solid fa-file mr-1"></i> BUSCAR ARCHIVO</strong><p>Abre el explorador de tu celular para elegir el archivo que quieres subir.</p><div class="close-bubble" onclick="toggleBubble('ftp-up-1', event)">×</div></div>
                 </div>
 
                 <div class="absolute bottom-4 left-4 right-4">
-                    <button class="w-full bg-gray-800/80 border border-white/10 text-white font-bold tracking-widest text-[11px] py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg uppercase">
-                        <i class="fa-brands fa-playstation text-sm"></i> SEND FILES
-                    </button>
+                    <button class="w-full bg-gray-800/80 border border-white/10 text-white font-bold tracking-widest text-[11px] py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg uppercase"><i class="fa-brands fa-playstation text-sm"></i> ENVIAR ARCHIVOS</button>
                 </div>
             </div>
 
@@ -361,10 +319,10 @@
                 <p>Usa este modo solo para subir archivos sueltos (como mods, updates o payloads) directamente al disco interno de tu PS4.</p>
                 <div class="h-px w-full bg-white/5 my-2"></div>
                 <p><strong class="text-white block mb-1">1. Seleccionar Ruta:</strong> Toca uno de los recuadros para elegir la carpeta de la PS4 (Ej: <b class="text-blue-400">/data/</b>).</p>
-                <p><strong class="text-white block mb-1">2. Agregar Rutas:</strong> Si la carpeta que buscas no está en la lista, toca el botón <b>'+'</b> para escribir la ruta exacta manualmente y guardarla en la lista.</p>
+                <p><strong class="text-white block mb-1">2. Agregar Rutas:</strong> Si la carpeta que buscas no está en la lista, toca el botón <b>'+'</b> de la cuadrícula para escribir la ruta exacta manualmente y guardarla en la lista.</p>
                 <div class="h-px w-full bg-white/5 my-2"></div>
-                <p><strong class="text-white block mb-1">3. Seleccionar Archivo:</strong> Toca el cuadro punteado central grande (<b class="text-blue-400">TAP TO SELECT</b>) para abrir la galería o explorador de tu celular y elegir el archivo.</p>
-                <p><strong class="text-white block mb-1">4. Enviar:</strong> Presiona el botón de <b>SEND FILES</b> abajo del todo.</p>
+                <p><strong class="text-white block mb-1">3. Seleccionar Archivo:</strong> Toca el cuadro punteado central grande (<b class="text-blue-400">TOCA PARA SELECCIONAR</b>) para abrir la galería o explorador de tu celular y elegir el archivo.</p>
+                <p><strong class="text-white block mb-1">4. Enviar:</strong> Presiona el botón oscuro de <b>ENVIAR ARCHIVOS</b> abajo del todo.</p>
             </div>
         </div>
     </div>
